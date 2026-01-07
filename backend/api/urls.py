@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path("pockets/", views.PocketListCreate.as_view(), name='pocket-list'),
-    path ("notes/delete/<int:pk>", views.PocketDelete.as_view(), name='delete-pocket')
+    path ("pockets/delete/<int:pk>/", views.PocketDelete.as_view(), name='delete-pocket')
 ]
