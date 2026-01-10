@@ -1,0 +1,470 @@
+/* PocketForm.css */
+
+.pocket-form-modal {
+  background: white;
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 500px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp var(--transition-normal);
+}
+
+/* Header with action buttons */
+.form-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem;
+  padding-bottom: 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.form-actions-left {
+  display: flex;
+  gap: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.action-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.action-btn.active {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.category-btn {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.4rem 0.9rem;
+  border-radius: 12px;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+}
+
+.category-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.category-btn.active {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.validate-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.validate-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.validate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Colored section */
+.form-colored-section {
+  padding: 0 0 3rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  min-height: 300px;
+  justify-content: center;
+  border-radius: 0;
+}
+
+.pocket-name-input {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  padding: 0 1.5rem 0.8rem 1.5rem;
+  border-radius: var(--radius-md);
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  transition: var(--transition-normal);
+}
+
+.pocket-name-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.pocket-name-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Amount control */
+.amount-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.amount-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-full);
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.amount-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.1);
+}
+
+.amount-btn:active {
+  transform: scale(0.95);
+}
+
+.amount-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.currency {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.amount-input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 3rem;
+  font-weight: 800;
+  width: 250px;
+  text-align: center;
+  padding: 0;
+}
+
+.amount-input:focus {
+  outline: none;
+}
+
+.amount-input::-webkit-inner-spin-button,
+.amount-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Frequency selector */
+.frequency-selector {
+  width: 100%;
+  max-width: 300px;
+}
+
+.frequency-select {
+  width: 100%;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.8rem 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: center;
+  transition: var(--transition-normal);
+}
+
+.frequency-select:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.frequency-select:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.frequency-select option {
+  background: var(--text-dark);
+  color: white;
+}
+
+/* White section (bottom half) */
+.form-white-section {
+  background: white;
+  min-height: 100px;
+  padding: 1.5rem;
+}
+
+/* Color/Category buttons */
+.color-picker-panel-colored,
+.category-picker-panel-colored {
+  animation: slideDown 0.3s ease;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  align-self: center;
+  width: 100%;
+  max-width: 450px;
+}
+
+.color-picker-panel-colored .color-grid,
+.category-picker-panel-colored .category-list {
+  margin: 0;
+}
+
+.color-picker-panel-colored .color-swatch {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.color-picker-panel-colored .color-swatch:hover {
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.color-picker-panel-colored .color-swatch.selected {
+  border-color: white;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+  transform: scale(1.15);
+}
+
+.category-picker-panel-colored {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  font-weight: 600;
+  color: white;
+}
+
+.category-picker-panel-colored .create-category-section {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 1rem;
+}
+
+.category-picker-panel-colored .category-input {
+  flex: 1;
+  padding: 0.8rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+}
+
+.category-picker-panel-colored .category-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.category-picker-panel-colored .category-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.category-picker-panel-colored .create-category-btn {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+  border: none;
+  padding: 0 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.category-picker-panel-colored .create-category-btn:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Color picker panel */
+.color-picker-panel,
+.category-picker-panel {
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.color-picker-panel h3,
+.category-picker-panel h3 {
+  margin: 0 0 1rem 0;
+  color: var(--text-dark);
+  font-size: 1.1rem;
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+}
+
+.color-swatch {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.color-swatch.selected {
+  border-color: var(--text-dark);
+  box-shadow: var(--shadow-lg);
+  transform: scale(1.15);
+}
+
+.color-input-custom {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--border-light);
+  cursor: pointer;
+}
+
+/* Category picker panel */
+.category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.create-category-section {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.category-input {
+  flex: 1;
+  padding: 0.8rem;
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+}
+
+.category-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-focus);
+}
+
+.create-category-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.create-category-btn:hover {
+  background: var(--primary-dark);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .pocket-form-modal {
+    width: 95%;
+  }
+
+  .form-colored-section {
+    padding: 2rem 1rem;
+    min-height: 250px;
+  }
+
+  .pocket-name-input {
+    font-size: 1.5rem;
+  }
+
+  .amount-input {
+    font-size: 2.5rem;
+    width: 140px;
+  }
+
+  .currency {
+    font-size: 1.5rem;
+  }
+
+  .amount-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  .color-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .color-swatch {
+    width: 40px;
+    height: 40px;
+  }
+}
