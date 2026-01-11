@@ -4,7 +4,7 @@ import "../styles/PocketForm.css";
 
 function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   const [name, setName] = useState(editingPocket?.name || "");
-  const [amount, setAmount] = useState(editingPocket?.amount || "0");
+  const [amount, setAmount] = useState(editingPocket?.amount || 0);
   const [frequency, setFrequency] = useState(
     editingPocket?.frequency || "none"
   );
@@ -13,6 +13,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   const [categories, setCategories] = useState([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(""); // Error message state
 
   // Show/hide sections
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -64,6 +65,32 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
     }
   };
 
+  // NEW: Delete category function
+  const handleDeleteCategory = async (categoryId, categoryName) => {
+    if (
+      !window.confirm(
+        `Delete "${categoryName}"? This only works if no pockets are using this category.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await api.delete(`/api/categories/delete/${categoryId}/`);
+      fetchCategories(); // Refresh the list
+      // If the deleted category was selected, clear the selection
+      if (category === categoryId) {
+        setCategory("");
+      }
+    } catch (error) {
+      if (error.response?.data?.error) {
+        alert(error.response.data.error);
+      } else {
+        alert("Failed to delete category");
+      }
+    }
+  };
+
   const adjustAmount = (increment) => {
     const currentAmount = parseFloat(amount) || 0;
     const newAmount = Math.max(0, currentAmount + increment);
@@ -71,8 +98,25 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   };
 
   const handleSubmit = async () => {
+    // Clear previous errors
+    setError("");
+
     if (!name.trim()) {
-      alert("Please enter a pocket name");
+      setError("Please enter a pocket name");
+      return;
+    }
+
+    // Validation: Amount and frequency must go together
+    const hasAmount = amount && parseFloat(amount) > 0;
+    const hasFrequency = frequency && frequency !== 'none';
+
+    if (hasAmount && !hasFrequency) {
+      setError("Please select a frequency for your recurring amount");
+      return;
+    }
+
+    if (!hasAmount && hasFrequency) {
+      setError("Please enter an amount for your recurring frequency");
       return;
     }
 
@@ -80,7 +124,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
 
     const pocketData = {
       name,
-      amount: amount || null,
+      amount: parseFloat(amount) || 0,
       frequency,
       color,
       category: category || null,
@@ -96,7 +140,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
       onClose();
     } catch (err) {
       console.error(err);
-      alert("Error saving pocket");
+      setError("Error saving pocket. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -126,7 +170,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
               }}
               title="Choose color"
             >
-              🎨 Color
+            🌈
             </button>
             <button
               type="button"
@@ -191,16 +235,28 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                   No category
                 </button>
                 {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    className={`category-btn ${
-                      category === cat.id ? "selected" : ""
-                    }`}
-                    onClick={() => setCategory(cat.id)}
-                  >
-                    {cat.name}
-                  </button>
+                  <div key={cat.id} className="category-item-wrapper">
+                    <button
+                      type="button"
+                      className={`category-btn ${
+                        category === cat.id ? "selected" : ""
+                      }`}
+                      onClick={() => setCategory(cat.id)}
+                    >
+                      {cat.name}
+                    </button>
+                    <button
+                      type="button"
+                      className="delete-category-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteCategory(cat.id, cat.name);
+                      }}
+                      title="Delete category"
+                    >
+                      ×
+                    </button>
+                  </div>
                 ))}
               </div>
 
@@ -245,7 +301,16 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                 type="number"
                 className="amount-input"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setAmount(value === '' ? 0 : value);
+                }}
+                onBlur={(e) => {
+                  // If empty on blur, set to 0
+                  if (e.target.value === '' || e.target.value === null) {
+                    setAmount(0);
+                  }
+                }}
                 step="0.01"
                 min="0"
               />
@@ -272,6 +337,13 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
               <option value="monthly">Monthly</option>
             </select>
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
         </div>
 
         {/* White section */}

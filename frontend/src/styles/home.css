@@ -1,8 +1,8 @@
-/* Home.css - Using global variables */
+/* Home.css */
 
 .home-container {
-    min-height: calc(100vh - 70px);
-    background: var(--background-gradient);
+    min-height: calc(100vh - 70px); /* Account for navbar */
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -13,33 +13,33 @@
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
-    padding: var(--spacing-lg);
+    padding: 2rem;
 }
 
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: 2rem;
 }
 
 .page-header h1 {
-    font-size: var(--text-4xl);
-    color: var(--text-dark);
+    font-size: 2.5rem;
+    color: #2c3e50;
     margin: 0;
     font-weight: 700;
 }
 
 .create-btn {
-    background: var(--primary-gradient);
-    color: var(--white);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
     border: none;
-    padding: var(--spacing-xs) var(--spacing-md);
-    border-radius: var(--radius-xl);
-    font-size: var(--text-base);
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: var(--transition-normal);
+    transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
@@ -48,103 +48,103 @@
     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
+/* Category Sections */
+.category-section {
+    margin-bottom: 2.5rem;
+}
+
+.category-title {
+    display: inline-block;
+    font-size: var(--text-sm);
+    color: white;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    padding: 0.4rem 1rem;
+    background: var(--primary-gradient);
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-md);
+}
+
+.category-divider {
+    display: none;
+}
+
 .pockets-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: var(--spacing-md);
+    gap: 1.5rem;
 }
 
 .pocket-card {
     position: relative;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
+    border-radius: 20px;
+    padding: 2rem;
     min-height: 180px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: var(--shadow-lg);
-    transition: var(--transition-normal);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .pocket-card:hover {
     transform: translateY(-5px);
-    box-shadow: var(--shadow-xl);
-    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
 .pocket-content {
-    color: var(--white);
-    flex: 1;
-    pointer-events: none;
-}
-
-.pocket-category {
-    display: inline-block;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: var(--text-xs);
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: white;
 }
 
 .pocket-name {
-    font-size: var(--text-2xl);
+    font-size: 1.5rem;
     font-weight: 700;
-    margin: 0 0 var(--spacing-sm) 0;
-    color: var(--white);
+    margin: 0 0 1rem 0;
+    color: white;
 }
 
 .pocket-amount {
-    font-size: var(--text-3xl);
+    font-size: 2rem;
     font-weight: 800;
     margin: 0;
-    color: var(--white);
+    color: white;
     opacity: 0.95;
-}
-
-.pocket-frequency {
-    font-size: var(--text-sm);
-    margin-top: 0.25rem;
-    opacity: 0.9;
-    font-weight: 600;
 }
 
 .delete-icon {
     position: absolute;
-    top: var(--spacing-sm);
-    right: var(--spacing-sm);
+    top: 1rem;
+    right: 1rem;
     background: rgba(255, 255, 255, 0.3);
     border: none;
-    color: var(--white);
+    color: white;
     width: 35px;
     height: 35px;
-    border-radius: var(--radius-full);
+    border-radius: 50%;
     font-size: 1.8rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: var(--transition-normal);
+    transition: all 0.3s ease;
     line-height: 1;
     padding: 0;
-    z-index: 10;
 }
 
 .delete-icon:hover {
-    background: rgba(255, 0, 0, 0.6);
+    background: rgba(255, 255, 255, 0.5);
     transform: rotate(90deg);
 }
 
 .empty-state {
     grid-column: 1 / -1;
     text-align: center;
-    padding: var(--spacing-xl) var(--spacing-lg);
-    color: var(--text-medium);
-    font-size: var(--text-lg);
+    padding: 4rem 2rem;
+    color: #7f8c8d;
+    font-size: 1.1rem;
 }
 
 /* Modal Styles */
@@ -163,13 +163,13 @@
 }
 
 .modal-content {
-    background: var(--white);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
     width: 90%;
     max-width: 500px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: slideUp var(--transition-normal);
+    animation: slideUp 0.3s ease;
 }
 
 @keyframes slideUp {
@@ -187,26 +187,26 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 1.5rem;
 }
 
 .modal-header h2 {
     margin: 0;
-    color: var(--text-dark);
-    font-size: var(--text-2xl);
+    color: #2c3e50;
+    font-size: 1.5rem;
 }
 
 .close-btn {
     background: none;
     border: none;
-    font-size: var(--text-3xl);
-    color: var(--text-light);
+    font-size: 2rem;
+    color: #95a5a6;
     cursor: pointer;
     padding: 0;
     width: 40px;
     height: 40px;
-    border-radius: var(--radius-full);
-    transition: var(--transition-normal);
+    border-radius: 50%;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -214,53 +214,53 @@
 }
 
 .close-btn:hover {
-    background: var(--border-light);
-    color: var(--text-dark);
+    background: #ecf0f1;
+    color: #2c3e50;
 }
 
 .pocket-form {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-md);
+    gap: 1.5rem;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: 0.5rem;
 }
 
 .form-group label {
     font-weight: 600;
-    color: var(--text-dark);
-    font-size: var(--text-sm);
+    color: #2c3e50;
+    font-size: 0.9rem;
 }
 
 .form-group input {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border: 2px solid var(--border-light);
-    border-radius: var(--radius-sm);
-    font-size: var(--text-base);
-    transition: var(--transition-normal);
+    padding: 0.8rem;
+    border: 2px solid #ecf0f1;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: var(--primary-color);
+    border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .submit-btn {
-    background: var(--primary-gradient);
-    color: var(--white);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
     border: none;
-    padding: var(--spacing-sm);
-    border-radius: var(--radius-sm);
-    font-size: var(--text-base);
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: var(--transition-normal);
-    margin-top: var(--spacing-xs);
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
 }
 
 .submit-btn:hover {
@@ -272,26 +272,30 @@
 @media (max-width: 768px) {
     .page-header {
         flex-direction: column;
-        gap: var(--spacing-sm);
+        gap: 1rem;
         text-align: center;
     }
 
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
     .home-content {
-        padding: var(--spacing-sm);
+        padding: 1rem;
     }
 
     .pockets-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: var(--spacing-sm);
+        gap: 1rem;
     }
 
     .pocket-card {
         min-height: 150px;
-        padding: var(--spacing-md);
+        padding: 1.5rem;
     }
 
     .modal-content {
         width: 95%;
-        padding: var(--spacing-md);
+        padding: 1.5rem;
     }
 }

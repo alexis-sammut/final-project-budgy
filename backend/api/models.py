@@ -41,8 +41,7 @@ class Pocket(models.Model):
     amount = models.DecimalField(
         max_digits=10, 
         decimal_places=2, 
-        null=True, 
-        blank=True,
+        default=0,
         help_text='Recurring amount to allocate to this pocket'
     )
     frequency = models.CharField(
