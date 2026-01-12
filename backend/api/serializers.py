@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Pocket, Category
+from .models import Pocket, Category, Item
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,8 +20,20 @@ class CategorySerializer(serializers.ModelSerializer):
         extra_kwargs = {'author': {'read_only': True}}
 
 
+class ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = ['id', 'name', 'amount', 'pocket', 'is_other', 'created_at', 'updated_at']
+        extra_kwargs = {
+            'pocket': {'read_only': True},
+            'created_at': {'read_only': True},
+            'updated_at': {'read_only': True},
+        }
+
+
 class PocketSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
+    items = ItemSerializer(many=True, read_only=True)
     
     class Meta:
         model = Pocket 
@@ -33,6 +45,7 @@ class PocketSerializer(serializers.ModelSerializer):
             'frequency',
             'category',
             'category_name',
+            'items',
             'created_at',
             'updated_at',
             'author'

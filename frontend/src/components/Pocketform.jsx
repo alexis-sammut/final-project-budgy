@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "../api";
 import "../styles/PocketForm.css";
 
 function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   const [name, setName] = useState(editingPocket?.name || "");
-  const [amount, setAmount] = useState(editingPocket?.amount || 0);
+  const [amount, setAmount] = useState(
+    editingPocket?.amount ? parseFloat(editingPocket.amount).toFixed(2) : '0'
+  );
   const [frequency, setFrequency] = useState(
     editingPocket?.frequency || "none"
   );
@@ -14,6 +16,10 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(""); // Error message state
+  const [items, setItems] = useState([]); // Items in this pocket
+  const [localItems, setLocalItems] = useState([]); // Local items for preview before save
+  
+  const skipOtherUpdate = useRef(false); // Flag to skip "Other" update when adding items
 
   // Show/hide sections
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -41,7 +47,24 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
 
   useEffect(() => {
     fetchCategories();
+    if (editingPocket?.id) {
+      fetchItems();
+    } else {
+      // For new pockets, initialize with empty local items
+      updateLocalOtherItem([]);
+    }
   }, []);
+
+  // Update local "Other" item whenever amount changes (but not when we're adding items)
+  useEffect(() => {
+    if (skipOtherUpdate.current) {
+      skipOtherUpdate.current = false; // Reset flag
+      return;
+    }
+    
+    const regularItems = localItems.filter(item => !item.is_other);
+    updateLocalOtherItem(regularItems);
+  }, [amount]);
 
   const fetchCategories = async () => {
     try {
@@ -49,6 +72,74 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
       setCategories(res.data);
     } catch (err) {
       console.error("Error fetching categories:", err);
+    }
+  };
+
+  const fetchItems = async () => {
+    if (!editingPocket?.id) return;
+    try {
+      const res = await api.get(`/api/pockets/${editingPocket.id}/items/`);
+      console.log("Fetched items:", res.data);
+      setItems(res.data);
+      setLocalItems(res.data); // Sync local items with fetched
+    } catch (err) {
+      console.error("Error fetching items:", err);
+    }
+  };
+
+  // Calculate and update the local "Other" item
+  const updateLocalOtherItem = (regularItems) => {
+    const currentAmount = parseFloat(amount) || 0;
+    const totalRegular = regularItems.reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0);
+    const leftover = currentAmount - totalRegular;
+
+    // Remove existing "Other" item
+    const withoutOther = regularItems.filter(item => !item.is_other);
+
+    if (currentAmount > 0 && leftover > 0) {
+      // Add "Other" item with leftover amount
+      setLocalItems([
+        ...withoutOther,
+        {
+          id: 'temp-other',
+          name: 'Other',
+          amount: leftover.toFixed(2),
+          is_other: true
+        }
+      ]);
+    } else {
+      // No "Other" if pocket amount is 0 or all allocated
+      setLocalItems(withoutOther);
+    }
+  };
+
+  // Add a new item
+  const handleAddItem = (itemName, itemAmount) => {
+    if (!itemName.trim()) return;
+    
+    const parsedAmount = parseFloat(itemAmount) || 0;
+    
+    const newItem = {
+      id: `temp-${Date.now()}`,
+      name: itemName,
+      amount: parsedAmount.toFixed(2),
+      is_other: false
+    };
+    
+    const regularItems = localItems.filter(item => !item.is_other);
+    const updatedRegular = [...regularItems, newItem];
+    
+    const currentAmount = parseFloat(amount) || 0;
+    const newTotal = updatedRegular.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+    
+    // If pocket amount is 0, OR if items total > pocket amount, update pocket amount
+    if (currentAmount === 0 || newTotal > currentAmount) {
+      skipOtherUpdate.current = true; // Skip the useEffect that would create "Other"
+      setAmount(newTotal.toFixed(2));
+      setLocalItems(updatedRegular);
+    } else {
+      // Pocket amount is set, add item and update "Other"
+      updateLocalOtherItem(updatedRegular);
     }
   };
 
@@ -88,6 +179,66 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
       } else {
         alert("Failed to delete category");
       }
+    }
+  };
+
+  // Item management functions
+  const handleUpdateItem = async (itemId, updatedData) => {
+    if (!editingPocket?.id) return;
+    
+    try {
+      await api.patch(`/api/items/update/${itemId}/`, updatedData);
+      await fetchItems(); // Refresh items list
+    } catch (error) {
+      console.error("Error updating item:", error);
+      setError("Failed to update item");
+    }
+  };
+
+  const handleDeleteLocalItem = async (itemId) => {
+    // If it's a real item (not temp), delete from backend
+    if (editingPocket?.id && !itemId.toString().startsWith('temp')) {
+      try {
+        await api.delete(`/api/items/delete/${itemId}/`);
+        await fetchItems(); // Refresh to get updated items and "Other"
+        return;
+      } catch (error) {
+        console.error("Error deleting item:", error);
+        setError("Failed to delete item");
+        return;
+      }
+    }
+    
+    // For temp items, just remove locally
+    const updated = localItems.filter(item => item.id !== itemId);
+    const regularItems = updated.filter(item => !item.is_other);
+    
+    // Deleting items never reduces pocket amount
+    // It just increases the "Other" item
+    updateLocalOtherItem(regularItems);
+  };
+
+  const handleCreateItem = async (itemData) => {
+    if (!editingPocket?.id) return;
+    
+    try {
+      await api.post(`/api/pockets/${editingPocket.id}/items/`, itemData);
+      await fetchItems(); // Refresh items list
+    } catch (error) {
+      console.error("Error creating item:", error);
+      setError("Failed to create item");
+    }
+  };
+
+  const handleDeleteItem = async (itemId) => {
+    if (!editingPocket?.id) return;
+    
+    try {
+      await api.delete(`/api/items/delete/${itemId}/`);
+      await fetchItems(); // Refresh items list
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      setError("Failed to delete item");
     }
   };
 
@@ -133,8 +284,33 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
     try {
       if (editingPocket) {
         await api.patch(`/api/pockets/update/${editingPocket.id}/`, pocketData);
+        
+        // Save ONLY NEW local items to backend (those with temp IDs)
+        const newItems = localItems.filter(item => 
+          !item.is_other && 
+          item.id.toString().startsWith('temp')
+        );
+        
+        for (const item of newItems) {
+          await api.post(`/api/pockets/${editingPocket.id}/items/`, {
+            name: item.name,
+            amount: item.amount
+          });
+        }
+        
+        await fetchItems(); // Refresh items to get updated "Other" item
       } else {
-        await api.post("/api/pockets/", pocketData);
+        const res = await api.post("/api/pockets/", pocketData);
+        
+        // For new pockets, save local items after pocket is created
+        const newPocketId = res.data.id;
+        const regularItems = localItems.filter(item => !item.is_other);
+        for (const item of regularItems) {
+          await api.post(`/api/pockets/${newPocketId}/items/`, {
+            name: item.name,
+            amount: item.amount
+          });
+        }
       }
       onPocketCreated();
       onClose();
@@ -302,13 +478,21 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                 className="amount-input"
                 value={amount}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  setAmount(value === '' ? 0 : value);
+                  // Allow user to clear/type freely
+                  setAmount(e.target.value);
+                }}
+                onFocus={(e) => {
+                  // Select all on focus so user can immediately type new value
+                  e.target.select();
                 }}
                 onBlur={(e) => {
-                  // If empty on blur, set to 0
-                  if (e.target.value === '' || e.target.value === null) {
-                    setAmount(0);
+                  // Format to 2 decimals on blur, default to 0 if empty
+                  const value = e.target.value;
+                  const numValue = parseFloat(value);
+                  if (isNaN(numValue) || value === '') {
+                    setAmount('0');
+                  } else {
+                    setAmount(numValue.toFixed(2));
                   }
                 }}
                 step="0.01"
@@ -346,8 +530,121 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
           )}
         </div>
 
-        {/* White section */}
-        <div className="form-white-section"></div>
+        {/* Items List */}
+        <div className="form-white-section">
+          <div className="items-list">
+            <h3 className="items-title">Budget Breakdown</h3>
+            
+            {/* Regular Items */}
+            {localItems.filter(item => !item.is_other).map((item) => (
+              <div key={item.id} className="item-row">
+                <span className="item-name">{item.name}</span>
+                <span className="item-amount">€{parseFloat(item.amount).toFixed(2)}</span>
+                <button 
+                  className="item-delete-btn"
+                  onClick={() => handleDeleteLocalItem(item.id)}
+                  title="Remove item"
+                >
+                  ×
+                </button>
+                <div className="item-divider"></div>
+              </div>
+            ))}
+            
+            {/* Other Item (auto-generated when amount > 0) */}
+            {localItems.find(item => item.is_other) && (
+              <div className="item-row item-other">
+                <span className="item-name">Other</span>
+                <input
+                  type="number"
+                  className="item-amount-editable"
+                  value={parseFloat(localItems.find(i => i.is_other).amount).toFixed(2)}
+                  step="0.01"
+                  min="0"
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => {
+                    // When user changes "Other" amount, update the total pocket amount
+                    const otherAmount = parseFloat(e.target.value) || 0;
+                    const regularItems = localItems.filter(item => !item.is_other);
+                    const regularTotal = regularItems.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+                    const newPocketAmount = regularTotal + otherAmount;
+                    skipOtherUpdate.current = true; // Don't trigger useEffect
+                    setAmount(newPocketAmount.toFixed(2));
+                  }}
+                  onBlur={(e) => {
+                    // Format on blur
+                    const value = parseFloat(e.target.value) || 0;
+                    const regularItems = localItems.filter(item => !item.is_other);
+                    const regularTotal = regularItems.reduce((sum, item) => sum + parseFloat(item.amount), 0);
+                    setAmount((regularTotal + value).toFixed(2));
+                  }}
+                />
+                <div className="item-divider"></div>
+              </div>
+            )}
+            
+            {/* Add Item Input */}
+            <div className="add-item-section">
+              <input
+                type="text"
+                className="add-item-name-input"
+                placeholder="+ Add item"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const amountInput = e.target.nextElementSibling;
+                    if (amountInput) amountInput.focus();
+                  }
+                }}
+                onBlur={(e) => {
+                  const nameInput = e.target;
+                  const amountInput = e.target.nextElementSibling;
+                  
+                  // Only add if both name and amount are filled
+                  if (nameInput.value && amountInput && amountInput.value) {
+                    handleAddItem(nameInput.value, amountInput.value);
+                    nameInput.value = '';
+                    amountInput.value = '';
+                  }
+                }}
+              />
+              <input
+                type="number"
+                className="add-item-amount-input"
+                placeholder="€0.00"
+                step="0.01"
+                min="0"
+                onFocus={(e) => {
+                  // Clear placeholder behavior - select all if has value
+                  if (e.target.value) e.target.select();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const nameInput = e.target.previousElementSibling;
+                    if (nameInput && nameInput.value && e.target.value) {
+                      const formattedAmount = parseFloat(e.target.value).toFixed(2);
+                      handleAddItem(nameInput.value, formattedAmount);
+                      nameInput.value = '';
+                      e.target.value = '';
+                      nameInput.focus();
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  const amountInput = e.target;
+                  const nameInput = e.target.previousElementSibling;
+                  
+                  // Only add if both name and amount are filled
+                  if (nameInput && nameInput.value && amountInput.value) {
+                    const formattedAmount = parseFloat(amountInput.value).toFixed(2);
+                    handleAddItem(nameInput.value, formattedAmount);
+                    nameInput.value = '';
+                    amountInput.value = '';
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

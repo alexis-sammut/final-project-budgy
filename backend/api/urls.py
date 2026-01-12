@@ -7,4 +7,7 @@ urlpatterns = [
     path("pockets/update/<int:pk>/", views.PocketUpdate.as_view(), name='update-pocket'),
     path("categories/", views.CategoryListCreate.as_view(), name='category-list'),
     path("categories/delete/<int:pk>/", views.CategoryDelete.as_view(), name='delete-category'),
+    path("pockets/<int:pocket_id>/items/", views.ItemListCreate.as_view(), name='item-list'),
+    path("items/update/<int:pk>/", views.ItemUpdate.as_view(), name='update-item'),
+    path("items/delete/<int:pk>/", views.ItemDelete.as_view(), name='delete-item'),
 ]

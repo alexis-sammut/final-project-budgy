@@ -257,6 +257,223 @@
   padding: 1.5rem;
 }
 
+/* Items List - Receipt Style */
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.items-title {
+  font-size: var(--text-lg);
+  color: var(--text-dark);
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border-light);
+}
+
+.items-empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-medium);
+  font-style: italic;
+}
+
+.items-empty-state p {
+  margin: 0;
+}
+
+.items-hint {
+  font-size: var(--text-sm);
+  margin-top: 0.5rem !important;
+  opacity: 0.7;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 0;
+  position: relative;
+}
+
+.item-delete-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  line-height: 1;
+}
+
+.item-row:hover .item-delete-btn {
+  opacity: 1;
+}
+
+.item-delete-btn:hover {
+  color: #c0392b;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.item-name {
+  font-size: var(--text-base);
+  color: var(--text-dark);
+  font-weight: 600;
+  flex: 1;
+}
+
+.item-amount {
+  font-size: var(--text-base);
+  color: var(--text-dark);
+  font-weight: 700;
+  text-align: right;
+  min-width: 80px;
+}
+
+.item-amount-editable {
+  font-size: var(--text-base);
+  color: var(--text-dark);
+  font-weight: 700;
+  text-align: right;
+  min-width: 80px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  outline: none;
+  font-family: inherit;
+}
+
+.item-amount-editable:focus {
+  background: rgba(13, 115, 119, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.item-amount-editable::-webkit-inner-spin-button,
+.item-amount-editable::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.item-divider {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, var(--border-light) 50%, transparent 50%);
+  background-size: 8px 1px;
+  background-repeat: repeat-x;
+}
+
+/* Other Item - Greyed out/transparent */
+.item-other {
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.item-other:hover {
+  opacity: 1;
+}
+
+.item-name-input {
+  font-size: var(--text-base);
+  color: var(--text-dark);
+  font-weight: 600;
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+}
+
+.item-name-input:focus {
+  background: rgba(13, 115, 119, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Other Item Placeholder */
+.item-other-placeholder {
+  justify-content: center;
+  opacity: 0.4;
+  font-style: italic;
+  padding: 1rem 0;
+}
+
+.item-placeholder-text {
+  color: var(--text-medium);
+  font-size: var(--text-sm);
+}
+
+/* Add Item Section */
+.add-item-section {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 0;
+  border-top: 2px solid var(--border-light);
+  margin-top: 0.5rem;
+}
+
+.add-item-name-input {
+  flex: 1;
+  font-size: var(--text-base);
+  color: var(--text-dark);
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  outline: none;
+}
+
+.add-item-name-input::placeholder {
+  color: var(--text-medium);
+  font-weight: 400;
+}
+
+.add-item-name-input:focus {
+  background: rgba(13, 115, 119, 0.05);
+  border-radius: var(--radius-sm);
+}
+
+.add-item-amount-input {
+  width: 100px;
+  font-size: var(--text-base);
+  color: var(--text-dark);
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  padding: 0.5rem;
+  text-align: right;
+  outline: none;
+}
+
+.add-item-amount-input::placeholder {
+  color: var(--text-medium);
+  font-weight: 400;
+}
+
+.add-item-amount-input:focus {
+  background: rgba(13, 115, 119, 0.05);
+  border-radius: var(--radius-sm);
+}
+
+.add-item-amount-input::-webkit-inner-spin-button,
+.add-item-amount-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* Color/Category buttons */
 .color-picker-panel-colored,
 .category-picker-panel-colored {
