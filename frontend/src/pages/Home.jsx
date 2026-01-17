@@ -50,10 +50,13 @@ function Home(){
 
     const getFrequencyLabel = (frequency) => {
         const labels = {
-            'none': 'No recurring',
+            'daily': 'Daily',
             'weekly': 'Weekly',
             'biweekly': 'Biweekly',
-            'monthly': 'Monthly'
+            '4-week': '4-Week',
+            'monthly': 'Monthly',
+            'quarterly': 'Quarterly',
+            'yearly': 'Yearly'
         };
         return labels[frequency] || frequency;
     };
@@ -106,9 +109,9 @@ function Home(){
                                         >
                                             <div className="pocket-content">
                                                 <h3 className="pocket-name">{pocket.name}</h3>
-                                                {pocket.amount && (
+                                                {pocket.amount_display && (
                                                     <>
-                                                        <p className="pocket-amount">€{pocket.amount}</p>
+                                                        <p className="pocket-amount">€{pocket.amount_display}</p>
                                                         <p className="pocket-frequency">
                                                             {getFrequencyLabel(pocket.frequency)}
                                                         </p>

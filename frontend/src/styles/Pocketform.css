@@ -69,6 +69,55 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
+.frequency-selector-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.frequency-selector {
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: transparent;
+  font-size: var(--text-base);
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: var(--transition-normal);
+  min-width: 40px;
+  width: 40px;
+  text-align: center;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.frequency-selector:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.frequency-selector option {
+  background: var(--bg-dark);
+  color: var(--text-light);
+  font-weight: 600;
+  padding: 0.5rem;
+}
+
+.frequency-display-code {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 700;
+  pointer-events: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .validate-btn {
   width: 50px;
   height: 50px;
@@ -135,6 +184,7 @@
 .amount-control {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
 }
 
@@ -170,6 +220,24 @@
   gap: 0.5rem;
 }
 
+.amount-info-tooltip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: help;
+}
+
+.info-icon {
+  font-size: 1.2rem;
+  opacity: 0.7;
+  transition: var(--transition-normal);
+}
+
+.amount-info-tooltip:hover .info-icon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
 .currency {
   font-size: 2rem;
   font-weight: 700;
@@ -195,40 +263,6 @@
 .amount-input::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-
-/* Frequency selector */
-.frequency-selector {
-  width: 100%;
-  max-width: 300px;
-}
-
-.frequency-select {
-  width: 100%;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 0.8rem 1rem;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  text-align: center;
-  transition: var(--transition-normal);
-}
-
-.frequency-select:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.frequency-select:focus {
-  outline: none;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.frequency-select option {
-  background: var(--text-dark);
-  color: white;
 }
 
 /* Error Message */
@@ -292,36 +326,35 @@
 
 .item-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 0.75rem;
   padding: 0.8rem 0;
   position: relative;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .item-delete-btn {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e74c3c;
   border: none;
-  color: #e74c3c;
-  font-size: 1.5rem;
+  color: white;
+  font-size: 1.2rem;
   font-weight: 700;
   cursor: pointer;
-  padding: 0.2rem 0.5rem;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-normal);
+  flex-shrink: 0;
   line-height: 1;
-}
-
-.item-row:hover .item-delete-btn {
-  opacity: 1;
+  padding: 0;
 }
 
 .item-delete-btn:hover {
-  color: #c0392b;
-  transform: translateY(-50%) rotate(90deg);
+  background: #c0392b;
+  transform: scale(1.1);
 }
 
 .item-name {
@@ -331,12 +364,72 @@
   flex: 1;
 }
 
+.item-frequency-selector {
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-dark);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  max-width: 100px;
+  text-align: right;
+  transition: var(--transition-normal);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin-left: auto;
+  margin-right: 0.5rem;
+}
+
+.item-frequency-selector:hover {
+  background: var(--bg-light);
+}
+
+.item-frequency-selector:focus {
+  outline: none;
+  background: var(--bg-light);
+}
+
+.item-frequency-selector option {
+  background: white;
+  color: var(--text-dark);
+  padding: 0.5rem;
+}
+
+.item-frequency-label-other {
+  font-size: var(--text-sm);
+  color: var(--text-dark);
+  font-weight: 500;
+  max-width: 100px;
+  text-align: right;
+  opacity: 0.65;
+  margin-left: auto;
+  margin-right: 0.5rem;
+}
+
 .item-amount {
   font-size: var(--text-base);
   color: var(--text-dark);
   font-weight: 700;
   text-align: right;
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.item-amount-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
   min-width: 80px;
+  justify-content: flex-end;
+}
+
+.currency-symbol {
+  font-size: var(--text-base);
+  color: var(--text-dark);
+  font-weight: 700;
 }
 
 .item-amount-editable {
@@ -344,7 +437,7 @@
   color: var(--text-dark);
   font-weight: 700;
   text-align: right;
-  min-width: 80px;
+  width: 70px;
   border: none;
   background: transparent;
   padding: 0;
@@ -707,6 +800,245 @@
 .delete-category-btn:active {
   transform: rotate(90deg) scale(0.9);
 }
+
+/* Editable Other item amount input */
+.item-amount-input {
+  width: 80px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: right;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.item-amount-input:hover {
+  border-color: #0D7377;
+  background: #f8f9fa;
+}
+
+.item-amount-input:focus {
+  outline: none;
+  border-color: #0D7377;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.1);
+}
+
+/* Remove number input arrows in Chrome/Safari */
+.item-amount-input::-webkit-outer-spin-button,
+.item-amount-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+add-item-frequency-selector:hover {
+  border-color: #0D7377;
+  background: #f8f9fa;
+}
+
+.add-item-frequency-selector:focus {
+  outline: none;
+  border-color: #0D7377;
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.1);
+}
+/* Add item section layout */
+.add-item-section {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+/* Add item name input - make it larger */
+.add-item-name-input {
+  flex: 2;  /* Takes 2x space */
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Add item frequency selector - compact */
+.add-item-frequency-selector {
+  padding: 0.5rem 0.3rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  max-width: 90px;
+}
+
+.add-item-frequency-selector:hover {
+  border-color: #0D7377;
+  background: #f8f9fa;
+}
+
+.add-item-frequency-selector:focus {
+  outline: none;
+  border-color: #0D7377;
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.1);
+}
+
+/* Add item amount input */
+.add-item-amount-input {
+  width: 70px;
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+/* Editable item amount inputs (for regular items) */
+.item-row .item-amount-input {
+  width: 80px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: right;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.item-row .item-amount-input:hover {
+  border-color: #0D7377;
+  background: #f8f9fa;
+}
+
+.item-row .item-amount-input:focus {
+  outline: none;
+  border-color: #0D7377;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.1);
+}
+
+/* Other item amount input */
+.item-other .item-amount-input {
+  width: 80px;
+  padding: 0.25rem 0.5rem;
+  border: none; 
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: right;
+  background: transparent;
+  transition: all 0.2s ease;
+  color: #666;  /* Slightly muted */
+}
+
+.item-other .item-amount-input:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.item-other .item-amount-input:focus {
+  outline: none;
+  background: white;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.05);
+}
+
+/* Remove number input arrows in Chrome/Safari */
+.item-amount-input::-webkit-outer-spin-button,
+.item-amount-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Pocket name row - contains name input and info icon */
+.pocket-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pocket-name-input {
+  flex: 1;  /* Takes remaining space */
+}
+
+/* Info message container - inline with name */
+.amount-info-message {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;  /* Don't shrink */
+}
+
+/* Info icon circle - outlined, matches frequency/category buttons */
+.info-icon-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);  /* Outlined circle */
+  background: transparent;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: normal;  /* Not bold */
+  font-style: normal;   /* Not italic */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.info-icon-circle:hover {
+  border-color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Info text - hidden by default, shown on hover */
+.info-text {
+  position: fixed;  /* Fixed positioning to overflow pocket */
+  top: auto;
+  left: auto;
+  transform: none;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 0.85rem;
+  color: #333;
+  line-height: 1.4;
+  width: 280px;
+  z-index: 10000;  /* Very high z-index to appear above everything */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  pointer-events: none;
+}
+
+/* Position tooltip below the icon */
+.amount-info-message:hover .info-text {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Arrow pointing to icon */
+.info-text::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 1rem;  /* Align arrow to left side */
+  border: 6px solid transparent;
+  border-bottom-color: white;
+}
+
+.info-text::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 1rem;  /* Align arrow to left side */
+  border: 7px solid transparent;
+  border-bottom-color: #e0e0e0;
+  margin-bottom: 1px;
+}
+
 
 
 /* Responsive */

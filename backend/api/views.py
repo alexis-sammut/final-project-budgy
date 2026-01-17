@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from .serializers import UserSerializer, PocketSerializer, CategorySerializer, ItemSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Pocket, Category, Item
+from .frequency_utils import convert_amount, calculate_pocket_monthly_equivalent
+from decimal import Decimal
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -42,37 +44,17 @@ class PocketUpdate(generics.UpdateAPIView):
         return Pocket.objects.filter(author=user)
     
     def perform_update(self, serializer):
+        old_pocket = self.get_object()
+        old_amount = old_pocket.amount
+        old_frequency = old_pocket.frequency
+        
         pocket = serializer.save()
         
-        # Auto-manage "Other" item when pocket amount changes
-        self.update_other_item(pocket)
-    
-    def update_other_item(self, pocket):
-        """
-        Auto-create or update the "Other" item based on pocket amount and existing items
-        """
-        # Get all non-other items
-        regular_items = pocket.items.filter(is_other=False)
-        total_regular = sum(item.amount for item in regular_items)
+        new_amount = pocket.amount
+        new_frequency = pocket.frequency
         
-        # Calculate leftover
-        leftover = pocket.amount - total_regular
-        
-        # Get or create "Other" item
-        other_item, created = Item.objects.get_or_create(
-            pocket=pocket,
-            is_other=True,
-            defaults={'name': 'Other', 'amount': leftover}
-        )
-        
-        if not created:
-            # Update existing "Other" item
-            other_item.amount = leftover
-            other_item.save()
-        
-        # Delete "Other" if amount is 0 or negative
-        if leftover <= 0:
-            other_item.delete()
+        if old_amount != new_amount or old_frequency != new_frequency:
+            pocket.update_other_item()
 
 class CategoryListCreate(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
@@ -98,7 +80,6 @@ class CategoryDelete(generics.DestroyAPIView):
     
     def destroy(self, request, *args, **kwargs):
         category = self.get_object()
-        # Check if any pockets use this category
         if category.pockets.exists():
             return Response(
                 {"error": "Cannot delete category that is being used by pockets"}, 
@@ -119,38 +100,8 @@ class ItemListCreate(generics.ListCreateAPIView):
         pocket_id = self.kwargs.get('pocket_id')
         pocket = Pocket.objects.get(id=pocket_id, author=self.request.user)
         
-        # Save the new item
         item = serializer.save(pocket=pocket)
-        
-        # Recalculate and update "Other" item
-        self.update_other_item(pocket)
-    
-    def update_other_item(self, pocket):
-        """
-        Auto-create or update the "Other" item based on pocket amount and existing items
-        """
-        # Get all non-other items
-        regular_items = pocket.items.filter(is_other=False)
-        total_regular = sum(item.amount for item in regular_items)
-        
-        # Calculate leftover
-        leftover = pocket.amount - total_regular
-        
-        # Get or create "Other" item
-        other_item, created = Item.objects.get_or_create(
-            pocket=pocket,
-            is_other=True,
-            defaults={'name': 'Other', 'amount': leftover}
-        )
-        
-        if not created:
-            # Update existing "Other" item
-            other_item.amount = leftover
-            other_item.save()
-        
-        # Delete "Other" if amount is 0 or negative
-        if leftover <= 0:
-            other_item.delete()
+        pocket.update_other_item()
 
 
 class ItemUpdate(generics.UpdateAPIView):
@@ -163,32 +114,11 @@ class ItemUpdate(generics.UpdateAPIView):
     def perform_update(self, serializer):
         item = serializer.save()
         
-        # If this was the "Other" item being edited, make it a regular item
         if item.is_other and item.name != 'Other':
             item.is_other = False
             item.save()
         
-        # Recalculate "Other" item
-        self.update_other_item(item.pocket)
-    
-    def update_other_item(self, pocket):
-        """Same logic as ItemListCreate"""
-        regular_items = pocket.items.filter(is_other=False)
-        total_regular = sum(item.amount for item in regular_items)
-        leftover = pocket.amount - total_regular
-        
-        other_item, created = Item.objects.get_or_create(
-            pocket=pocket,
-            is_other=True,
-            defaults={'name': 'Other', 'amount': leftover}
-        )
-        
-        if not created:
-            other_item.amount = leftover
-            other_item.save()
-        
-        if leftover <= 0:
-            other_item.delete()
+        item.pocket.update_other_item()
 
 
 class ItemDelete(generics.DestroyAPIView):
@@ -200,26 +130,8 @@ class ItemDelete(generics.DestroyAPIView):
     
     def perform_destroy(self, instance):
         pocket = instance.pocket
+        is_deleting_other = instance.is_other
         instance.delete()
         
-        # Recalculate "Other" item after deletion
-        self.update_other_item(pocket)
-    
-    def update_other_item(self, pocket):
-        """Same logic as ItemListCreate"""
-        regular_items = pocket.items.filter(is_other=False)
-        total_regular = sum(item.amount for item in regular_items)
-        leftover = pocket.amount - total_regular
-        
-        other_item, created = Item.objects.get_or_create(
-            pocket=pocket,
-            is_other=True,
-            defaults={'name': 'Other', 'amount': leftover}
-        )
-        
-        if not created:
-            other_item.amount = leftover
-            other_item.save()
-        
-        if leftover <= 0:
-            other_item.delete()
+        if not is_deleting_other:
+            pocket.update_other_item()
