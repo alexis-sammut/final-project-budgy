@@ -35,6 +35,8 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
 
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [showFrequencyPicker, setShowFrequencyPicker] = useState(false);
+  const [showCreateCategory, setShowCreateCategory] = useState(false);
   
   const frequencies = [
     { value: 'daily', label: 'Daily', code: 'D' },
@@ -46,11 +48,22 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
     { value: 'yearly', label: 'Yearly', code: 'Y' },
   ];
 
+  const itemFrequencies = [
+    { value: 'daily', label: 'Daily', code: 'D' },
+    { value: 'weekly', label: 'Weekly', code: 'W' },
+    { value: 'biweekly', label: 'Biweekly', code: 'B' },
+    { value: '4-week', label: 'Per 4 Weeks', code: '4W' },
+    { value: 'monthly', label: 'Monthly', code: 'M' },
+    { value: 'quarterly', label: 'Quarterly', code: 'Q' },
+    { value: 'yearly', label: 'Yearly', code: 'Y' },
+    { value: 'percentage', label: 'Ratio', code: '%' },
+  ];
+
   const colorPalette = [
-    "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A",
-    "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E2",
-    "#F8B500", "#FF85A2", "#7FDBFF", "#2ECC71",
-    "#0D7377", "#E74C3C", "#9B59B6", "#3498DB",
+    "#0D7377", "#FF6B6B", "#4ECDC4", "#45B7D1",
+    "#FFA07A", "#98D8C8", "#F7DC6F", "#BB8FCE",
+    "#85C1E2", "#F8B500", "#FF85A2", "#7FDBFF",
+    "#2ECC71", "#E74C3C", "#9B59B6", "#3498DB",
   ];
 
   useEffect(() => {
@@ -98,6 +111,8 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
 
   const updatePocketTotal = (items) => {
     const total = items.reduce((sum, item) => {
+      if (item.is_percentage) return sum;
+      
       const itemAmount = parseFloat(item.amount) || 0;
       const itemFreq = item.frequency || frequency;
       
@@ -132,25 +147,35 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
     }
   };
 
-  const handleAddItem = (itemName, itemAmount, itemFrequency = null) => {
+  const handleAddItem = (itemName, itemAmount, itemFrequency = null, isPercentage = false) => {
     if (!itemName.trim()) return;
     
     const parsedAmount = parseFloat(itemAmount) || 0;
     
+    if (isPercentage && (parsedAmount <= 0 || parsedAmount >= 100)) {
+      setError("Percentage must be between 0 and 100");
+      setTimeout(() => setError(""), 3000);
+      return;
+    }
+    
     const newItem = {
       id: `temp-${Date.now()}`,
       name: itemName,
-      amount: parsedAmount,
-      amount_display: parsedAmount,
-      frequency: itemFrequency || frequency,
-      is_other: false
+      amount: isPercentage ? 0 : parsedAmount,
+      amount_display: isPercentage ? 0 : parsedAmount,
+      frequency: isPercentage ? 'percentage' : (itemFrequency || frequency),
+      is_other: false,
+      is_percentage: isPercentage,
+      percentage_value: isPercentage ? parsedAmount : null
     };
     
     const updatedItems = [...localItems, newItem];
     setLocalItems(updatedItems);
     
-    skipOtherUpdate.current = true;
-    updatePocketTotal(updatedItems);
+    if (!isPercentage) {
+      skipOtherUpdate.current = true;
+      updatePocketTotal(updatedItems);
+    }
   };
 
   const createCategory = async () => {
@@ -161,6 +186,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
       setCategories([...categories, res.data]);
       setCategory(res.data.id);
       setNewCategoryName("");
+      setShowCreateCategory(false);
     } catch (err) {
       alert("Error creating category");
     }
@@ -296,17 +322,49 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
       if (editingPocket) {
         await api.patch(`/api/pockets/update/${editingPocket.id}/`, pocketData);
         
+        // Create new items (temp IDs)
         const newItems = localItems.filter(item => 
           item.id.toString().startsWith('temp')
         );
         
         for (const item of newItems) {
-          await api.post(`/api/pockets/${editingPocket.id}/items/`, {
+          const itemData = {
             name: item.name,
-            amount: parseFloat((parseFloat(item.amount) || 0).toFixed(10)),
-            frequency: item.frequency || frequency,
-            is_other: item.is_other || false
-          });
+            is_other: item.is_other || false,
+            is_percentage: item.is_percentage || false
+          };
+          
+          if (item.is_percentage) {
+            itemData.percentage_value = parseFloat(item.percentage_value);
+            itemData.frequency = 'percentage';
+          } else {
+            itemData.amount = parseFloat((parseFloat(item.amount) || 0).toFixed(10));
+            itemData.frequency = item.frequency || frequency;
+          }
+          
+          await api.post(`/api/pockets/${editingPocket.id}/items/`, itemData);
+        }
+        
+        const existingItems = localItems.filter(item => 
+          !item.id.toString().startsWith('temp') && !item.is_other
+        );
+        
+        for (const item of existingItems) {
+          const itemData = {
+            name: item.name,
+          };
+          
+          if (item.is_percentage) {
+            itemData.percentage_value = parseFloat(item.percentage_value);
+            itemData.frequency = 'percentage';
+            itemData.is_percentage = true;
+          } else {
+            itemData.amount = parseFloat((parseFloat(item.amount) || 0).toFixed(10));
+            itemData.frequency = item.frequency || frequency;
+            itemData.is_percentage = false;
+          }
+          
+          await api.patch(`/api/items/update/${item.id}/`, itemData);
         }
         
         await fetchItems();
@@ -316,12 +374,21 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
         if (localItems.length > 0) {
           const newPocketId = res.data.id;
           for (const item of localItems) {
-            await api.post(`/api/pockets/${newPocketId}/items/`, {
+            const itemData = {
               name: item.name,
-              amount: parseFloat((parseFloat(item.amount) || 0).toFixed(10)),
-              frequency: item.frequency || frequency,
-              is_other: item.is_other || false
-            });
+              is_other: item.is_other || false,
+              is_percentage: item.is_percentage || false
+            };
+            
+            if (item.is_percentage) {
+              itemData.percentage_value = parseFloat(item.percentage_value);
+              itemData.frequency = 'percentage';
+            } else {
+              itemData.amount = parseFloat((parseFloat(item.amount) || 0).toFixed(10));
+              itemData.frequency = item.frequency || frequency;
+            }
+            
+            await api.post(`/api/pockets/${newPocketId}/items/`, itemData);
           }
         }
       }
@@ -352,6 +419,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
               onClick={() => {
                 setShowColorPicker(!showColorPicker);
                 setShowCategoryPicker(false);
+                setShowFrequencyPicker(false);
               }}
               title="Choose color"
             >
@@ -363,29 +431,25 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
               onClick={() => {
                 setShowCategoryPicker(!showCategoryPicker);
                 setShowColorPicker(false);
+                setShowFrequencyPicker(false);
               }}
             >
               {category
                 ? categories.find((cat) => cat.id === category)?.name || "Set category"
                 : "Set category"}
             </button>
-            <div className="frequency-selector-wrapper">
-              <select
-                className="frequency-selector"
-                value={frequency}
-                onChange={(e) => handleFrequencyChange(e.target.value)}
-                title="Expense frequency"
-              >
-                {frequencies.map(freq => (
-                  <option key={freq.value} value={freq.value}>
-                    {freq.label}
-                  </option>
-                ))}
-              </select>
-              <span className="frequency-display-code">
-                {frequencies.find(f => f.value === frequency)?.code}
-              </span>
-            </div>
+            <button
+              type="button"
+              className={`action-btn ${showFrequencyPicker ? "active" : ""}`}
+              onClick={() => {
+                setShowFrequencyPicker(!showFrequencyPicker);
+                setShowColorPicker(false);
+                setShowCategoryPicker(false);
+              }}
+              title="Expense frequency"
+            >
+              {frequencies.find(f => f.value === frequency)?.label}
+            </button>
           </div>
           <button
             type="button"
@@ -447,23 +511,61 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                     </button>
                   </div>
                 ))}
-              </div>
-
-              <div className="create-category-section">
-                <input
-                  type="text"
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  placeholder="New category name"
-                  className="category-input"
-                />
                 <button
                   type="button"
-                  onClick={createCategory}
-                  className="create-category-btn"
+                  className={`category-btn add-category-btn ${showCreateCategory ? "active" : ""}`}
+                  onClick={() => setShowCreateCategory(!showCreateCategory)}
+                  title="Add new category"
                 >
-                  Create
+                  +
                 </button>
+              </div>
+
+              {showCreateCategory && (
+                <div className="create-category-section">
+                  <input
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        createCategory();
+                      } else if (e.key === 'Escape') {
+                        setShowCreateCategory(false);
+                        setNewCategoryName("");
+                      }
+                    }}
+                    placeholder="New category name"
+                    className="category-input"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={createCategory}
+                    className="create-category-btn"
+                  >
+                    Create
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {showFrequencyPicker && (
+            <div className="category-picker-panel-colored">
+              <div className="category-list">
+                {frequencies.map((freq) => (
+                  <button
+                    key={freq.value}
+                    type="button"
+                    className={`category-btn ${frequency === freq.value ? "selected" : ""}`}
+                    onClick={() => {
+                      handleFrequencyChange(freq.value);
+                    }}
+                  >
+                    {freq.label}
+                  </button>
+                ))}
               </div>
             </div>
           )}
@@ -486,11 +588,11 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
               const pocketInOtherGroup = otherGroup.includes(frequency);
               
               const allItemsInMonthlyGroup = localItems
-                .filter(item => !item.is_other)
+                .filter(item => !item.is_other && !item.is_percentage)
                 .every(item => monthlyGroup.includes(item.frequency));
               
               const allItemsInOtherGroup = localItems
-                .filter(item => !item.is_other)
+                .filter(item => !item.is_other && !item.is_percentage)
                 .every(item => otherGroup.includes(item.frequency));
               
               const shouldShow = !(
@@ -548,7 +650,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                     const updatedItems = localItems.filter(item => !item.is_other);
                     setLocalItems(updatedItems);
                   } else {
-                    const regularItems = localItems.filter(item => !item.is_other);
+                    const regularItems = localItems.filter(item => !item.is_other && !item.is_percentage);
                     const itemsTotal = regularItems.reduce((sum, item) => {
                       const itemAmount = parseFloat(item.amount) || 0;
                       const itemFreq = item.frequency || frequency;
@@ -627,7 +729,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
           <div className="items-list">
             <h3 className="items-title">Budget Breakdown</h3>
             
-            {localItems.filter(item => !item.is_other).map((item) => (
+            {localItems.filter(item => !item.is_other && !item.is_percentage).map((item) => (
               <div key={item.id} className="item-row">
                 <button 
                   className="item-delete-btn"
@@ -640,11 +742,24 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                 <select
                   className="item-frequency-selector"
                   value={item.frequency}
-                  onChange={(e) => {
+                  onChange={async (e) => {
+                    const newFrequency = e.target.value;
                     const updated = localItems.map(i => 
-                      i.id === item.id ? {...i, frequency: e.target.value} : i
+                      i.id === item.id ? {...i, frequency: newFrequency} : i
                     );
                     setLocalItems(updated);
+                    
+                    if (editingPocket?.id && !item.id.toString().startsWith('temp')) {
+                      try {
+                        await api.patch(`/api/items/update/${item.id}/`, {
+                          frequency: newFrequency
+                        });
+                      } catch (error) {
+                        console.error("Error updating frequency:", error);
+                        setError("Failed to update frequency");
+                        setTimeout(() => setError(""), 3000);
+                      }
+                    }
                   }}
                   title="Item frequency"
                 >
@@ -654,6 +769,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                     </option>
                   ))}
                 </select>
+                <span className="currency-symbol">€</span>
                 <input
                   type="number"
                   className="item-amount-input"
@@ -719,6 +835,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                   <span className="item-frequency-label-other">
                     {frequencies.find(f => f.value === frequency)?.label}
                   </span>
+                  <span className="currency-symbol">€</span>
                   <input
                     type="number"
                     className="item-amount-input"
@@ -758,6 +875,85 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                 </div>
               );
             })()}
+
+            {localItems.filter(item => item.is_percentage).map((item) => (
+              <div key={item.id} className="item-row item-percentage">
+                <button 
+                  className="item-delete-btn"
+                  onClick={() => handleDeleteLocalItem(item.id)}
+                  title="Remove item"
+                >
+                  −
+                </button>
+                <span className="item-name">{item.name}</span>
+                <span className="percentage-symbol">%</span>
+                <input
+                  type="number"
+                  className="item-amount-input"
+                  value={editingItemAmount?.[item.id] !== undefined 
+                    ? editingItemAmount[item.id] 
+                    : (item.percentage_value || 0)}
+                  onFocus={() => {
+                    setEditingItemAmount({
+                      ...editingItemAmount,
+                      [item.id]: item.percentage_value || 0
+                    });
+                  }}
+                  onChange={(e) => {
+                    setEditingItemAmount({
+                      ...editingItemAmount,
+                      [item.id]: e.target.value
+                    });
+                  }}
+                  onBlur={async (e) => {
+                    const newPercentage = parseFloat(e.target.value) || 0;
+                    
+                    if (newPercentage <= 0 || newPercentage >= 100) {
+                      setError("Percentage must be between 0 and 100");
+                      setTimeout(() => setError(""), 3000);
+                      const newEditingState = {...editingItemAmount};
+                      delete newEditingState[item.id];
+                      setEditingItemAmount(newEditingState);
+                      return;
+                    }
+                    
+                    const updatedItems = localItems.map(i => 
+                      i.id === item.id ? {
+                        ...i,
+                        percentage_value: newPercentage
+                      } : i
+                    );
+                    setLocalItems(updatedItems);
+                    
+                    // Save to backend if it's an existing item
+                    if (editingPocket?.id && !item.id.toString().startsWith('temp')) {
+                      try {
+                        await api.patch(`/api/items/update/${item.id}/`, {
+                          percentage_value: newPercentage
+                        });
+                      } catch (error) {
+                        console.error("Error updating percentage:", error);
+                        setError("Failed to update percentage");
+                        setTimeout(() => setError(""), 3000);
+                      }
+                    }
+                    
+                    const newEditingState = {...editingItemAmount};
+                    delete newEditingState[item.id];
+                    setEditingItemAmount(newEditingState);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.target.blur();
+                    }
+                  }}
+                  step="0.01"
+                  min="0.01"
+                  max="99.99"
+                />
+                <div className="item-divider"></div>
+              </div>
+            ))}
             
             <div className="add-item-section">
               <input
@@ -777,18 +973,21 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                 onChange={(e) => setNewItemFrequency(e.target.value)}
                 title="Item frequency"
               >
-                {frequencies.map(freq => (
+                {itemFrequencies.slice(0, 7).map(freq => (
                   <option key={freq.value} value={freq.value}>
                     {freq.label}
                   </option>
                 ))}
+                <option disabled>────────</option>
+                <option value="percentage">Ratio</option>
               </select>
               <input
                 type="number"
                 className="add-item-amount-input"
-                placeholder="€0.00"
+                placeholder={newItemFrequency === 'percentage' ? '0%' : '€0.00'}
                 step="0.01"
                 min="0"
+                max={newItemFrequency === 'percentage' ? '99.99' : undefined}
                 onFocus={(e) => {
                   if (e.target.value) e.target.select();
                 }}
@@ -796,7 +995,8 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                   if (e.key === 'Enter') {
                     const nameInput = e.target.previousElementSibling.previousElementSibling;
                     if (nameInput && nameInput.value && e.target.value) {
-                      handleAddItem(nameInput.value, e.target.value, newItemFrequency);
+                      const isPercentage = newItemFrequency === 'percentage';
+                      handleAddItem(nameInput.value, e.target.value, newItemFrequency, isPercentage);
                       nameInput.value = '';
                       e.target.value = '';
                       setNewItemFrequency(frequency);
@@ -810,7 +1010,8 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                   const nameInput = freqSelect.previousElementSibling;
                   
                   if (nameInput && nameInput.value && amountInput.value) {
-                    handleAddItem(nameInput.value, amountInput.value, newItemFrequency);
+                    const isPercentage = newItemFrequency === 'percentage';
+                    handleAddItem(nameInput.value, amountInput.value, newItemFrequency, isPercentage);
                     nameInput.value = '';
                     amountInput.value = '';
                     setNewItemFrequency(frequency);

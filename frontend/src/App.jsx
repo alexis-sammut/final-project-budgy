@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Home from './pages/Home'
 import Register from './pages/Register'
 import NotFound from './pages/NotFound'
+import CurrencyConverter from './pages/CurrencyConverter'
 import ProtectedRoute from './components/ProtectedRoute'
  
 function Logout(){
@@ -26,12 +27,16 @@ function App() {
           </ProtectedRoute>
         }
         /> 
+        <Route path='/currency-converter' element={
+          <ProtectedRoute>
+            <CurrencyConverter/>
+          </ProtectedRoute>
+        }
+        />
         <Route path='/login' element={<Login />}/>
         <Route path='/logout' element={<Logout />}/>
         <Route path='/register' element={<RegisterAndLogout  />}/>
         <Route path='*' element={<NotFound />}/>
-
-
       </Routes>
     </BrowserRouter>
 )

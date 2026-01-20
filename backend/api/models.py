@@ -70,7 +70,7 @@ class Pocket(models.Model):
         from .frequency_utils import convert_amount
         from decimal import Decimal
         
-        regular_items = self.items.filter(is_other=False)
+        regular_items = self.items.filter(is_other=False, is_percentage=False)
         
         # Convert everything to pocket frequency and sum
         total_regular = Decimal('0')
@@ -80,15 +80,24 @@ class Pocket(models.Model):
         
         leftover = self.amount - total_regular
         
-        other_item, created = Item.objects.get_or_create(
-            pocket=self,
-            is_other=True,
-            defaults={
-                'name': 'Other',
-                'amount': leftover,
-                'frequency': self.frequency
-            }
-        )
+        other_items = self.items.filter(is_other=True)
+        if other_items.count() > 1:
+            first_other = other_items.first()
+            other_items.exclude(id=first_other.id).delete()
+            other_item = first_other
+            created = False
+        elif other_items.count() == 1:
+            other_item = other_items.first()
+            created = False
+        else:
+            other_item = Item.objects.create(
+                pocket=self,
+                is_other=True,
+                name='Other',
+                amount=leftover,
+                frequency=self.frequency
+            )
+            created = True
         
         if not created:
             other_item.amount = leftover
@@ -109,6 +118,7 @@ class Item(models.Model):
         ('monthly', 'Monthly'),
         ('quarterly', 'Quarterly (Every 3 months)'),
         ('yearly', 'Yearly'),
+        ('percentage', 'Percentage'),
     ]
     
     name = models.CharField(max_length=100)
@@ -117,24 +127,33 @@ class Item(models.Model):
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, default='monthly')
     pocket = models.ForeignKey(Pocket, on_delete=models.CASCADE, related_name='items')
     is_other = models.BooleanField(default=False)
+    is_percentage = models.BooleanField(default=False)
+    percentage_value = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     class Meta:
-        ordering = ['is_other', 'created_at']
+        ordering = ['is_other', 'is_percentage', 'created_at']
     
     def __str__(self):
+        if self.is_percentage:
+            return f"{self.name} - {self.percentage_value}%"
         return f"{self.name} - €{self.amount}"
     
     def save(self, *args, **kwargs):
         from decimal import Decimal, ROUND_HALF_UP
         
-        if self.amount is not None:
-            self.amount_display = Decimal(str(self.amount)).quantize(
-                Decimal('0.01'), 
-                rounding=ROUND_HALF_UP
-            )
+        if self.is_percentage:
+            self.frequency = 'percentage'
+            self.amount = Decimal('0')
+            self.amount_display = Decimal('0')
         else:
-            self.amount_display = Decimal('0.00')
+            if self.amount is not None:
+                self.amount_display = Decimal(str(self.amount)).quantize(
+                    Decimal('0.01'), 
+                    rounding=ROUND_HALF_UP
+                )
+            else:
+                self.amount_display = Decimal('0.00')
         
         super().save(*args, **kwargs)

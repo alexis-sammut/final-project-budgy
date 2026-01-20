@@ -59,6 +59,8 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: white;
+  min-width: auto;
+  white-space: nowrap;
 }
 
 .category-btn:hover {
@@ -430,6 +432,7 @@
   font-size: var(--text-base);
   color: var(--text-dark);
   font-weight: 700;
+  margin-right: 0.25rem;
 }
 
 .item-amount-editable {
@@ -619,6 +622,7 @@
   padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   margin-top: 1rem;
+  animation: slideDown 0.2s ease;
 }
 
 .category-picker-panel-colored .category-input {
@@ -763,6 +767,27 @@
   position: relative;
   display: inline-block;
   margin: 0.25rem;
+}
+
+/* Add Category Button (+) */
+.add-category-btn {
+  background: rgba(255, 255, 255, 0.3);
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 0.4rem 0.9rem;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.add-category-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.add-category-btn.active {
+  background: rgba(255, 255, 255, 0.5);
+  border-style: solid;
 }
 
 /* Delete Category Button */
@@ -1078,5 +1103,148 @@ add-item-frequency-selector:hover {
   .color-swatch {
     width: 40px;
     height: 40px;
+  }
+}
+/* Percentage item styling - purple text only, bold */
+.item-percentage {
+  background: transparent;
+}
+
+.item-percentage .item-name {
+  color: #8E44AD;
+  font-weight: 700;
+}
+
+.item-percentage .percentage-symbol {
+  color: #9B59B6;
+  font-weight: 700;
+}
+
+.item-percentage .item-amount-input {
+  color: #8E44AD;
+  font-weight: 700;
+  border-color: #E8DAEF;
+}
+
+.item-percentage .item-amount-input:hover {
+  border-color: #9B59B6;
+  background: #FAF5FF;
+}
+
+.item-percentage .item-amount-input:focus {
+  border-color: #9B59B6;
+  box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.1);
+}
+
+.percentage-symbol {
+  color: #9B59B6;
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-right: 0.25rem;
+}
+
+/* Adjust input width to account for currency/percentage symbol */
+.item-row .item-amount-input {
+  width: 70px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  text-align: right;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+/* Confirmation Modal Styling */
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.2s ease;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+.confirm-modal h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-dark);
+  font-size: 1.5rem;
+}
+
+.confirm-modal p {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-medium);
+  font-size: 1rem;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.confirm-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirm-cancel {
+  background: #ecf0f1;
+  color: var(--text-dark);
+}
+
+.confirm-cancel:hover {
+  background: #d5dbdb;
+}
+
+.confirm-close {
+  background: var(--primary-color);
+  color: white;
+}
+
+.confirm-close:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 115, 119, 0.3);
+}
+
+.confirm-delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.confirm-delete:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

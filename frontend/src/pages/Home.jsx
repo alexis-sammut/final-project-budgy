@@ -9,6 +9,8 @@ function Home(){
     const [pockets, setPockets] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editingPocket, setEditingPocket] = useState(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [pocketToDelete, setPocketToDelete] = useState(null);
 
     useEffect(()=> {
         getPockets();
@@ -26,16 +28,23 @@ function Home(){
     }
 
     const deletePocket = (id) => {
-        if (!confirm("Are you sure you want to delete this pocket?")) return;
-        
         api.delete(`api/pockets/delete/${id}/`).then((res)=>{
             if (res.status === 204) {
-                alert('Pocket deleted!')
                 getPockets()
-            } else {
-                alert('Failed to delete pocket.')
-            }   
-        }).catch((error) => alert(error))
+                setShowDeleteConfirm(false);
+                setPocketToDelete(null);
+            }
+        }).catch((error) => {
+            alert('Failed to delete pocket.')
+            setShowDeleteConfirm(false);
+            setPocketToDelete(null);
+        })
+    };
+
+    const handleDeleteClick = (e, id) => {
+        e.stopPropagation();
+        setPocketToDelete(id);
+        setShowDeleteConfirm(true);
     };
 
     const handleEdit = (pocket) => {
@@ -71,7 +80,6 @@ function Home(){
         return groups;
     }, {});
 
-    // Sort categories: Uncategorized last, others alphabetically
     const sortedCategories = Object.keys(groupedPockets).sort((a, b) => {
         if (a === 'Uncategorized') return 1;
         if (b === 'Uncategorized') return -1;
@@ -120,10 +128,7 @@ function Home(){
                                             </div>
                                             <button 
                                                 className="delete-icon" 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    deletePocket(pocket.id);
-                                                }}
+                                                onClick={(e) => handleDeleteClick(e, pocket.id)}
                                                 title="Delete pocket"
                                             >
                                                 ×
@@ -141,6 +146,32 @@ function Home(){
                             onPocketCreated={getPockets}
                             editingPocket={editingPocket}
                         />
+                    )}
+
+                    {showDeleteConfirm && (
+                        <div className="confirm-overlay" onClick={() => setShowDeleteConfirm(false)}>
+                            <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+                                <h3>Delete Pocket?</h3>
+                                <p>This action cannot be undone.</p>
+                                <div className="confirm-actions">
+                                    <button 
+                                        className="confirm-btn confirm-cancel"
+                                        onClick={() => {
+                                            setShowDeleteConfirm(false);
+                                            setPocketToDelete(null);
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        className="confirm-btn confirm-delete"
+                                        onClick={() => deletePocket(pocketToDelete)}
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>

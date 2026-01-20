@@ -23,7 +23,19 @@ class CategorySerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ['id', 'name', 'amount', 'amount_display', 'frequency', 'pocket', 'is_other', 'created_at', 'updated_at']
+        fields = [
+            'id', 
+            'name', 
+            'amount', 
+            'amount_display', 
+            'frequency', 
+            'pocket', 
+            'is_other', 
+            'is_percentage',
+            'percentage_value',
+            'created_at', 
+            'updated_at'
+        ]
         extra_kwargs = {
             'pocket': {'read_only': True},
             'amount_display': {'read_only': True},
