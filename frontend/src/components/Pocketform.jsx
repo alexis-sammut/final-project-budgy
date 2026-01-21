@@ -32,6 +32,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   const [editingOtherAmount, setEditingOtherAmount] = useState(null);
   const [editingItemAmount, setEditingItemAmount] = useState(null);
   const [newItemFrequency, setNewItemFrequency] = useState(frequency);
+  const [newItemDueDate, setNewItemDueDate] = useState('');
 
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
@@ -44,7 +45,6 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
     { value: 'biweekly', label: 'Biweekly', code: 'B' },
     { value: '4-week', label: 'Per 4 Weeks', code: '4W' },
     { value: 'monthly', label: 'Monthly', code: 'M' },
-    { value: 'quarterly', label: 'Quarterly', code: 'Q' },
     { value: 'yearly', label: 'Yearly', code: 'Y' },
   ];
 
@@ -54,16 +54,19 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
     { value: 'biweekly', label: 'Biweekly', code: 'B' },
     { value: '4-week', label: 'Per 4 Weeks', code: '4W' },
     { value: 'monthly', label: 'Monthly', code: 'M' },
-    { value: 'quarterly', label: 'Quarterly', code: 'Q' },
     { value: 'yearly', label: 'Yearly', code: 'Y' },
     { value: 'percentage', label: 'Ratio', code: '%' },
   ];
 
+  // Array for due date dropdown (1-31)
+  const dueDates = Array.from({ length: 31 }, (_, i) => i + 1);
+
+
   const colorPalette = [
-    "#0D7377", "#FF6B6B", "#4ECDC4", "#45B7D1",
-    "#FFA07A", "#98D8C8", "#F7DC6F", "#BB8FCE",
-    "#85C1E2", "#F8B500", "#FF85A2", "#7FDBFF",
-    "#2ECC71", "#E74C3C", "#9B59B6", "#3498DB",
+    "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A",
+    "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E2",
+    "#F8B500", "#FF85A2", "#7FDBFF", "#2ECC71",
+    "#0D7377", "#E74C3C", "#9B59B6", "#3498DB",
   ];
 
   useEffect(() => {
@@ -147,7 +150,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
     }
   };
 
-  const handleAddItem = (itemName, itemAmount, itemFrequency = null, isPercentage = false) => {
+  const handleAddItem = (itemName, itemAmount, itemFrequency = null, isPercentage = false, dueDate = null) => {
     if (!itemName.trim()) return;
     
     const parsedAmount = parseFloat(itemAmount) || 0;
@@ -158,12 +161,20 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
       return;
     }
     
+    // Validate due date for monthly items
+    if (itemFrequency === 'monthly' && !dueDate) {
+      setError("Monthly items require a due date");
+      setTimeout(() => setError(""), 3000);
+      return;
+    }
+    
     const newItem = {
       id: `temp-${Date.now()}`,
       name: itemName,
       amount: isPercentage ? 0 : parsedAmount,
       amount_display: isPercentage ? 0 : parsedAmount,
       frequency: isPercentage ? 'percentage' : (itemFrequency || frequency),
+      due_date: itemFrequency === 'monthly' ? dueDate : null,
       is_other: false,
       is_percentage: isPercentage,
       percentage_value: isPercentage ? parsedAmount : null
@@ -340,11 +351,16 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
           } else {
             itemData.amount = parseFloat((parseFloat(item.amount) || 0).toFixed(10));
             itemData.frequency = item.frequency || frequency;
+            if (item.frequency === 'monthly' && item.due_date) {
+              itemData.due_date = item.due_date;
+            }
           }
           
           await api.post(`/api/pockets/${editingPocket.id}/items/`, itemData);
         }
         
+        // Update existing items (non-temp, non-other)
+        // We exclude "Other" because the backend recalculates it automatically
         const existingItems = localItems.filter(item => 
           !item.id.toString().startsWith('temp') && !item.is_other
         );
@@ -362,6 +378,9 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
             itemData.amount = parseFloat((parseFloat(item.amount) || 0).toFixed(10));
             itemData.frequency = item.frequency || frequency;
             itemData.is_percentage = false;
+            if (item.frequency === 'monthly' && item.due_date) {
+              itemData.due_date = item.due_date;
+            }
           }
           
           await api.patch(`/api/items/update/${item.id}/`, itemData);
@@ -386,6 +405,9 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
             } else {
               itemData.amount = parseFloat((parseFloat(item.amount) || 0).toFixed(10));
               itemData.frequency = item.frequency || frequency;
+              if (item.frequency === 'monthly' && item.due_date) {
+                itemData.due_date = item.due_date;
+              }
             }
             
             await api.post(`/api/pockets/${newPocketId}/items/`, itemData);
@@ -749,6 +771,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                     );
                     setLocalItems(updated);
                     
+                    // Save to backend if it's an existing item
                     if (editingPocket?.id && !item.id.toString().startsWith('temp')) {
                       try {
                         await api.patch(`/api/items/update/${item.id}/`, {
@@ -769,6 +792,40 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                     </option>
                   ))}
                 </select>
+                {item.frequency === 'monthly' && (
+                  <select
+                    className="item-duedate-selector"
+                    value={item.due_date || ''}
+                    onChange={async (e) => {
+                      const newDueDate = parseInt(e.target.value);
+                      const updated = localItems.map(i => 
+                        i.id === item.id ? {...i, due_date: newDueDate} : i
+                      );
+                      setLocalItems(updated);
+                      
+                      // Save to backend if it's an existing item
+                      if (editingPocket?.id && !item.id.toString().startsWith('temp')) {
+                        try {
+                          await api.patch(`/api/items/update/${item.id}/`, {
+                            due_date: newDueDate
+                          });
+                        } catch (error) {
+                          console.error("Error updating due date:", error);
+                          setError("Failed to update due date");
+                          setTimeout(() => setError(""), 3000);
+                        }
+                      }
+                    }}
+                    title="Due date (day of month)"
+                  >
+                    <option value="">Due</option>
+                    {dueDates.map(day => (
+                      <option key={day} value={day}>
+                        {day}
+                      </option>
+                    ))}
+                  </select>
+                )}
                 <span className="currency-symbol">€</span>
                 <input
                   type="number"
@@ -970,10 +1027,15 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
               <select
                 className="add-item-frequency-selector"
                 value={newItemFrequency}
-                onChange={(e) => setNewItemFrequency(e.target.value)}
+                onChange={(e) => {
+                  setNewItemFrequency(e.target.value);
+                  if (e.target.value !== 'monthly') {
+                    setNewItemDueDate('');
+                  }
+                }}
                 title="Item frequency"
               >
-                {itemFrequencies.slice(0, 7).map(freq => (
+                {itemFrequencies.slice(0, 6).map(freq => (
                   <option key={freq.value} value={freq.value}>
                     {freq.label}
                   </option>
@@ -981,6 +1043,21 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                 <option disabled>────────</option>
                 <option value="percentage">Ratio</option>
               </select>
+              {newItemFrequency === 'monthly' && (
+                <select
+                  className="add-item-duedate-selector"
+                  value={newItemDueDate}
+                  onChange={(e) => setNewItemDueDate(e.target.value)}
+                  title="Due date (day of month)"
+                >
+                  <option value="">Due</option>
+                  {dueDates.map(day => (
+                    <option key={day} value={day}>
+                      {day}
+                    </option>
+                  ))}
+                </select>
+              )}
               <input
                 type="number"
                 className="add-item-amount-input"
@@ -993,28 +1070,31 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    const nameInput = e.target.previousElementSibling.previousElementSibling;
+                    const nameInput = document.querySelector('.add-item-name-input');
                     if (nameInput && nameInput.value && e.target.value) {
                       const isPercentage = newItemFrequency === 'percentage';
-                      handleAddItem(nameInput.value, e.target.value, newItemFrequency, isPercentage);
+                      const dueDate = newItemFrequency === 'monthly' ? parseInt(newItemDueDate) : null;
+                      handleAddItem(nameInput.value, e.target.value, newItemFrequency, isPercentage, dueDate);
                       nameInput.value = '';
                       e.target.value = '';
                       setNewItemFrequency(frequency);
+                      setNewItemDueDate('');
                       nameInput.focus();
                     }
                   }
                 }}
                 onBlur={(e) => {
                   const amountInput = e.target;
-                  const freqSelect = e.target.previousElementSibling;
-                  const nameInput = freqSelect.previousElementSibling;
+                  const nameInput = document.querySelector('.add-item-name-input');
                   
                   if (nameInput && nameInput.value && amountInput.value) {
                     const isPercentage = newItemFrequency === 'percentage';
-                    handleAddItem(nameInput.value, amountInput.value, newItemFrequency, isPercentage);
+                    const dueDate = newItemFrequency === 'monthly' ? parseInt(newItemDueDate) : null;
+                    handleAddItem(nameInput.value, amountInput.value, newItemFrequency, isPercentage, dueDate);
                     nameInput.value = '';
                     amountInput.value = '';
                     setNewItemFrequency(frequency);
+                    setNewItemDueDate('');
                   }
                 }}
               />

@@ -23,7 +23,6 @@ class Pocket(models.Model):
         ('biweekly', 'Biweekly (Every 2 weeks)'),
         ('4-week', '4-Week (Every 28 days)'),
         ('monthly', 'Monthly'),
-        ('quarterly', 'Quarterly (Every 3 months)'),
         ('yearly', 'Yearly'),
     ]
     
@@ -80,8 +79,10 @@ class Pocket(models.Model):
         
         leftover = self.amount - total_regular
         
+        # First, clean up any duplicate "Other" items
         other_items = self.items.filter(is_other=True)
         if other_items.count() > 1:
+            # Keep the first one, delete the rest
             first_other = other_items.first()
             other_items.exclude(id=first_other.id).delete()
             other_item = first_other
@@ -90,6 +91,7 @@ class Pocket(models.Model):
             other_item = other_items.first()
             created = False
         else:
+            # Create new "Other" item
             other_item = Item.objects.create(
                 pocket=self,
                 is_other=True,
@@ -116,15 +118,15 @@ class Item(models.Model):
         ('biweekly', 'Biweekly (Every 2 weeks)'),
         ('4-week', '4-Week (Every 28 days)'),
         ('monthly', 'Monthly'),
-        ('quarterly', 'Quarterly (Every 3 months)'),
         ('yearly', 'Yearly'),
-        ('percentage', 'Percentage'),
+        ('percentage', 'Ratio'),
     ]
     
     name = models.CharField(max_length=100)
     amount = models.DecimalField(max_digits=20, decimal_places=10, default=0)
     amount_display = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     frequency = models.CharField(max_length=10, choices=FREQUENCY_CHOICES, default='monthly')
+    due_date = models.IntegerField(null=True, blank=True)
     pocket = models.ForeignKey(Pocket, on_delete=models.CASCADE, related_name='items')
     is_other = models.BooleanField(default=False)
     is_percentage = models.BooleanField(default=False)

@@ -6,7 +6,6 @@ DAYS_PER_FREQUENCY = {
     'biweekly': Decimal('14'),
     '4-week': Decimal('28'),
     'monthly': Decimal('30'),
-    'quarterly': Decimal('90'),
     'yearly': Decimal('365'),
 }
 
@@ -16,7 +15,6 @@ FREQUENCY_CODES = {
     'biweekly': 'B',
     '4-week': '4',
     'monthly': 'M',
-    'quarterly': 'Q',
     'yearly': 'Y',
 }
 

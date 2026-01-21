@@ -400,6 +400,63 @@
   padding: 0.5rem;
 }
 
+.item-duedate-selector {
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-dark);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  max-width: 70px;
+  text-align: center;
+  transition: var(--transition-normal);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin-right: 0.5rem;
+}
+
+.item-duedate-selector:hover {
+  background: var(--bg-light);
+}
+
+.item-duedate-selector:focus {
+  outline: none;
+  background: var(--bg-light);
+}
+
+.item-duedate-selector option {
+  background: white;
+  color: var(--text-dark);
+  padding: 0.5rem;
+}
+
+.add-item-duedate-selector {
+  padding: 0.5rem 0.3rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+  max-width: 70px;
+  text-align: center;
+}
+
+.add-item-duedate-selector:hover {
+  border-color: #0D7377;
+  background: #f8f9fa;
+}
+
+.add-item-duedate-selector:focus {
+  outline: none;
+  border-color: #0D7377;
+  box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.1);
+}
+
 .item-frequency-label-other {
   font-size: var(--text-sm);
   color: var(--text-dark);
