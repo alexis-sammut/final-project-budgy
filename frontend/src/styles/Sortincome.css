@@ -1,0 +1,331 @@
+/* SECTION 1: Income Input & Status */
+.income-section {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.income-inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Large Income Input */
+.income-input-large {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.income-input-large label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.amount-input-wrapper-large {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid #ecf0f1;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.amount-input-wrapper-large:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.amount-input-wrapper-large .currency-large {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #667eea;
+  line-height: 1;
+}
+
+.amount-input-wrapper-large input {
+  border: none;
+  outline: none;
+  font-size: 2.5rem;
+  font-weight: 800;
+  width: 100%;
+  color: #2c3e50;
+  line-height: 1;
+}
+
+.amount-input-wrapper-large input::placeholder {
+  color: #bdc3c7;
+}
+
+.amount-input-wrapper-large input::-webkit-inner-spin-button,
+.amount-input-wrapper-large input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Date Range Picker Column */
+.income-inputs-row > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.income-inputs-row > div:last-child::before {
+  content: 'Period';
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Remaining Display */
+.remaining-display {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.remaining-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+}
+
+.remaining-amount {
+  font-size: 4rem;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.remaining-amount.positive {
+  color: #fff;
+}
+
+.remaining-amount.negative {
+  color: #ff6b6b;
+}
+
+.remaining-amount.zero {
+  color: #2ecc71;
+}
+
+.over-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+/* Error Message */
+.error-message-inline {
+  background: #ffe5e5;
+  color: #e74c3c;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border-left: 4px solid #e74c3c;
+  font-weight: 600;
+  margin-top: 1rem;
+}
+
+/* SECTION 2: Pockets */
+.pockets-section {
+  min-height: 200px;
+}
+
+.category-section {
+  margin-bottom: 2.5rem;
+}
+
+.category-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #ecf0f1;
+}
+
+.pockets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.pocket-card {
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.pocket-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pocket-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.pocket-card:hover::before {
+  opacity: 1;
+}
+
+.pocket-content {
+  position: relative;
+  z-index: 1;
+}
+
+.pocket-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.75rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pocket-amount {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Finalize Section */
+.finalize-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-top: 3rem;
+}
+
+.finalize-btn {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border: none;
+  padding: 1.2rem 4rem;
+  border-radius: 14px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.finalize-btn:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(46, 204, 113, 0.5);
+}
+
+.finalize-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #95a5a6;
+  box-shadow: none;
+  transform: none;
+}
+
+.finalize-hint {
+  color: #7f8c8d;
+  font-size: 0.95rem;
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .income-section {
+    padding: 1.5rem;
+  }
+
+  .income-inputs-row {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .amount-input-wrapper-large .currency-large,
+  .amount-input-wrapper-large input {
+    font-size: 2rem;
+  }
+
+  .remaining-amount {
+    font-size: 3rem;
+  }
+
+  .pockets-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .pocket-card {
+    padding: 1.25rem;
+  }
+
+  .pocket-name {
+    font-size: 1rem;
+  }
+
+  .pocket-amount {
+    font-size: 1.5rem;
+  }
+
+  .finalize-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .amount-input-wrapper-large {
+    padding: 1rem 1.5rem;
+  }
+
+  .amount-input-wrapper-large .currency-large,
+  .amount-input-wrapper-large input {
+    font-size: 1.75rem;
+  }
+
+  .remaining-amount {
+    font-size: 2.5rem;
+  }
+
+  .pockets-grid {
+    grid-template-columns: 1fr;
+  }
+}

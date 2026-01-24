@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Pocket, Category, Item
+from .models import Pocket, Category, Item, IncomeSortInstance, SortedPocket, SortedItem
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,4 +70,53 @@ class PocketSerializer(serializers.ModelSerializer):
             'amount_display': {'read_only': True},
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
+        }
+
+
+class SortedItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SortedItem
+        fields = [
+            'id',
+            'name',
+            'amount',
+            'is_other',
+            'is_percentage',
+            'percentage_value',
+            'original_item',
+        ]
+
+
+class SortedPocketSerializer(serializers.ModelSerializer):
+    sorted_items = SortedItemSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = SortedPocket
+        fields = [
+            'id',
+            'name',
+            'color',
+            'category_name',
+            'total_amount',
+            'original_pocket',
+            'sorted_items',
+        ]
+
+
+class IncomeSortInstanceSerializer(serializers.ModelSerializer):
+    sorted_pockets = SortedPocketSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = IncomeSortInstance
+        fields = [
+            'id',
+            'income_amount',
+            'start_date',
+            'end_date',
+            'created_at',
+            'author',
+            'sorted_pockets',
+        ]
+        extra_kwargs = {
+            'author': {'read_only': True},
         }

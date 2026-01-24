@@ -752,7 +752,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
             <h3 className="items-title">Budget Breakdown</h3>
             
             {localItems.filter(item => !item.is_other && !item.is_percentage).map((item) => (
-              <div key={item.id} className="item-row">
+              <div key={item.id} className="item-row item-recurring">
                 <button 
                   className="item-delete-btn"
                   onClick={() => handleDeleteLocalItem(item.id)}

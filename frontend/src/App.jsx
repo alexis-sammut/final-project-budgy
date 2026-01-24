@@ -6,6 +6,8 @@ import Register from './pages/Register'
 import NotFound from './pages/NotFound'
 import CurrencyConverter from './pages/CurrencyConverter'
 import ProtectedRoute from './components/ProtectedRoute'
+import SortIncome from "./pages/SortIncome"
+
  
 function Logout(){
   localStorage.clear()
@@ -27,6 +29,10 @@ function App() {
           </ProtectedRoute>
         }
         /> 
+        <Route path="/sort-income" element={
+          <ProtectedRoute>
+            <SortIncome />
+          </ProtectedRoute>} />
         <Route path='/currency-converter' element={
           <ProtectedRoute>
             <CurrencyConverter/>

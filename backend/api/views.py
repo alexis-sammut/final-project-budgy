@@ -2,11 +2,17 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework import generics, status
 from rest_framework.response import Response
-from .serializers import UserSerializer, PocketSerializer, CategorySerializer, ItemSerializer
+from rest_framework.views import APIView
+from .serializers import (
+    UserSerializer, PocketSerializer, CategorySerializer, ItemSerializer,
+    IncomeSortInstanceSerializer, SortedPocketSerializer, SortedItemSerializer
+)
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Pocket, Category, Item
+from .models import Pocket, Category, Item, IncomeSortInstance, SortedPocket, SortedItem
 from .frequency_utils import convert_amount, calculate_pocket_monthly_equivalent
+from .income_sort_utils import calculate_pocket_total_for_period
 from decimal import Decimal
+from datetime import datetime
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -135,3 +141,158 @@ class ItemDelete(generics.DestroyAPIView):
         
         if not is_deleting_other:
             pocket.update_other_item()
+
+
+class CalculateIncomeSortView(APIView):
+    """
+    Calculate prorated amounts for all pockets based on income and period.
+    This doesn't save anything - it's just for the UI to display initial amounts.
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        income_amount = Decimal(str(request.data.get('income_amount', 0)))
+        start_date_str = request.data.get('start_date')
+        end_date_str = request.data.get('end_date')
+        period_type = request.data.get('period_type', 'custom')
+        
+        if not all([income_amount, start_date_str, end_date_str]):
+            return Response(
+                {'error': 'Missing required fields'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            return Response(
+                {'error': 'Invalid date format. Use YYYY-MM-DD'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        pockets = Pocket.objects.filter(author=request.user)
+        
+        result = []
+        for pocket in pockets:
+            pocket_data = calculate_pocket_total_for_period(
+                pocket, 
+                income_amount, 
+                start_date, 
+                end_date,
+                period_type
+            )
+            
+            result.append({
+                'id': pocket.id,
+                'name': pocket.name,
+                'color': pocket.color,
+                'category_name': pocket.category.name if pocket.category else None,
+                'calculated_total': str(pocket_data['total']),
+                'items': pocket_data['items'],
+            })
+        
+        return Response(result)
+
+
+class IncomeSortCreateView(APIView):
+    """
+    Save a finalized income sort instance with all pocket/item snapshots.
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        income_amount = request.data.get('income_amount')
+        start_date_str = request.data.get('start_date')
+        end_date_str = request.data.get('end_date')
+        pockets_data = request.data.get('pockets', [])
+        
+        if not all([income_amount, start_date_str, end_date_str]):
+            return Response(
+                {'error': 'Missing required fields'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+            income_amount = Decimal(str(income_amount))
+        except (ValueError, Exception) as e:
+            return Response(
+                {'error': f'Invalid data: {str(e)}'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        sort_instance = IncomeSortInstance.objects.create(
+            author=request.user,
+            income_amount=income_amount,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        
+        for pocket_data in pockets_data:
+            original_pocket_id = pocket_data.get('original_pocket_id')
+            original_pocket = None
+            
+            if original_pocket_id:
+                try:
+                    original_pocket = Pocket.objects.get(
+                        id=original_pocket_id, 
+                        author=request.user
+                    )
+                except Pocket.DoesNotExist:
+                    pass
+            
+            sorted_pocket = SortedPocket.objects.create(
+                sort_instance=sort_instance,
+                name=pocket_data.get('name'),
+                color=pocket_data.get('color'),
+                category_name=pocket_data.get('category_name'),
+                total_amount=Decimal(str(pocket_data.get('total_amount', 0))),
+                original_pocket=original_pocket,
+            )
+            
+            for item_data in pocket_data.get('items', []):
+                original_item_id = item_data.get('original_item_id')
+                original_item = None
+                
+                if original_item_id:
+                    try:
+                        original_item = Item.objects.get(id=original_item_id)
+                    except Item.DoesNotExist:
+                        pass
+                
+                SortedItem.objects.create(
+                    sorted_pocket=sorted_pocket,
+                    name=item_data.get('name'),
+                    amount=Decimal(str(item_data.get('amount', 0))),
+                    is_other=item_data.get('is_other', False),
+                    is_percentage=item_data.get('is_percentage', False),
+                    percentage_value=Decimal(str(item_data.get('percentage_value'))) if item_data.get('percentage_value') else None,
+                    original_item=original_item,
+                )
+        
+        serializer = IncomeSortInstanceSerializer(sort_instance)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class IncomeSortListView(generics.ListAPIView):
+    """
+    List all income sort instances for the authenticated user.
+    """
+    serializer_class = IncomeSortInstanceSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return IncomeSortInstance.objects.filter(author=self.request.user)
+
+
+class IncomeSortDetailView(generics.RetrieveAPIView):
+    """
+    Get details of a specific income sort instance.
+    """
+    serializer_class = IncomeSortInstanceSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return IncomeSortInstance.objects.filter(author=self.request.user)

@@ -159,3 +159,64 @@ class Item(models.Model):
                 self.amount_display = Decimal('0.00')
         
         super().save(*args, **kwargs)
+
+
+class IncomeSortInstance(models.Model):
+    """Instance of a periodic income sort"""
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="income_sorts")
+    income_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"€{self.income_amount} - {self.start_date} to {self.end_date}"
+
+
+class SortedPocket(models.Model):
+    """Snapshot of a pocket during an income sort"""
+    sort_instance = models.ForeignKey(IncomeSortInstance, on_delete=models.CASCADE, related_name='sorted_pockets')
+    
+    # Snapshot of pocket details
+    name = models.CharField(max_length=50)
+    color = models.CharField(max_length=7)
+    category_name = models.CharField(max_length=50, null=True, blank=True)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    
+    # Reference to original pocket
+    original_pocket = models.ForeignKey(Pocket, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['created_at']
+    
+    def __str__(self):
+        return f"{self.name} - €{self.total_amount}"
+
+
+class SortedItem(models.Model):
+    """Snapshot of an item during an income sort"""
+    sorted_pocket = models.ForeignKey(SortedPocket, on_delete=models.CASCADE, related_name='sorted_items')
+    
+    name = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    is_other = models.BooleanField(default=False)
+    is_percentage = models.BooleanField(default=False)
+    percentage_value = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    
+    # Reference to original item
+    original_item = models.ForeignKey(Item, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['is_other', 'is_percentage', 'created_at']
+    
+    def __str__(self):
+        if self.is_percentage:
+            return f"{self.name} - {self.percentage_value}%"
+        return f"{self.name} - €{self.amount}"
