@@ -7,6 +7,8 @@ import NotFound from './pages/NotFound'
 import CurrencyConverter from './pages/CurrencyConverter'
 import ProtectedRoute from './components/ProtectedRoute'
 import SortIncome from "./pages/SortIncome"
+import SortedIncomeList from "./pages/SortedIncomeList"
+import SortedIncomeDetail from "./pages/SortedIncomeDetail"
 
  
 function Logout(){
@@ -32,6 +34,14 @@ function App() {
         <Route path="/sort-income" element={
           <ProtectedRoute>
             <SortIncome />
+          </ProtectedRoute>} />
+        <Route path="/sorted-incomes" element={
+          <ProtectedRoute>
+            <SortedIncomeList />
+          </ProtectedRoute>} />
+        <Route path="/sorted-income/:id" element={
+          <ProtectedRoute>
+            <SortedIncomeDetail />
           </ProtectedRoute>} />
         <Route path='/currency-converter' element={
           <ProtectedRoute>

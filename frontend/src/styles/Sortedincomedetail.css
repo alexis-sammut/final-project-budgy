@@ -1,0 +1,276 @@
+/* SortedIncomeDetail.css */
+
+.back-btn {
+  background: transparent;
+  border: none;
+  color: #667eea;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.75rem 0;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  color: #764ba2;
+  transform: translateX(-4px);
+}
+
+/* Header Section */
+.detail-header-section {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.detail-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Income Display */
+.detail-income-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-income-display label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-amount-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+}
+
+.detail-currency {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+.detail-amount {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+
+/* Period Display */
+.detail-period-display {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-period-display label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.period-info-box {
+  padding: 1.5rem 2rem;
+  background: #f8f9fa;
+  border: 2px solid #ecf0f1;
+  border-radius: 16px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Summary */
+.detail-summary {
+  display: flex;
+  gap: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #ecf0f1;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summary-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* Pockets Section */
+.detail-pockets-section {
+  min-height: 200px;
+}
+
+.detail-category-section {
+  margin-bottom: 2.5rem;
+}
+
+.detail-category-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.detail-pockets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.detail-pocket-card {
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.detail-pocket-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.detail-pocket-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.detail-pocket-card:hover::before {
+  opacity: 1;
+}
+
+.detail-pocket-content {
+  position: relative;
+  z-index: 1;
+}
+
+.detail-pocket-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.75rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.detail-pocket-amount {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.detail-pocket-items-count {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .detail-header-section {
+    padding: 1.5rem;
+  }
+
+  .detail-info-row {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .detail-currency,
+  .detail-amount {
+    font-size: 2rem;
+  }
+
+  .period-info-box {
+    font-size: 1.1rem;
+  }
+
+  .detail-pockets-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .detail-pocket-card {
+    padding: 1.25rem;
+  }
+
+  .detail-pocket-name {
+    font-size: 1rem;
+  }
+
+  .detail-pocket-amount {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .detail-amount-display,
+  .period-info-box {
+    padding: 1rem 1.5rem;
+  }
+
+  .detail-currency,
+  .detail-amount {
+    font-size: 1.75rem;
+  }
+
+  .detail-pockets-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-summary {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

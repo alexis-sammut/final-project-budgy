@@ -1,0 +1,219 @@
+/* SortedPocketViewModal.css */
+
+.sorted-pocket-view-modal {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Header */
+.view-modal-header {
+  padding: 2rem;
+  color: white;
+  position: relative;
+}
+
+.view-modal-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.view-pocket-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  flex: 1;
+}
+
+.view-modal-close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+  padding: 0;
+}
+
+.view-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.view-pocket-total {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.view-currency {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.view-amount {
+  font-size: 3rem;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Body */
+.view-modal-body {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.view-items-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.view-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.view-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.view-item-row:last-child {
+  border-bottom: none;
+}
+
+.view-item-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.percentage-badge {
+  background: #9B59B6;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.view-item-amount {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.view-item-currency {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+/* Other Item */
+.item-other .view-item-name {
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.item-other .view-item-amount {
+  color: #7f8c8d;
+}
+
+/* Percentage Item */
+.item-percentage .view-item-name {
+  color: #9B59B6;
+}
+
+.item-percentage .view-item-amount {
+  color: #9B59B6;
+}
+
+.view-no-items {
+  text-align: center;
+  color: #95a5a6;
+  font-style: italic;
+  padding: 2rem;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .sorted-pocket-view-modal {
+    width: 95%;
+  }
+
+  .view-modal-header {
+    padding: 1.5rem;
+  }
+
+  .view-pocket-name {
+    font-size: 1.5rem;
+  }
+
+  .view-currency {
+    font-size: 1.5rem;
+  }
+
+  .view-amount {
+    font-size: 2.5rem;
+  }
+
+  .view-modal-body {
+    padding: 1.5rem;
+  }
+
+  .view-item-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .view-item-amount {
+    font-size: 1.25rem;
+  }
+}

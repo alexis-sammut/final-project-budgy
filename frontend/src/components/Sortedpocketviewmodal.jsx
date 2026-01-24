@@ -91,10 +91,10 @@ function SortPocketModal({ pocket, incomeAmount, onClose, onUpdate }) {
   const sortedItems = [...localItems].sort((a, b) => {
     // Define item types
     const getItemType = (item) => {
-      if (item.is_other) return 4; // Other last
-      if (item.is_percentage) return 2; // Percentage second
-      if (!item.id.toString().startsWith('temp')) return 1; // Recurring first (from template)
-      return 3; // Manual third
+      if (item.is_other) return 4; 
+      if (item.is_percentage) return 2; 
+      if (!item.id.toString().startsWith('temp')) return 1; 
+      return 3; 
     };
     
     return getItemType(a) - getItemType(b);

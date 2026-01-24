@@ -14,6 +14,6 @@ urlpatterns = [
     # Income sorting endpoints
     path("income-sort/calculate/", views.CalculateIncomeSortView.as_view(), name='calculate-income-sort'),
     path("income-sort/create/", views.IncomeSortCreateView.as_view(), name='create-income-sort'),
-    path("income-sort/list/", views.IncomeSortListView.as_view(), name='list-income-sorts'),
-    path("income-sort/<int:pk>/", views.IncomeSortDetailView.as_view(), name='income-sort-detail'),
+    path("sorted-incomes/", views.IncomeSortListView.as_view(), name='sorted-income-list'),
+    path("sorted-incomes/<int:pk>/", views.IncomeSortDetailView.as_view(), name='sorted-income-detail'),
 ]

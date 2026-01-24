@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Pocket, Category, Item, IncomeSortInstance, SortedPocket, SortedItem
+from .models import Pocket, Category, Item, SortedIncome, SortedPocket, SortedItem
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category 
+        model = Category
         fields = ['id', 'name', 'created_at', 'author']
         extra_kwargs = {'author': {'read_only': True}}
 
@@ -103,11 +103,11 @@ class SortedPocketSerializer(serializers.ModelSerializer):
         ]
 
 
-class IncomeSortInstanceSerializer(serializers.ModelSerializer):
+class SortedIncomeSerializer(serializers.ModelSerializer):
     sorted_pockets = SortedPocketSerializer(many=True, read_only=True)
     
     class Meta:
-        model = IncomeSortInstance
+        model = SortedIncome
         fields = [
             'id',
             'income_amount',

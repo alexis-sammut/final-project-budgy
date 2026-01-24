@@ -146,12 +146,8 @@ function SortIncome() {
         pockets: pocketsData,
       });
 
-      alert("Income sort saved successfully!");
-      
-      // Reset
-      setIncomeAmount("");
-      setDateRange({ start: "", end: "", periodType: "custom" });
-      fetchAllPockets();
+      // Redirect to sorted incomes list
+      navigate("/sorted-incomes");
     } catch (err) {
       console.error("Error saving income sort:", err);
       setError("Failed to save income sort");

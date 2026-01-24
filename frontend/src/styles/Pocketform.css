@@ -1,3 +1,5 @@
+/* PocketForm.css - Clean consolidated version */
+
 .pocket-form-modal {
   background: white;
   border-radius: var(--radius-lg);
@@ -863,7 +865,7 @@
   color: #7f8c8d !important;
 }
 
-/* Disabled inputs (for sort income) */
+/* Disabled/readonly inputs (for sort income) */
 .item-amount-input:disabled,
 .item-amount-input[readonly] {
   border: none !important;
@@ -920,4 +922,23 @@
     width: 40px;
     height: 40px;
   }
+}
+
+/* Add Remainder Button */
+.add-remainder-btn {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+}
+
+.add-remainder-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(46, 204, 113, 0.4);
 }

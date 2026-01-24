@@ -5,10 +5,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import (
     UserSerializer, PocketSerializer, CategorySerializer, ItemSerializer,
-    IncomeSortInstanceSerializer, SortedPocketSerializer, SortedItemSerializer
+    SortedIncomeSerializer, SortedPocketSerializer, SortedItemSerializer
 )
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Pocket, Category, Item, IncomeSortInstance, SortedPocket, SortedItem
+from .models import Pocket, Category, Item, SortedIncome, SortedPocket, SortedItem
 from .frequency_utils import convert_amount, calculate_pocket_monthly_equivalent
 from .income_sort_utils import calculate_pocket_total_for_period
 from decimal import Decimal
@@ -223,7 +223,7 @@ class IncomeSortCreateView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        sort_instance = IncomeSortInstance.objects.create(
+        sort_instance = SortedIncome.objects.create(
             author=request.user,
             income_amount=income_amount,
             start_date=start_date,
@@ -244,7 +244,7 @@ class IncomeSortCreateView(APIView):
                     pass
             
             sorted_pocket = SortedPocket.objects.create(
-                sort_instance=sort_instance,
+                sorted_income=sort_instance,
                 name=pocket_data.get('name'),
                 color=pocket_data.get('color'),
                 category_name=pocket_data.get('category_name'),
@@ -272,7 +272,7 @@ class IncomeSortCreateView(APIView):
                     original_item=original_item,
                 )
         
-        serializer = IncomeSortInstanceSerializer(sort_instance)
+        serializer = SortedIncomeSerializer(sort_instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -280,19 +280,21 @@ class IncomeSortListView(generics.ListAPIView):
     """
     List all income sort instances for the authenticated user.
     """
-    serializer_class = IncomeSortInstanceSerializer
+    serializer_class = SortedIncomeSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return IncomeSortInstance.objects.filter(author=self.request.user)
+        return SortedIncome.objects.filter(author=self.request.user)
 
 
 class IncomeSortDetailView(generics.RetrieveAPIView):
     """
     Get details of a specific income sort instance.
     """
-    serializer_class = IncomeSortInstanceSerializer
+    serializer_class = SortedIncomeSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return IncomeSortInstance.objects.filter(author=self.request.user)
+        return SortedIncome.objects.filter(author=self.request.user)
+    
+    
