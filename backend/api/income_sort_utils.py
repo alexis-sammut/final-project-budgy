@@ -185,3 +185,19 @@ def calculate_pocket_total_for_period(pocket, income_amount, start_date, end_dat
         'total': total,
         'items': item_breakdown
     }
+    
+def calculate_pocket_total_for_oneoff(pocket, income_amount):
+    """
+    Calculate pocket amount for one-off income (no items, just pocket amount).
+    Used when period_type is 'oneoff'.
+    """
+    from decimal import Decimal
+    
+    # For one-off, just return the pocket's monthly equivalent
+    # without breaking down into items
+    monthly_equivalent = calculate_pocket_monthly_equivalent(pocket)
+    
+    return {
+        'total': monthly_equivalent,
+        'items': []  # No items for one-off
+    }

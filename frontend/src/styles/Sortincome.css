@@ -1,3 +1,86 @@
+/* Full Screen App Container */
+.sort-income-app {
+  min-height: 100vh;
+  background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+}
+
+/* App Header */
+.sort-app-header {
+  background: white;
+  padding: 1.25rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: grid;
+  grid-template-columns: 60px 1fr 60px;
+  align-items: center;
+  gap: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.back-arrow-btn {
+  background: transparent;
+  border: none;
+  color: #667eea;
+  font-size: 2rem;
+  font-weight: 300;
+  cursor: pointer;
+  padding: 0.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.back-arrow-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateX(-4px);
+}
+
+.income-name-input {
+  border: none;
+  outline: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+  background: transparent;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.income-name-input:hover {
+  background: #f8f9fa;
+}
+
+.income-name-input:focus {
+  background: #f8f9fa;
+}
+
+.income-name-input::placeholder {
+  color: #bdc3c7;
+  font-weight: 600;
+}
+
+.header-spacer {
+  width: 60px;
+}
+
+/* Content Area */
+.sort-income-content {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
 /* SECTION 1: Income Input & Status */
 .income-section {
   background: white;
@@ -5,13 +88,9 @@
   padding: 2.5rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
-}
-
-.income-inputs-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 2rem;
-  margin-bottom: 2rem;
 }
 
 /* Large Income Input */
@@ -219,6 +298,27 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.pocket-remainder {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  margin: 0.5rem 0 0 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  text-shadow: none;
+  display: inline-block;
+}
+
+.pocket-remainder.over-budget {
+  background: rgba(231, 76, 60, 0.9);
+  box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
+}
+
+.pocket-remainder.under-budget {
+  background: rgba(241, 196, 15, 0.9);
+  box-shadow: 0 2px 6px rgba(241, 196, 15, 0.4);
+}
+
 /* Finalize Section */
 .finalize-section {
   display: flex;
@@ -270,13 +370,31 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .income-section {
+  .sort-app-header {
+    padding: 1rem 1.5rem;
+    grid-template-columns: 50px 1fr 50px;
+  }
+
+  .back-arrow-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 1.75rem;
+  }
+
+  .income-name-input {
+    font-size: 1.25rem;
+  }
+
+  .header-spacer {
+    width: 50px;
+  }
+
+  .sort-income-content {
     padding: 1.5rem;
   }
 
-  .income-inputs-row {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  .income-section {
+    padding: 1.5rem;
   }
 
   .amount-input-wrapper-large .currency-large,
@@ -312,6 +430,29 @@
 }
 
 @media (max-width: 576px) {
+  .sort-app-header {
+    padding: 1rem;
+    grid-template-columns: 45px 1fr 45px;
+  }
+
+  .back-arrow-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 1.5rem;
+  }
+
+  .income-name-input {
+    font-size: 1.1rem;
+  }
+
+  .header-spacer {
+    width: 45px;
+  }
+
+  .sort-income-content {
+    padding: 1rem;
+  }
+
   .amount-input-wrapper-large {
     padding: 1rem 1.5rem;
   }

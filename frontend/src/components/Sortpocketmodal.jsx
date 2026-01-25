@@ -1,17 +1,79 @@
 import { useState, useEffect } from "react";
 import "../styles/PocketForm.css";
 
-function SortPocketModal({ pocket, incomeAmount, onClose, onUpdate }) {
+function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, onUpdate }) {
   const [localAmount, setLocalAmount] = useState(pocket.localAmount || 0);
   const [localItems, setLocalItems] = useState(pocket.localItems || []);
   const [newItemName, setNewItemName] = useState("");
   const [newItemAmount, setNewItemAmount] = useState("");
   const [newItemType, setNewItemType] = useState("euro");
+  const [amountInputValue, setAmountInputValue] = useState("");
 
   useEffect(() => {
     setLocalAmount(pocket.localAmount || 0);
     setLocalItems(pocket.localItems || []);
+    setAmountInputValue((pocket.localAmount || 0).toString());
   }, [pocket]);
+
+  const handleAmountInputChange = (value) => {
+    setAmountInputValue(value);
+  };
+
+  const handleAmountBlur = () => {
+    const amount = parseFloat(amountInputValue);
+    
+    if (isNaN(amount) || amountInputValue === '') {
+      const itemsTotal = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
+      setLocalAmount(itemsTotal);
+      setAmountInputValue(itemsTotal.toString());
+      return;
+    }
+    
+    const itemsTotal = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
+    
+    if (amount < itemsTotal - 0.01) {
+      setLocalAmount(itemsTotal);
+      setAmountInputValue(itemsTotal.toString());
+      return;
+    }
+    
+    setLocalAmount(amount);
+    setAmountInputValue(amount.toString());
+    
+    const otherAmount = amount - itemsTotal;
+    
+    const otherItemIndex = localItems.findIndex(item => item.is_other);
+    
+    if (otherAmount > 0.01) {
+      if (otherItemIndex >= 0) {
+        const updatedItems = [...localItems];
+        updatedItems[otherItemIndex] = {
+          ...updatedItems[otherItemIndex],
+          localAmount: otherAmount
+        };
+        setLocalItems(updatedItems);
+      } else {
+        const newOtherItem = {
+          id: `temp-${Date.now()}-other`,
+          name: 'Other',
+          localAmount: otherAmount,
+          is_other: true,
+          is_percentage: false,
+        };
+        setLocalItems([...localItems, newOtherItem]);
+      }
+    } else {
+      if (otherItemIndex >= 0) {
+        const updatedItems = localItems.filter(item => !item.is_other);
+        setLocalItems(updatedItems);
+      }
+    }
+    
+    onUpdate(pocket.id, {
+      localAmount: amount,
+      localItems: localItems
+    });
+  };
 
   const handleAddItem = (name, amount, isPercentage = false, percentageValue = null) => {
     const newItem = {
@@ -26,9 +88,18 @@ function SortPocketModal({ pocket, incomeAmount, onClose, onUpdate }) {
     const updatedItems = [...localItems, newItem];
     setLocalItems(updatedItems);
     
+    const itemsTotal = updatedItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
+    setLocalAmount(itemsTotal);
+    setAmountInputValue(itemsTotal.toString());
+    
     setNewItemName("");
     setNewItemAmount("");
     setNewItemType("euro");
+    
+    onUpdate(pocket.id, {
+      localAmount: itemsTotal,
+      localItems: updatedItems
+    });
   };
 
   const handleAddItemClick = () => {
@@ -50,7 +121,6 @@ function SortPocketModal({ pocket, incomeAmount, onClose, onUpdate }) {
   };
 
   const handleAddRemainder = () => {
-    // Calculate total of all items
     const totalItems = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
     const remainder = localAmount - totalItems;
     
@@ -62,6 +132,15 @@ function SortPocketModal({ pocket, incomeAmount, onClose, onUpdate }) {
   const handleDeleteItem = (itemId) => {
     const updatedItems = localItems.filter(item => item.id !== itemId);
     setLocalItems(updatedItems);
+    
+    const itemsTotal = updatedItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
+    setLocalAmount(itemsTotal);
+    setAmountInputValue(itemsTotal.toString());
+    
+    onUpdate(pocket.id, {
+      localAmount: itemsTotal,
+      localItems: updatedItems
+    });
   };
 
   const handleItemAmountChange = (itemId, newAmount) => {
@@ -69,6 +148,15 @@ function SortPocketModal({ pocket, incomeAmount, onClose, onUpdate }) {
       item.id === itemId ? { ...item, localAmount: parseFloat(newAmount) || 0 } : item
     );
     setLocalItems(updatedItems);
+    
+    const itemsTotal = updatedItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
+    setLocalAmount(itemsTotal);
+    setAmountInputValue(itemsTotal.toString());
+    
+    onUpdate(pocket.id, {
+      localAmount: itemsTotal,
+      localItems: updatedItems
+    });
   };
 
   const handleSave = () => {
@@ -131,16 +219,34 @@ function SortPocketModal({ pocket, incomeAmount, onClose, onUpdate }) {
               <input
                 type="number"
                 className="amount-input"
-                value={localAmount}
-                onChange={(e) => setLocalAmount(parseFloat(e.target.value) || 0)}
+                value={amountInputValue}
+                onChange={(e) => handleAmountInputChange(e.target.value)}
+                onBlur={handleAmountBlur}
                 step="0.01"
                 min="0"
               />
             </div>
           </div>
 
-          {remainder !== 0 && (
+          {(() => {
+            const itemsTotal = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
+            const isBelowItems = localAmount < itemsTotal - 0.01;
+            
+            return isBelowItems && (
+              <div className="error-message">
+                Cannot be less than items total (€{itemsTotal.toFixed(2)})
+              </div>
+            );
+          })()}
+
+          {overBudgetAmount > 0.01 && (
             <div className="error-message">
+              Over budget by €{overBudgetAmount.toFixed(2)}
+            </div>
+          )}
+
+          {remainder !== 0 && overBudgetAmount <= 0.01 && (
+            <div className={remainder > 0 ? "warning-message" : "warning-message warning-over"}>
               {remainder > 0 
                 ? `€${remainder.toFixed(2)} remaining to allocate`
                 : `€${Math.abs(remainder).toFixed(2)} over budget`

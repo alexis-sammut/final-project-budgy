@@ -175,13 +175,18 @@ class CalculateIncomeSortView(APIView):
         
         result = []
         for pocket in pockets:
-            pocket_data = calculate_pocket_total_for_period(
-                pocket, 
-                income_amount, 
-                start_date, 
-                end_date,
-                period_type
-            )
+            if period_type == 'oneoff':
+                # One-off income: no items, just pocket total
+                pocket_data = calculate_pocket_total_for_oneoff(pocket, income_amount)
+            else:
+                # Regular periodic income: calculate with items
+                pocket_data = calculate_pocket_total_for_period(
+                    pocket, 
+                    income_amount, 
+                    start_date, 
+                    end_date,
+                    period_type
+                )
             
             result.append({
                 'id': pocket.id,

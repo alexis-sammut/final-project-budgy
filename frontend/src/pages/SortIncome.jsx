@@ -1,21 +1,22 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import SortPocketModal from "../components/SortPocketModal";
 import DateRangePicker from "../components/DateRangePicker";
-import "../styles/Home.css";
 import "../styles/SortIncome.css";
 
 function SortIncome() {
+  const navigate = useNavigate();
+  const [incomeName, setIncomeName] = useState("");
   const [incomeAmount, setIncomeAmount] = useState("");
-  const [dateRange, setDateRange] = useState({ start: "", end: "", periodType: "custom" });
+  const [dateRange, setDateRange] = useState({ start: "", end: "", periodType: "1month" });
   const [calculatedPockets, setCalculatedPockets] = useState([]);
   const [allPockets, setAllPockets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedPocket, setSelectedPocket] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   // Fetch all pockets on mount
   useEffect(() => {
@@ -96,6 +97,18 @@ function SortIncome() {
     setSelectedPocket(null);
   };
 
+  const handleBackClick = () => {
+    setShowExitConfirm(true);
+  };
+
+  const handleConfirmExit = () => {
+    navigate("/sorted-incomes");
+  };
+
+  const handleCancelExit = () => {
+    setShowExitConfirm(false);
+  };
+
   const getTotalAllocated = () => {
     return calculatedPockets.reduce((sum, pocket) => {
       return sum + (pocket.localAmount || 0);
@@ -110,7 +123,9 @@ function SortIncome() {
 
   const canFinalize = () => {
     const remaining = getRemaining();
-    return remaining >= -0.01 && remaining <= 0.01;
+    const isBalanced = remaining >= -0.01 && remaining <= 0.01;
+    const notOverBudget = overBudgetAmount <= 0.01;
+    return isBalanced && notOverBudget;
   };
 
   const handleFinalize = async () => {
@@ -175,42 +190,50 @@ function SortIncome() {
   const remaining = getRemaining();
   const totalAllocated = getTotalAllocated();
   const income = parseFloat(incomeAmount) || 0;
+  const overBudgetAmount = totalAllocated > income ? totalAllocated - income : 0;
 
   return (
-    <>
-      <Navbar />
-      <div className="home-container">
-        <div className="home-content">
-          <div className="page-header">
-            <h1>Sort Income</h1>
-          </div>
+    <div className="sort-income-app">
+      {/* App Header */}
+      <div className="sort-app-header">
+        <button className="back-arrow-btn" onClick={handleBackClick}>
+          ←
+        </button>
+        <input
+          type="text"
+          className="income-name-input"
+          placeholder="Name this income sort"
+          value={incomeName}
+          onChange={(e) => setIncomeName(e.target.value)}
+        />
+        <div className="header-spacer"></div>
+      </div>
+
+      <div className="sort-income-content">
 
           {/* SECTION 1: Income Input & Status */}
           <div className="income-section">
-            <div className="income-inputs-row">
-              {/* Large Income Input */}
-              <div className="income-input-large">
-                <label>Income to Sort</label>
-                <div className="amount-input-wrapper-large">
-                  <span className="currency-large">€</span>
-                  <input
-                    type="number"
-                    value={incomeAmount}
-                    onChange={(e) => setIncomeAmount(e.target.value)}
-                    placeholder="0.00"
-                    step="0.01"
-                    min="0"
-                  />
-                </div>
+            <div className="income-input-large">
+              <label>Income to Sort</label>
+              <div className="amount-input-wrapper-large">
+                <span className="currency-large">€</span>
+                <input
+                  type="number"
+                  value={incomeAmount}
+                  onChange={(e) => setIncomeAmount(e.target.value)}
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                />
               </div>
-
-              {/* Date Range Picker */}
-              <DateRangePicker
-                value={dateRange}
-                onChange={setDateRange}
-                onCalculate={handleCalculate}
-              />
             </div>
+
+            {/* Date Range Picker*/}
+            <DateRangePicker
+              value={dateRange}
+              onChange={setDateRange}
+              onCalculate={handleCalculate}
+            />
 
             {/* Remaining Amount Display */}
             {income > 0 && dateRange.start && dateRange.end && (
@@ -232,19 +255,35 @@ function SortIncome() {
               <div key={categoryName} className="category-section">
                 <h2 className="category-title">{categoryName}</h2>
                 <div className="pockets-grid">
-                  {groupedPockets[categoryName].map((pocket) => (
-                    <div 
-                      key={pocket.id} 
-                      className="pocket-card"
-                      style={{ backgroundColor: pocket.color }}
-                      onClick={() => handlePocketClick(pocket)}
-                    >
-                      <div className="pocket-content">
-                        <h3 className="pocket-name">{pocket.name}</h3>
-                        <p className="pocket-amount">€{pocket.localAmount.toFixed(2)}</p>
+                  {groupedPockets[categoryName].map((pocket) => {
+                    const pocketTotal = pocket.localAmount || 0;
+                    const itemsTotal = (pocket.localItems || []).reduce((sum, item) => sum + (item.localAmount || 0), 0);
+                    const pocketRemainder = pocketTotal - itemsTotal;
+                    const isOverBudget = pocketRemainder < -0.01;
+                    const hasRemainder = Math.abs(pocketRemainder) > 0.01;
+                    
+                    return (
+                      <div 
+                        key={pocket.id} 
+                        className="pocket-card"
+                        style={{ backgroundColor: pocket.color }}
+                        onClick={() => handlePocketClick(pocket)}
+                      >
+                        <div className="pocket-content">
+                          <h3 className="pocket-name">{pocket.name}</h3>
+                          <p className="pocket-amount">€{pocketTotal.toFixed(2)}</p>
+                          {hasRemainder && (
+                            <p className={`pocket-remainder ${isOverBudget ? 'over-budget' : 'under-budget'}`}>
+                              {isOverBudget 
+                                ? `€${Math.abs(pocketRemainder).toFixed(2)} over` 
+                                : `€${pocketRemainder.toFixed(2)} left`
+                              }
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
@@ -260,7 +299,9 @@ function SortIncome() {
                 </button>
                 {!canFinalize() && (
                   <p className="finalize-hint">
-                    {remaining > 0.01
+                    {overBudgetAmount > 0.01
+                      ? `Reduce allocations - you're €${overBudgetAmount.toFixed(2)} over budget`
+                      : remaining > 0.01
                       ? "Allocate all remaining income to finalize"
                       : "Reduce allocations - you're over budget"}
                   </p>
@@ -273,14 +314,31 @@ function SortIncome() {
             <SortPocketModal
               pocket={selectedPocket}
               incomeAmount={income}
+              overBudgetAmount={overBudgetAmount}
               onClose={handleCloseModal}
               onUpdate={handlePocketUpdate}
             />
           )}
+
+          {/* Exit Confirmation Modal */}
+          {showExitConfirm && (
+            <div className="modal-overlay" onClick={handleCancelExit}>
+              <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+                <h3>Exit Without Saving?</h3>
+                <p>Your income sort hasn't been finalized. All changes will be lost.</p>
+                <div className="confirm-actions">
+                  <button className="confirm-btn confirm-cancel" onClick={handleCancelExit}>
+                    Continue Sorting
+                  </button>
+                  <button className="confirm-btn confirm-delete" onClick={handleConfirmExit}>
+                    Exit Anyway
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      <Footer />
-    </>
   );
 }
 

@@ -131,7 +131,6 @@ function SortedIncomeDetail() {
             ← Back to Sorted Incomes
           </button>
 
-          {/* Header Section - Similar to Sort Income */}
           <div className="detail-header-section">
             <div className="detail-info-row">
               {/* Income Amount */}
