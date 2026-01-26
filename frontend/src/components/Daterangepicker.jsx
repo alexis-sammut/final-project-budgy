@@ -40,17 +40,14 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     if (!tempStartDate || (tempStartDate && tempEndDate)) {
       setTempStartDate(dateStr);
       
-      // Auto-calculate end date for non-custom presets
       if (selectedPreset !== "custom") {
         const preset = presets.find(p => p.value === selectedPreset);
         const start = new Date(dateStr);
         let end;
         
         if (preset.isOneOff) {
-          // One-Time: same date for start and end
           end = start;
         } else if (preset.isMonth) {
-          // Get the number of days in the starting month
           const daysInMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
           
           end = new Date(start);
@@ -77,7 +74,59 @@ function DateRangePicker({ value, onChange, onCalculate }) {
       } else {
         setTempEndDate(dateStr);
       }
+      
+      detectPresetFromDates(tempStartDate, dateStr);
     }
+  };
+
+  const detectPresetFromDates = (startStr, endStr) => {
+    const start = new Date(startStr);
+    const end = new Date(endStr);
+    
+    // Calculate difference in days
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
+    
+    if (diffDays === 7) {
+      setSelectedPreset("1week");
+      return;
+    }
+    
+    if (diffDays === 14) {
+      setSelectedPreset("2weeks");
+      return;
+    }
+    
+    if (diffDays >= 28 && diffDays <= 31) {
+      const startDay = start.getDate();
+      const endDay = end.getDate();
+      const startMonth = start.getMonth();
+      const endMonth = end.getMonth();
+      
+      const daysInStartMonth = new Date(start.getFullYear(), startMonth + 1, 0).getDate();
+      
+      if (endDay === startDay - 1 && endMonth === startMonth + 1) {
+        setSelectedPreset("1month");
+        return;
+      }
+      
+      if (startDay === 1 && endDay === daysInStartMonth && startMonth === endMonth) {
+        setSelectedPreset("1month");
+        return;
+      }
+      
+      if (diffDays === daysInStartMonth) {
+        setSelectedPreset("1month");
+        return;
+      }
+    }
+    
+    if (diffDays === 1 && startStr === endStr) {
+      setSelectedPreset("oneoff");
+      return;
+    }
+    
+    setSelectedPreset("custom");
   };
 
   const handleApply = () => {

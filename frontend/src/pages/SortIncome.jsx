@@ -213,38 +213,44 @@ function SortIncome() {
 
           {/* SECTION 1: Income Input & Status */}
           <div className="income-section">
-            <div className="income-input-large">
-              <label>Income to Sort</label>
-              <div className="amount-input-wrapper-large">
-                <span className="currency-large">€</span>
-                <input
-                  type="number"
-                  value={incomeAmount}
-                  onChange={(e) => setIncomeAmount(e.target.value)}
-                  placeholder="0.00"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-            </div>
-
-            {/* Date Range Picker*/}
-            <DateRangePicker
-              value={dateRange}
-              onChange={setDateRange}
-              onCalculate={handleCalculate}
-            />
-
-            {/* Remaining Amount Display */}
-            {income > 0 && dateRange.start && dateRange.end && (
-              <div className="remaining-display">
-                <div className="remaining-label">Remaining to allocate</div>
-                <div className={`remaining-amount ${remaining < 0 ? 'negative' : remaining > 0 ? 'positive' : 'zero'}`}>
-                  €{Math.abs(remaining).toFixed(2)}
-                  {remaining < 0 && <span className="over-text"> over budget</span>}
+            <div className="income-inputs-row">
+              {/* Left Column: Income Input + Remaining Display */}
+              <div className="income-left-column">
+                <div className="income-input-large">
+                  <label>Income to Sort</label>
+                  <div className="amount-input-wrapper-large">
+                    <span className="currency-large">€</span>
+                    <input
+                      type="number"
+                      value={incomeAmount}
+                      onChange={(e) => setIncomeAmount(e.target.value)}
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
                 </div>
+
+                {/* Remaining Amount Display */}
+                {income > 0 && dateRange.start && dateRange.end && (
+                  <div className="remaining-display-compact">
+                    <div className="remaining-label-compact">
+                      {remaining < 0 ? 'Over Budget' : 'Amount Left to Allocate'}
+                    </div>
+                    <div className={`remaining-amount-compact ${remaining < 0 ? 'negative' : 'positive'}`}>
+                      {remaining < 0 && '−'}€{Math.abs(remaining).toFixed(2)}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+
+              {/* Right Column: Date Range Picker */}
+              <DateRangePicker
+                value={dateRange}
+                onChange={setDateRange}
+                onCalculate={handleCalculate}
+              />
+            </div>
 
             {error && <div className="error-message-inline">{error}</div>}
           </div>

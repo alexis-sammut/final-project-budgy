@@ -2,38 +2,50 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/Navbar.css";
 
 function Navbar() {
-    const navigate = useNavigate();
-    
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate("/login");
-    };
+  const navigate = useNavigate();
 
-    return (
-        <nav className="navbar">
-            <div className="navbar-container">
-                <Link to="/" className="navbar-logo">
-                    <span className="logo-icon">💰</span>
-                    Budgy
-                </Link>
-                
-                <div className="navbar-menu">
-                    <Link to="/" className="navbar-link">
-                        Home
-                    </Link>
-                    <Link to="/budget" className="navbar-link">
-                        Budget
-                    </Link>
-                    <Link to="/history" className="navbar-link">
-                        History
-                    </Link>
-                    <button onClick={handleLogout} className="logout-btn">
-                        Logout
-                    </button>
-                </div>
-            </div>
-        </nav>
-    );
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  return (
+    <nav className="navbar-green">
+      <div className="navbar-container">
+        {/* Left: Logo/Brand */}
+        <Link to="/" className="navbar-brand">
+          <span className="brand-icon">💰</span>
+          <span className="brand-text">Budget</span>
+        </Link>
+
+        {/* Center: Main Navigation */}
+        <div className="navbar-links">
+          <Link to="/" className="nav-link">
+            <span className="nav-icon">🏠</span>
+            Home
+          </Link>
+          <Link to="/pockets" className="nav-link">
+            <span className="nav-icon">📂</span>
+            Pockets
+          </Link>
+          <Link to="/sorted-incomes" className="nav-link">
+            <span className="nav-icon">📊</span>
+            Sorted Incomes
+          </Link>
+        </div>
+
+        {/* Right: Action Button */}
+        <div className="navbar-actions">
+          <Link to="/sort-income" className="nav-btn-primary">
+            + Sort Income
+          </Link>
+          <button onClick={handleLogout} className="nav-btn-logout">
+            Logout
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
 }
 
 export default Navbar;
