@@ -60,6 +60,12 @@ function DateRangePicker({ value, onChange, onCalculate }) {
         if (end) {
           const endDateStr = end.toISOString().split('T')[0];
           setTempEndDate(endDateStr);
+          
+          onChange({
+            start: dateStr,
+            end: endDateStr,
+            periodType: selectedPreset,
+          });
         }
       } else {
         setTempEndDate("");
@@ -68,14 +74,24 @@ function DateRangePicker({ value, onChange, onCalculate }) {
       const start = new Date(tempStartDate);
       const clicked = new Date(dateStr);
       
+      let finalStart = tempStartDate;
+      let finalEnd = dateStr;
+      
       if (clicked < start) {
-        setTempStartDate(dateStr);
-        setTempEndDate(tempStartDate);
-      } else {
-        setTempEndDate(dateStr);
+        finalStart = dateStr;
+        finalEnd = tempStartDate;
       }
       
-      detectPresetFromDates(tempStartDate, dateStr);
+      setTempStartDate(finalStart);
+      setTempEndDate(finalEnd);
+      
+      const detectedPreset = detectPresetFromDates(finalStart, finalEnd);
+      
+      onChange({
+        start: finalStart,
+        end: finalEnd,
+        periodType: detectedPreset,
+      });
     }
   };
 
@@ -83,18 +99,17 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     const start = new Date(startStr);
     const end = new Date(endStr);
     
-    // Calculate difference in days
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
     
     if (diffDays === 7) {
       setSelectedPreset("1week");
-      return;
+      return "1week";
     }
     
     if (diffDays === 14) {
       setSelectedPreset("2weeks");
-      return;
+      return "2weeks";
     }
     
     if (diffDays >= 28 && diffDays <= 31) {
@@ -107,26 +122,27 @@ function DateRangePicker({ value, onChange, onCalculate }) {
       
       if (endDay === startDay - 1 && endMonth === startMonth + 1) {
         setSelectedPreset("1month");
-        return;
+        return "1month";
       }
       
       if (startDay === 1 && endDay === daysInStartMonth && startMonth === endMonth) {
         setSelectedPreset("1month");
-        return;
+        return "1month";
       }
       
       if (diffDays === daysInStartMonth) {
         setSelectedPreset("1month");
-        return;
+        return "1month";
       }
     }
     
     if (diffDays === 1 && startStr === endStr) {
       setSelectedPreset("oneoff");
-      return;
+      return "oneoff";
     }
     
     setSelectedPreset("custom");
+    return "custom";
   };
 
   const handleApply = () => {
@@ -149,12 +165,10 @@ function DateRangePicker({ value, onChange, onCalculate }) {
 
     const days = [];
 
-    // Previous month's trailing days
     for (let i = 0; i < startDayOfWeek; i++) {
       days.push(null);
     }
 
-    // Current month's days
     for (let i = 1; i <= daysInMonth; i++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
       days.push(dateStr);
@@ -270,16 +284,6 @@ function DateRangePicker({ value, onChange, onCalculate }) {
                     {dayCount} day{dayCount !== 1 ? 's' : ''}
                   </div>
                 )}
-
-                <div className="picker-actions">
-                  <button 
-                    className="picker-apply-btn"
-                    onClick={handleApply}
-                    disabled={!tempStartDate || !tempEndDate}
-                  >
-                    Apply
-                  </button>
-                </div>
               </div>
             </div>
           </div>

@@ -10,7 +10,7 @@ from .serializers import (
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Pocket, Category, Item, SortedIncome, SortedPocket, SortedItem
 from .frequency_utils import convert_amount, calculate_pocket_monthly_equivalent
-from .income_sort_utils import calculate_pocket_total_for_period
+from .income_sort_utils import calculate_pocket_total_for_period, calculate_pocket_total_for_oneoff
 from decimal import Decimal
 from datetime import datetime
 
@@ -301,5 +301,3 @@ class IncomeSortDetailView(generics.RetrieveAPIView):
     
     def get_queryset(self):
         return SortedIncome.objects.filter(author=self.request.user)
-    
-    

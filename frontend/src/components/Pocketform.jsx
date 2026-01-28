@@ -6,7 +6,7 @@ import { convertAmount, formatAmountDisplay, hasMixedFrequencies } from "../util
 function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   const [name, setName] = useState(editingPocket?.name || "");
   const [amount, setAmount] = useState(
-    editingPocket?.amount ? parseFloat(editingPocket.amount).toFixed(2) : '0'
+    editingPocket?.amount ? parseFloat(editingPocket.amount).toFixed(2) : '0.00'
   );
   const [frequency, setFrequency] = useState(
     editingPocket?.frequency || "monthly"
@@ -126,7 +126,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
       return sum + itemAmount;
     }, 0);
     
-    setAmount(formatAmountDisplay(total));
+    setAmount(total.toFixed(2));
     setStoredAmount(total);
   };
   
@@ -289,7 +289,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   const handleFrequencyChange = (newFrequency) => {
     const convertedAmount = convertAmount(storedAmount, frequency, newFrequency);
     
-    setAmount(formatAmountDisplay(convertedAmount));
+    setAmount(convertedAmount.toFixed(2));
     setStoredAmount(convertedAmount);
     setFrequency(newFrequency);
     setNewItemFrequency(newFrequency);
@@ -667,7 +667,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                   const numValue = parseFloat(value);
                   
                   if (isNaN(numValue) || value === '') {
-                    setAmount('0');
+                    setAmount('0.00');
                     setStoredAmount(0);
                     const updatedItems = localItems.filter(item => !item.is_other);
                     setLocalItems(updatedItems);
@@ -687,7 +687,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                       
                       setError(<>Pocket amount cannot be less than items total<br/>€{formatAmountDisplay(itemsTotal)} {freqLabel}</>);
                       const minAmount = itemsTotal;
-                      setAmount(formatAmountDisplay(minAmount));
+                      setAmount(minAmount.toFixed(2));
                       setStoredAmount(minAmount);
                       
                       const updatedItems = localItems.filter(item => !item.is_other);
@@ -698,8 +698,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                       return;
                     }
                     
-                    const formatted = formatAmountDisplay(numValue);
-                    setAmount(formatted);
+                    setAmount(numValue.toFixed(2));
                     setStoredAmount(numValue);
                     
                     if (numValue === 0) {
@@ -1083,11 +1082,14 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                     }
                   }
                 }}
-                onBlur={(e) => {
-                  const amountInput = e.target;
+              />
+              <button
+                className="action-btn"
+                onClick={() => {
                   const nameInput = document.querySelector('.add-item-name-input');
+                  const amountInput = document.querySelector('.add-item-amount-input');
                   
-                  if (nameInput && nameInput.value && amountInput.value) {
+                  if (nameInput && nameInput.value && amountInput && amountInput.value) {
                     const isPercentage = newItemFrequency === 'percentage';
                     const dueDate = newItemFrequency === 'monthly' ? parseInt(newItemDueDate) : null;
                     handleAddItem(nameInput.value, amountInput.value, newItemFrequency, isPercentage, dueDate);
@@ -1097,7 +1099,14 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                     setNewItemDueDate('');
                   }
                 }}
-              />
+                disabled={false}
+                style={{ 
+                  background: color,
+                }}
+                title="Add item"
+              >
+                +
+              </button>
             </div>
           </div>
         </div>

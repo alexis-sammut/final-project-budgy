@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/PocketForm.css";
 
-function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, onUpdate }) {
+function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remainingIncome = 0, onClose, onUpdate }) {
   const [localAmount, setLocalAmount] = useState(pocket.localAmount || 0);
   const [localItems, setLocalItems] = useState(pocket.localItems || []);
   const [newItemName, setNewItemName] = useState("");
@@ -12,7 +12,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, 
   useEffect(() => {
     setLocalAmount(pocket.localAmount || 0);
     setLocalItems(pocket.localItems || []);
-    setAmountInputValue((pocket.localAmount || 0).toString());
+    setAmountInputValue((pocket.localAmount || 0).toFixed(2));
   }, [pocket]);
 
   const handleAmountInputChange = (value) => {
@@ -25,7 +25,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, 
     if (isNaN(amount) || amountInputValue === '') {
       const itemsTotal = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
       setLocalAmount(itemsTotal);
-      setAmountInputValue(itemsTotal.toString());
+      setAmountInputValue(itemsTotal.toFixed(2));
       return;
     }
     
@@ -33,14 +33,14 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, 
     
     if (amount < itemsTotal - 0.01) {
       setLocalAmount(itemsTotal);
-      setAmountInputValue(itemsTotal.toString());
+      setAmountInputValue(itemsTotal.toFixed(2));
       return;
     }
     
     setLocalAmount(amount);
-    setAmountInputValue(amount.toString());
+    setAmountInputValue(amount.toFixed(2));
     
-    const otherAmount = amount - itemsTotal;
+    const otherAmount = parseFloat((amount - itemsTotal).toFixed(2));
     
     const otherItemIndex = localItems.findIndex(item => item.is_other);
     
@@ -76,10 +76,14 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, 
   };
 
   const handleAddItem = (name, amount, isPercentage = false, percentageValue = null) => {
+    const roundedAmount = isPercentage 
+      ? Math.ceil(parseFloat(amount) * 100) / 100 
+      : parseFloat(parseFloat(amount).toFixed(2));
+    
     const newItem = {
       id: `temp-${Date.now()}-${Math.random()}`,
       name,
-      localAmount: parseFloat(amount),
+      localAmount: roundedAmount,
       is_percentage: isPercentage,
       percentage_value: percentageValue,
       is_other: false,
@@ -89,15 +93,16 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, 
     setLocalItems(updatedItems);
     
     const itemsTotal = updatedItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
-    setLocalAmount(itemsTotal);
-    setAmountInputValue(itemsTotal.toString());
+    const roundedTotal = parseFloat(itemsTotal.toFixed(2));
+    setLocalAmount(roundedTotal);
+    setAmountInputValue(roundedTotal.toFixed(2));
     
     setNewItemName("");
     setNewItemAmount("");
     setNewItemType("euro");
     
     onUpdate(pocket.id, {
-      localAmount: itemsTotal,
+      localAmount: roundedTotal,
       localItems: updatedItems
     });
   };
@@ -121,11 +126,40 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, 
   };
 
   const handleAddRemainder = () => {
-    const totalItems = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
-    const remainder = localAmount - totalItems;
-    
-    if (remainder > 0.01) {
-      handleAddItem("Other", remainder, false, null);
+    if (remainingIncome > 0.01) {
+      const newAmount = parseFloat((localAmount + remainingIncome).toFixed(2));
+      setLocalAmount(newAmount);
+      setAmountInputValue(newAmount.toFixed(2));
+      
+      const itemsTotal = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
+      const otherItemIndex = localItems.findIndex(item => item.is_other);
+      const currentOtherAmount = otherItemIndex >= 0 ? localItems[otherItemIndex].localAmount : 0;
+      const newOtherAmount = parseFloat((currentOtherAmount + remainingIncome).toFixed(2));
+      
+      let updatedItems;
+      if (otherItemIndex >= 0) {
+        updatedItems = [...localItems];
+        updatedItems[otherItemIndex] = {
+          ...updatedItems[otherItemIndex],
+          localAmount: newOtherAmount
+        };
+      } else {
+        const newOtherItem = {
+          id: `temp-${Date.now()}-other`,
+          name: 'Other',
+          localAmount: remainingIncome,
+          is_other: true,
+          is_percentage: false,
+        };
+        updatedItems = [...localItems, newOtherItem];
+      }
+      
+      setLocalItems(updatedItems);
+      
+      onUpdate(pocket.id, {
+        localAmount: newAmount,
+        localItems: updatedItems
+      });
     }
   };
 
@@ -134,27 +168,29 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, 
     setLocalItems(updatedItems);
     
     const itemsTotal = updatedItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
-    setLocalAmount(itemsTotal);
-    setAmountInputValue(itemsTotal.toString());
+    const roundedTotal = parseFloat(itemsTotal.toFixed(2));
+    setLocalAmount(roundedTotal);
+    setAmountInputValue(roundedTotal.toFixed(2));
     
     onUpdate(pocket.id, {
-      localAmount: itemsTotal,
+      localAmount: roundedTotal,
       localItems: updatedItems
     });
   };
 
   const handleItemAmountChange = (itemId, newAmount) => {
     const updatedItems = localItems.map(item =>
-      item.id === itemId ? { ...item, localAmount: parseFloat(newAmount) || 0 } : item
+      item.id === itemId ? { ...item, localAmount: parseFloat(parseFloat(newAmount).toFixed(2)) || 0 } : item
     );
     setLocalItems(updatedItems);
     
     const itemsTotal = updatedItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
-    setLocalAmount(itemsTotal);
-    setAmountInputValue(itemsTotal.toString());
+    const roundedTotal = parseFloat(itemsTotal.toFixed(2));
+    setLocalAmount(roundedTotal);
+    setAmountInputValue(roundedTotal.toFixed(2));
     
     onUpdate(pocket.id, {
-      localAmount: itemsTotal,
+      localAmount: roundedTotal,
       localItems: updatedItems
     });
   };
@@ -245,7 +281,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, 
             </div>
           )}
 
-          {remainder !== 0 && overBudgetAmount <= 0.01 && (
+          {Math.abs(remainder) > 0.01 && overBudgetAmount <= 0.01 && (
             <div className={remainder > 0 ? "warning-message" : "warning-message warning-over"}>
               {remainder > 0 
                 ? `€${remainder.toFixed(2)} remaining to allocate`
@@ -354,13 +390,13 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, onClose, 
           </div>
 
           {/* Add Remainder Button */}
-          {remainder > 0.01 && (
+          {remainingIncome > 0.01 && (
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
               <button
                 className="add-remainder-btn"
                 onClick={handleAddRemainder}
               >
-                Add Remainder (€{remainder.toFixed(2)})
+                Add Remainder (€{remainingIncome.toFixed(2)})
               </button>
             </div>
           )}

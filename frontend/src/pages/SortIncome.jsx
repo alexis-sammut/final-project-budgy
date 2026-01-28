@@ -229,6 +229,20 @@ function SortIncome() {
                       min="0"
                     />
                   </div>
+                  {/* Date Range Display */}
+                  {dateRange.start && dateRange.end && dateRange.periodType !== 'oneoff' && (
+                    <div className="date-range-display">
+                      {new Date(dateRange.start).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      })} - {new Date(dateRange.end).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 {/* Remaining Amount Display */}
@@ -316,35 +330,36 @@ function SortIncome() {
             )}
           </div>
 
-          {showModal && selectedPocket && (
-            <SortPocketModal
-              pocket={selectedPocket}
-              incomeAmount={income}
-              overBudgetAmount={overBudgetAmount}
-              onClose={handleCloseModal}
-              onUpdate={handlePocketUpdate}
-            />
-          )}
+        {showModal && selectedPocket && (
+          <SortPocketModal
+            pocket={selectedPocket}
+            incomeAmount={income}
+            overBudgetAmount={overBudgetAmount}
+            remainingIncome={remaining}
+            onClose={handleCloseModal}
+            onUpdate={handlePocketUpdate}
+          />
+        )}
 
-          {/* Exit Confirmation Modal */}
-          {showExitConfirm && (
-            <div className="modal-overlay" onClick={handleCancelExit}>
-              <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
-                <h3>Exit Without Saving?</h3>
-                <p>Your income sort hasn't been finalized. All changes will be lost.</p>
-                <div className="confirm-actions">
-                  <button className="confirm-btn confirm-cancel" onClick={handleCancelExit}>
-                    Continue Sorting
-                  </button>
-                  <button className="confirm-btn confirm-delete" onClick={handleConfirmExit}>
-                    Exit Anyway
-                  </button>
-                </div>
+        {/* Exit Confirmation Modal */}
+        {showExitConfirm && (
+          <div className="modal-overlay" onClick={handleCancelExit}>
+            <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+              <h3>Exit Without Saving?</h3>
+              <p>Your income sort hasn't been finalized. All changes will be lost.</p>
+              <div className="confirm-actions">
+                <button className="confirm-btn confirm-cancel" onClick={handleCancelExit}>
+                  Continue Sorting
+                </button>
+                <button className="confirm-btn confirm-delete" onClick={handleConfirmExit}>
+                  Exit Anyway
+                </button>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+    </div>
   );
 }
 

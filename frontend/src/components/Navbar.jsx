@@ -13,17 +13,13 @@ function Navbar() {
     <nav className="navbar-green">
       <div className="navbar-container">
         {/* Left: Logo/Brand */}
-        <Link to="/" className="navbar-brand">
+        <Link to="/pockets" className="navbar-brand">
           <span className="brand-icon">💰</span>
           <span className="brand-text">Budget</span>
         </Link>
 
         {/* Center: Main Navigation */}
         <div className="navbar-links">
-          <Link to="/" className="nav-link">
-            <span className="nav-icon">🏠</span>
-            Home
-          </Link>
           <Link to="/pockets" className="nav-link">
             <span className="nav-icon">📂</span>
             Pockets
@@ -31,6 +27,10 @@ function Navbar() {
           <Link to="/sorted-incomes" className="nav-link">
             <span className="nav-icon">📊</span>
             Sorted Incomes
+          </Link>
+          <Link to="/converter" className="nav-link">
+            <span className="nav-icon">🔄</span>
+            Converter
           </Link>
         </div>
 

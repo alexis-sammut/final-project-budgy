@@ -1,3 +1,4 @@
+/* Full Screen App Container */
 .sort-income-app {
   min-height: 100vh;
   background: #f8f9fa;
@@ -163,6 +164,19 @@
   margin: 0;
 }
 
+/* Date Range Display */
+.date-range-display {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(102, 126, 234, 0.08);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #667eea;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
 /* Date Range Picker Column */
 .income-inputs-row > div:last-child {
   display: flex;
@@ -179,6 +193,7 @@
   letter-spacing: 0.5px;
 }
 
+/* Remaining Display - Old (keep for reference, unused now) */
 .remaining-display {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 16px;
@@ -222,6 +237,7 @@
   opacity: 0.9;
 }
 
+/* Compact Remaining Display - Next to Income Input */
 .remaining-display-compact {
   background: white;
   border-radius: 16px;

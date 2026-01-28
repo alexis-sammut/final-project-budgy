@@ -52,24 +52,29 @@ def calculate_item_amount_for_period(item, income_amount, start_date, end_date, 
     """
     Calculate the prorated amount needed for an item during a specific period.
     
-    For percentage items: returns percentage of income
-    For monthly items with period_type='month': returns full amount
+    For percentage items: returns percentage of income (rounded UP to nearest cent)
+    For monthly items with period_type='1month' or 'month': returns full amount
     For regular items: calculates based on frequency and period overlap
     
     Args:
-        period_type: 'week', 'biweek', 'month', or 'custom'
+        period_type: '1week', '2weeks', '1month', 'oneoff', or 'custom'
     """
     if item.is_percentage and item.percentage_value:
         # Percentage items take % of total income
         percentage = Decimal(str(item.percentage_value)) / Decimal('100')
-        return income_amount * percentage
+        raw_amount = income_amount * percentage
+        
+        # Round UP to nearest cent (ROUND_CEILING)
+        from decimal import ROUND_CEILING
+        return raw_amount.quantize(Decimal('0.01'), rounding=ROUND_CEILING)
     
     # For regular items, calculate based on frequency
     amount = Decimal(str(item.amount))
     frequency = item.frequency
     
-    # Special handling for monthly items when period_type is 'month'
-    if frequency == 'monthly' and period_type == 'month':
+    # Special handling for monthly items when period_type is a month period
+    # Frontend sends: '1month', backend might normalize to 'month'
+    if frequency == 'monthly' and period_type in ['month', '1month']:
         # Return full amount for monthly budgets
         return amount
     
@@ -89,7 +94,10 @@ def calculate_item_amount_for_period(item, income_amount, start_date, end_date, 
         # For non-monthly frequencies, use simple daily rate
         frequency_days = DAYS_PER_FREQUENCY.get(frequency, Decimal('30'))
         daily_rate = amount / frequency_days
-        return daily_rate * Decimal(str(period_days))
+        calculated_amount = daily_rate * Decimal(str(period_days))
+        
+        # Round to 2 decimal places
+        return calculated_amount.quantize(Decimal('0.01'))
 
 
 def calculate_monthly_item_for_period(amount, due_date, start_date, end_date, period_days):
@@ -144,7 +152,7 @@ def calculate_monthly_item_for_period(amount, due_date, start_date, end_date, pe
         # Move to next billing cycle
         current_date = cycle_end + timedelta(days=1)
     
-    return total_amount
+    return total_amount.quantize(Decimal('0.01'))
 
 
 def calculate_pocket_total_for_period(pocket, income_amount, start_date, end_date, period_type='custom'):
@@ -153,7 +161,7 @@ def calculate_pocket_total_for_period(pocket, income_amount, start_date, end_dat
     Returns dict with total and breakdown per item.
     
     Args:
-        period_type: 'week', 'biweek', 'month', or 'custom'
+        period_type: '1week', '2weeks', '1month', 'oneoff', or 'custom'
     """
     items = pocket.items.filter(is_other=False)
     
@@ -181,6 +189,8 @@ def calculate_pocket_total_for_period(pocket, income_amount, start_date, end_dat
         
         total += item_amount
     
+    total = total.quantize(Decimal('0.01'))
+    
     return {
         'total': total,
         'items': item_breakdown
@@ -189,15 +199,13 @@ def calculate_pocket_total_for_period(pocket, income_amount, start_date, end_dat
 def calculate_pocket_total_for_oneoff(pocket, income_amount):
     """
     Calculate pocket amount for one-off income (no items, just pocket amount).
+    For one-off income, all pockets start at 0 - user allocates manually.
     Used when period_type is 'oneoff'.
     """
     from decimal import Decimal
     
-    # For one-off, just return the pocket's monthly equivalent
-    # without breaking down into items
-    monthly_equivalent = calculate_pocket_monthly_equivalent(pocket)
-    
+    # For one-off, return 0 - user allocates manually
     return {
-        'total': monthly_equivalent,
-        'items': []  # No items for one-off
+        'total': Decimal('0.00'),
+        'items': [] 
     }
