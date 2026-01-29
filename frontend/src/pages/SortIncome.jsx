@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import SortPocketModal from "../components/SortPocketModal";
 import DateRangePicker from "../components/DateRangePicker";
+import Pocket from "../components/Pocket";
 import "../styles/SortIncome.css";
 
 function SortIncome() {
@@ -275,35 +276,14 @@ function SortIncome() {
               <div key={categoryName} className="category-section">
                 <h2 className="category-title">{categoryName}</h2>
                 <div className="pockets-grid">
-                  {groupedPockets[categoryName].map((pocket) => {
-                    const pocketTotal = pocket.localAmount || 0;
-                    const itemsTotal = (pocket.localItems || []).reduce((sum, item) => sum + (item.localAmount || 0), 0);
-                    const pocketRemainder = pocketTotal - itemsTotal;
-                    const isOverBudget = pocketRemainder < -0.01;
-                    const hasRemainder = Math.abs(pocketRemainder) > 0.01;
-                    
-                    return (
-                      <div 
-                        key={pocket.id} 
-                        className="pocket-card"
-                        style={{ backgroundColor: pocket.color }}
-                        onClick={() => handlePocketClick(pocket)}
-                      >
-                        <div className="pocket-content">
-                          <h3 className="pocket-name">{pocket.name}</h3>
-                          <p className="pocket-amount">€{pocketTotal.toFixed(2)}</p>
-                          {hasRemainder && (
-                            <p className={`pocket-remainder ${isOverBudget ? 'over-budget' : 'under-budget'}`}>
-                              {isOverBudget 
-                                ? `€${Math.abs(pocketRemainder).toFixed(2)} over` 
-                                : `€${pocketRemainder.toFixed(2)} left`
-                              }
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                  {groupedPockets[categoryName].map((pocket) => (
+                    <Pocket
+                      key={pocket.id}
+                      pocket={pocket}
+                      variant="sorting"
+                      onClick={() => handlePocketClick(pocket)}
+                    />
+                  ))}
                 </div>
               </div>
             ))}

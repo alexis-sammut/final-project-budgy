@@ -8,7 +8,7 @@
 
 /* App Header */
 .sort-app-header {
-  background: white;
+  background: linear-gradient(135deg, #024b1a 0%, #2d6a4f 100%);
   padding: 1.25rem 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: grid;
@@ -43,11 +43,12 @@
 }
 
 .income-name-input {
+  background: linear-gradient(135deg, #024b1a 0%, #2d6a4f 100%);
   border: none;
   outline: none;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: white;
   text-align: center;
   background: transparent;
   padding: 0.5rem;
@@ -55,16 +56,9 @@
   transition: all 0.2s ease;
 }
 
-.income-name-input:hover {
-  background: #f8f9fa;
-}
-
-.income-name-input:focus {
-  background: #f8f9fa;
-}
 
 .income-name-input::placeholder {
-  color: #bdc3c7;
+  color: #FFFFFF55;
   font-weight: 600;
 }
 
@@ -292,12 +286,16 @@
 }
 
 .category-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.1rem;
   color: #2c3e50;
-  margin-bottom: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1.25rem 0;
+  padding: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 3px solid #667eea;
   padding-bottom: 0.75rem;
-  border-bottom: 3px solid #ecf0f1;
+  display: block;
 }
 
 .pockets-grid {

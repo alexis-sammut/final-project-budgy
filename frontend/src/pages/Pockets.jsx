@@ -3,6 +3,7 @@ import api from "../api"
 import Navbar from "../components/Navbar"
 import Footer from "../components/Footer"
 import PocketForm from "../components/PocketForm"
+import Pocket from "../components/Pocket"
 import "../styles/Home.css"
 
 function Home(){
@@ -122,6 +123,9 @@ function Home(){
                                                         <p className="pocket-amount">€{pocket.amount_display}</p>
                                                         <p className="pocket-frequency">
                                                             {getFrequencyLabel(pocket.frequency)}
+                                                        </p>
+                                                        <p className="pocket-items-count">
+                                                            {pocket.items?.length || 0} item{(pocket.items?.length || 0) !== 1 ? 's' : ''}
                                                         </p>
                                                     </>
                                                 )}

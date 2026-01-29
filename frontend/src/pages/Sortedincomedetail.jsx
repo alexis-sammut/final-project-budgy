@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import SortedPocketViewModal from "../components/SortedPocketViewModal";
+import SortedPocketViewModal from "../components/SortedPocketViewModal"
+import Pocket from "../components/Pocket";
 import "../styles/Home.css";
 import "../styles/SortedIncomeDetail.css";
 
@@ -173,22 +174,12 @@ function SortedIncomeDetail() {
                 <h2 className="detail-category-title">{category}</h2>
                 <div className="detail-pockets-grid">
                   {pockets.map((pocket) => (
-                    <div
+                    <Pocket
                       key={pocket.id}
-                      className="detail-pocket-card"
-                      style={{ backgroundColor: pocket.color }}
+                      pocket={pocket}
+                      variant="history"
                       onClick={() => handlePocketClick(pocket)}
-                    >
-                      <div className="detail-pocket-content">
-                        <h3 className="detail-pocket-name">{pocket.name}</h3>
-                        <p className="detail-pocket-amount">
-                          €{parseFloat(pocket.total_amount).toFixed(2)}
-                        </p>
-                        <p className="detail-pocket-items-count">
-                          {pocket.sorted_items?.length || 0} items
-                        </p>
-                      </div>
-                    </div>
+                    />
                   ))}
                 </div>
               </div>

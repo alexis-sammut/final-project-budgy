@@ -1,7 +1,7 @@
 import React from 'react'
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
 import Login from './pages/Login'
-import Home from './pages/Home'
+import Pockets from './pages/Pockets'
 import Register from './pages/Register'
 import NotFound from './pages/NotFound'
 import CurrencyConverter from './pages/CurrencyConverter'
@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import SortIncome from "./pages/SortIncome"
 import SortedIncomeList from "./pages/SortedIncomeList"
 import SortedIncomeDetail from "./pages/SortedIncomeDetail"
+import Calendar from "./pages/Calendar";
 
  
 function Logout(){
@@ -27,7 +28,7 @@ function App() {
       <Routes>
         <Route path= "/" element={
           <ProtectedRoute>
-            <Home/>
+            <Pockets/>
           </ProtectedRoute>
         }
         /> 
@@ -46,9 +47,13 @@ function App() {
         <Route path='/currency-converter' element={
           <ProtectedRoute>
             <CurrencyConverter/>
-          </ProtectedRoute>
-        }
-        />
+          </ProtectedRoute>  
+        }/>
+        <Route path='/calendar' element={
+          <ProtectedRoute>
+            <Calendar/>
+          </ProtectedRoute>  
+        }/>
         <Route path='/login' element={<Login />}/>
         <Route path='/logout' element={<Logout />}/>
         <Route path='/register' element={<RegisterAndLogout  />}/>

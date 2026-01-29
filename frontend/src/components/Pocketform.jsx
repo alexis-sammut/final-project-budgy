@@ -38,6 +38,8 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showFrequencyPicker, setShowFrequencyPicker] = useState(false);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
+  const [showDeleteCategoryModal, setShowDeleteCategoryModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
   
   const frequencies = [
     { value: 'daily', label: 'Daily', code: 'D' },
@@ -204,22 +206,30 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   };
 
   const handleDeleteCategory = async (categoryId, categoryName) => {
-    if (!window.confirm(`Delete "${categoryName}"? This only works if no pockets are using this category.`)) {
-      return;
-    }
+    setCategoryToDelete({ id: categoryId, name: categoryName });
+    setShowDeleteCategoryModal(true);
+  };
+
+  const confirmDeleteCategory = async () => {
+    if (!categoryToDelete) return;
 
     try {
-      await api.delete(`/api/categories/delete/${categoryId}/`);
+      await api.delete(`/api/categories/delete/${categoryToDelete.id}/`);
       fetchCategories();
-      if (category === categoryId) {
+      if (category === categoryToDelete.id) {
         setCategory("");
       }
+      setShowDeleteCategoryModal(false);
+      setCategoryToDelete(null);
     } catch (error) {
       if (error.response?.data?.error) {
-        alert(error.response.data.error);
+        setError(error.response.data.error);
       } else {
-        alert("Failed to delete category");
+        setError("Failed to delete category");
       }
+      setTimeout(() => setError(""), 3000);
+      setShowDeleteCategoryModal(false);
+      setCategoryToDelete(null);
     }
   };
 
@@ -431,7 +441,8 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <>
+      <div className="modal-overlay" onClick={onClose}>
       <div className="pocket-form-modal" onClick={(e) => e.stopPropagation()}>
         <div className="form-header" style={{ backgroundColor: color }}>
           <div className="form-actions-left">
@@ -1112,7 +1123,35 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
         </div>
       </div>
     </div>
-  );
+
+    {/* Delete Category Confirmation Modal */}
+    {showDeleteCategoryModal && categoryToDelete && (
+      <div className="confirm-overlay" onClick={() => setShowDeleteCategoryModal(false)}>
+        <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+          <h3>Delete "<strong>{categoryToDelete.name}</strong>"?</h3>
+          <p className="confirm-warning">This only works if no pockets are using this category.</p>
+          <div className="confirm-actions">
+            <button 
+              className="confirm-btn confirm-cancel"
+              onClick={() => {
+                setShowDeleteCategoryModal(false);
+                setCategoryToDelete(null);
+              }}
+            >
+              Cancel
+            </button>
+            <button 
+              className="confirm-btn confirm-delete"
+              onClick={confirmDeleteCategory}
+            >
+              Delete Category
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </>
+);
 }
 
 export default PocketForm;

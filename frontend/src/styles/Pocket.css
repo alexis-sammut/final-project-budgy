@@ -1,0 +1,102 @@
+.pocket-card {
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.pocket-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pocket-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.pocket-card:hover::before {
+  opacity: 1;
+}
+
+.pocket-content {
+  position: relative;
+  z-index: 1;
+}
+
+.pocket-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.75rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pocket-amount {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pocket-remainder {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  margin: 0.5rem 0 0 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  text-shadow: none;
+  display: inline-block;
+}
+
+.pocket-remainder.over-budget {
+  background: rgba(231, 76, 60, 0.9);
+  box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
+}
+
+.pocket-remainder.under-budget {
+  background: rgba(241, 196, 15, 0.9);
+  box-shadow: 0 2px 6px rgba(241, 196, 15, 0.4);
+}
+
+.pocket-items-count {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
+}
+
+.pocket-frequency {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pocket-card {
+    padding: 1.25rem;
+  }
+
+  .pocket-name {
+    font-size: 1rem;
+  }
+
+  .pocket-amount {
+    font-size: 1.5rem;
+  }
+}

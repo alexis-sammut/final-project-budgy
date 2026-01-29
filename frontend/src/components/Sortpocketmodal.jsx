@@ -8,6 +8,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
   const [newItemAmount, setNewItemAmount] = useState("");
   const [newItemType, setNewItemType] = useState("euro");
   const [amountInputValue, setAmountInputValue] = useState("");
+  const [minAmountError, setMinAmountError] = useState("");
 
   useEffect(() => {
     setLocalAmount(pocket.localAmount || 0);
@@ -22,36 +23,63 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
   const handleAmountBlur = () => {
     const amount = parseFloat(amountInputValue);
     
+    // Calculate total of non-Other items only
+    const nonOtherItemsTotal = localItems
+      .filter(item => !item.is_other)
+      .reduce((sum, item) => sum + (item.localAmount || 0), 0);
+    
     if (isNaN(amount) || amountInputValue === '') {
-      const itemsTotal = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
-      setLocalAmount(itemsTotal);
-      setAmountInputValue(itemsTotal.toFixed(2));
+      setLocalAmount(nonOtherItemsTotal);
+      setAmountInputValue(nonOtherItemsTotal.toFixed(2));
+      
+      // Remove Other item if exists
+      const updatedItems = localItems.filter(item => !item.is_other);
+      setLocalItems(updatedItems);
+      
+      onUpdate(pocket.id, {
+        localAmount: nonOtherItemsTotal,
+        localItems: updatedItems
+      });
       return;
     }
     
-    const itemsTotal = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
-    
-    if (amount < itemsTotal - 0.01) {
-      setLocalAmount(itemsTotal);
-      setAmountInputValue(itemsTotal.toFixed(2));
+    // Minimum pocket amount is the total of non-Other items
+    if (amount < nonOtherItemsTotal - 0.01) {
+      console.log('Setting error - amount:', amount, 'minimum:', nonOtherItemsTotal);
+      setMinAmountError(`Pocket amount cannot be less than items total (€${nonOtherItemsTotal.toFixed(2)})`);
+      
+      setLocalAmount(nonOtherItemsTotal);
+      setAmountInputValue(nonOtherItemsTotal.toFixed(2));
+      
+      const updatedItems = localItems.filter(item => !item.is_other);
+      setLocalItems(updatedItems);
+      
+      onUpdate(pocket.id, {
+        localAmount: nonOtherItemsTotal,
+        localItems: updatedItems
+      });
+      
+      setTimeout(() => setMinAmountError(""), 5000);
       return;
     }
     
+    setMinAmountError("");
     setLocalAmount(amount);
     setAmountInputValue(amount.toFixed(2));
     
-    const otherAmount = parseFloat((amount - itemsTotal).toFixed(2));
+    // Calculate Other amount (difference between total and non-Other items)
+    const otherAmount = parseFloat((amount - nonOtherItemsTotal).toFixed(2));
     
     const otherItemIndex = localItems.findIndex(item => item.is_other);
     
+    let updatedItems;
     if (otherAmount > 0.01) {
       if (otherItemIndex >= 0) {
-        const updatedItems = [...localItems];
+        updatedItems = [...localItems];
         updatedItems[otherItemIndex] = {
           ...updatedItems[otherItemIndex],
           localAmount: otherAmount
         };
-        setLocalItems(updatedItems);
       } else {
         const newOtherItem = {
           id: `temp-${Date.now()}-other`,
@@ -60,18 +88,18 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
           is_other: true,
           is_percentage: false,
         };
-        setLocalItems([...localItems, newOtherItem]);
+        updatedItems = [...localItems, newOtherItem];
       }
     } else {
-      if (otherItemIndex >= 0) {
-        const updatedItems = localItems.filter(item => !item.is_other);
-        setLocalItems(updatedItems);
-      }
+      // Remove Other item if amount is too small
+      updatedItems = localItems.filter(item => !item.is_other);
     }
+    
+    setLocalItems(updatedItems);
     
     onUpdate(pocket.id, {
       localAmount: amount,
-      localItems: localItems
+      localItems: updatedItems
     });
   };
 
@@ -147,7 +175,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
         const newOtherItem = {
           id: `temp-${Date.now()}-other`,
           name: 'Other',
-          localAmount: remainingIncome,
+          localAmount: parseFloat(remainingIncome.toFixed(2)),
           is_other: true,
           is_percentage: false,
         };
@@ -264,6 +292,12 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
             </div>
           </div>
 
+          {minAmountError && (
+            <div className="error-message">
+              {minAmountError}
+            </div>
+          )}
+
           {(() => {
             const itemsTotal = localItems.reduce((sum, item) => sum + (item.localAmount || 0), 0);
             const isBelowItems = localAmount < itemsTotal - 0.01;
@@ -326,7 +360,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
 
                   <div className="item-amount-wrapper">
                     <span className="currency-symbol">€</span>
-                    {isRecurring || item.is_percentage ? (
+                    {isRecurring || item.is_percentage || item.is_other ? (
                       <span className="item-amount-display">
                         {item.localAmount.toFixed(2)}
                       </span>
