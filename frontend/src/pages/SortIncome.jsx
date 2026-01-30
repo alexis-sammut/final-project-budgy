@@ -5,6 +5,7 @@ import SortPocketModal from "../components/SortPocketModal";
 import DateRangePicker from "../components/DateRangePicker";
 import Pocket from "../components/Pocket";
 import "../styles/SortIncome.css";
+import { getUserCurrency } from "../utils/userPreferences";
 
 function SortIncome() {
   const navigate = useNavigate();
@@ -13,16 +14,25 @@ function SortIncome() {
   const [dateRange, setDateRange] = useState({ start: "", end: "", periodType: "1month" });
   const [calculatedPockets, setCalculatedPockets] = useState([]);
   const [allPockets, setAllPockets] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedPocket, setSelectedPocket] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [currency, setCurrency] = useState("€");
 
   // Fetch all pockets on mount
   useEffect(() => {
     fetchAllPockets();
+    fetchCategories();
+    fetchCurrency();
   }, []);
+
+  const fetchCurrency = async () => {
+    const userCurrency = await getUserCurrency();
+    setCurrency(userCurrency);
+  };
 
   // Trigger calculation whenever income or dates change
   useEffect(() => {
@@ -46,6 +56,15 @@ function SortIncome() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get("/api/categories/");
+      setCategories(res.data);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
   const handleCalculate = async () => {
     const income = parseFloat(incomeAmount);
     if (isNaN(income) || income <= 0) return;
@@ -63,15 +82,22 @@ function SortIncome() {
       });
 
       // Transform the response
-      const transformedPockets = res.data.map(pocket => ({
-        ...pocket,
-        localAmount: parseFloat(pocket.calculated_total),
-        localItems: pocket.items.map(item => ({
-          ...item,
-          localAmount: parseFloat(item.amount),
-          id: item.id || `temp-${Date.now()}-${Math.random()}`,
-        })),
-      }));
+      const transformedPockets = res.data.map(pocket => {
+        // Find the original pocket to get category_name and color
+        const originalPocket = allPockets.find(p => p.id === pocket.id);
+        
+        return {
+          ...pocket,
+          category_name: originalPocket?.category_name || pocket.category_name,
+          color: originalPocket?.color || pocket.color,
+          localAmount: parseFloat(pocket.calculated_total),
+          localItems: pocket.items.map(item => ({
+            ...item,
+            localAmount: parseFloat(item.amount),
+            id: item.id || `temp-${Date.now()}-${Math.random()}`,
+          })),
+        };
+      });
 
       setCalculatedPockets(transformedPockets);
     } catch (err) {
@@ -185,7 +211,15 @@ function SortIncome() {
   const sortedCategories = Object.keys(groupedPockets).sort((a, b) => {
     if (a === 'Uncategorized') return 1;
     if (b === 'Uncategorized') return -1;
-    return a.localeCompare(b);
+    
+    const categoryA = categories.find(c => c.name === a);
+    const categoryB = categories.find(c => c.name === b);
+    
+    if (!categoryA && !categoryB) return a.localeCompare(b);
+    if (!categoryA) return 1;
+    if (!categoryB) return -1;
+    
+    return (categoryA.order || 0) - (categoryB.order || 0);
   });
 
   const remaining = getRemaining();
@@ -220,7 +254,7 @@ function SortIncome() {
                 <div className="income-input-large">
                   <label>Income to Sort</label>
                   <div className="amount-input-wrapper-large">
-                    <span className="currency-large">€</span>
+                    <span className="currency-large">{currency}</span>
                     <input
                       type="number"
                       value={incomeAmount}
@@ -253,7 +287,7 @@ function SortIncome() {
                       {remaining < 0 ? 'Over Budget' : 'Amount Left to Allocate'}
                     </div>
                     <div className={`remaining-amount-compact ${remaining < 0 ? 'negative' : 'positive'}`}>
-                      {remaining < 0 && '−'}€{Math.abs(remaining).toFixed(2)}
+                      {remaining < 0 && '−'}{currency}{Math.abs(remaining).toFixed(2)}
                     </div>
                   </div>
                 )}
@@ -282,6 +316,7 @@ function SortIncome() {
                       pocket={pocket}
                       variant="sorting"
                       onClick={() => handlePocketClick(pocket)}
+                      currency={currency}
                     />
                   ))}
                 </div>
@@ -300,7 +335,7 @@ function SortIncome() {
                 {!canFinalize() && (
                   <p className="finalize-hint">
                     {overBudgetAmount > 0.01
-                      ? `Reduce allocations - you're €${overBudgetAmount.toFixed(2)} over budget`
+                      ? `Reduce allocations - you're ${currency}${overBudgetAmount.toFixed(2)} over budget`
                       : remaining > 0.01
                       ? "Allocate all remaining income to finalize"
                       : "Reduce allocations - you're over budget"}
@@ -318,6 +353,7 @@ function SortIncome() {
             remainingIncome={remaining}
             onClose={handleCloseModal}
             onUpdate={handlePocketUpdate}
+            currency={currency}
           />
         )}
 

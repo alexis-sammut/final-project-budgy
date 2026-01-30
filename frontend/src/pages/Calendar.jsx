@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CalendarDayModal from "../components/CalendarDayModal";
 import "../styles/Calendar.css";
+import { getUserCurrency } from "../utils/userPreferences";
 
 function Calendar() {
   const navigate = useNavigate();
@@ -14,10 +15,17 @@ function Calendar() {
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [currency, setCurrency] = useState("€")
 
   useEffect(() => {
     fetchPocketsAndItems();
+    fetchCurrency()
   }, []);
+
+  const fetchCurrency = async () => {
+  const userCurrency = await getUserCurrency();
+  setCurrency(userCurrency);
+};
 
   const fetchPocketsAndItems = async () => {
     try {
@@ -214,6 +222,7 @@ function Calendar() {
           month={monthYear}
           items={selectedDay.items}
           onClose={handleCloseModal}
+          currency={currency}
         />
       )}
     </>

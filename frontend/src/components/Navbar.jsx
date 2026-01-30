@@ -1,16 +1,10 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import "../styles/Navbar.css";
 
 function Navbar() {
-  const navigate = useNavigate();
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const dropdownRef = useRef(null);
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
 
   const toggleToolsDropdown = () => {
     setShowToolsDropdown(!showToolsDropdown);
@@ -20,7 +14,6 @@ function Navbar() {
     setShowToolsDropdown(false);
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -37,13 +30,11 @@ function Navbar() {
   return (
     <nav className="navbar-green">
       <div className="navbar-container">
-        {/* Left: Logo/Brand */}
         <div className="navbar-brand">
           <span className="brand-icon">💰</span>
-          <span className="brand-text">Budget</span>
+          <span className="brand-text">Budgy</span>
         </div>
 
-        {/* Center: Main Navigation */}
         <div className="navbar-links">
           <Link to="/" className="nav-link">
             <span className="nav-icon">📂</span>
@@ -54,7 +45,6 @@ function Navbar() {
             Sorted Incomes
           </Link>
           
-          {/* Tools Dropdown */}
           <div className="nav-dropdown" ref={dropdownRef}>
             <button 
               className="nav-link dropdown-toggle" 
@@ -88,14 +78,13 @@ function Navbar() {
           </div>
         </div>
 
-        {/* Right: Action Button */}
         <div className="navbar-actions">
-          <Link to="/sort-income" className="add-btn">
+          <Link to="/sort-income" className="create-btn">
             + Sort Income
           </Link>
-          <button onClick={handleLogout} className="nav-btn-logout">
-            Logout
-          </button>
+          <Link to="/profile" className="profile-icon-btn">
+            👤
+          </Link>
         </div>
       </div>
     </nav>

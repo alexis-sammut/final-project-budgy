@@ -1,7 +1,7 @@
 /* Footer.css */
 
 .footer {
-    background: #2c3e50;
+    background: linear-gradient(135deg, #024b1a 0%, #2d6a4f 100%);
     color: white;
     margin-top: auto;
 }
@@ -23,6 +23,7 @@
 .footer-section h4 {
     margin: 0 0 1rem 0;
     font-weight: 700;
+    color: white;
 }
 
 .footer-logo {
@@ -33,7 +34,6 @@
 }
 
 .footer-tagline {
-    color: #bdc3c7;
     margin: 0.5rem 0 0 0;
 }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/PocketForm.css";
 
-function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remainingIncome = 0, onClose, onUpdate }) {
+function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remainingIncome = 0, onClose, onUpdate, currency = "€" }) {
   const [localAmount, setLocalAmount] = useState(pocket.localAmount || 0);
   const [localItems, setLocalItems] = useState(pocket.localItems || []);
   const [newItemName, setNewItemName] = useState("");
@@ -46,7 +46,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
     // Minimum pocket amount is the total of non-Other items
     if (amount < nonOtherItemsTotal - 0.01) {
       console.log('Setting error - amount:', amount, 'minimum:', nonOtherItemsTotal);
-      setMinAmountError(`Pocket amount cannot be less than items total (€${nonOtherItemsTotal.toFixed(2)})`);
+      setMinAmountError(`Pocket amount cannot be less than items total (${currency}${nonOtherItemsTotal.toFixed(2)})`);
       
       setLocalAmount(nonOtherItemsTotal);
       setAmountInputValue(nonOtherItemsTotal.toFixed(2));
@@ -67,7 +67,6 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
     setLocalAmount(amount);
     setAmountInputValue(amount.toFixed(2));
     
-    // Calculate Other amount (difference between total and non-Other items)
     const otherAmount = parseFloat((amount - nonOtherItemsTotal).toFixed(2));
     
     const otherItemIndex = localItems.findIndex(item => item.is_other);
@@ -91,7 +90,6 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
         updatedItems = [...localItems, newOtherItem];
       }
     } else {
-      // Remove Other item if amount is too small
       updatedItems = localItems.filter(item => !item.is_other);
     }
     
@@ -260,10 +258,20 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
         {/* Header */}
         <div className="form-header" style={{ backgroundColor: pocket.color }}>
           <div className="form-actions-left">
-            <button className="validate-btn" onClick={handleSave}>
-              ✓
-            </button>
+            {pocket.category_name && (
+              <button
+                type="button"
+                className="action-btn category-btn"
+                style={{ cursor: 'default' }}
+                title={pocket.category_name}
+              >
+                {pocket.category_name}
+              </button>
+            )}
           </div>
+          <button className="validate-btn" onClick={handleSave}>
+            ✓
+          </button>
         </div>
 
         {/* Colored Section */}
@@ -279,7 +287,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
 
           <div className="amount-control">
             <div className="amount-display">
-              <span className="currency">€</span>
+              <span className="currency">{currency}</span>
               <input
                 type="number"
                 className="amount-input"
@@ -304,28 +312,28 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
             
             return isBelowItems && (
               <div className="error-message">
-                Cannot be less than items total (€{itemsTotal.toFixed(2)})
+                Cannot be less than items total ({currency}{itemsTotal.toFixed(2)})
               </div>
             );
           })()}
 
           {overBudgetAmount > 0.01 && (
             <div className="error-message">
-              Over budget by €{overBudgetAmount.toFixed(2)}
+              Over budget by {currency}{overBudgetAmount.toFixed(2)}
             </div>
           )}
 
           {Math.abs(remainder) > 0.01 && overBudgetAmount <= 0.01 && (
             <div className={remainder > 0 ? "warning-message" : "warning-message warning-over"}>
               {remainder > 0 
-                ? `€${remainder.toFixed(2)} remaining to allocate`
-                : `€${Math.abs(remainder).toFixed(2)} over budget`
+                ? `${currency}${remainder.toFixed(2)} remaining to allocate`
+                : `${currency}${Math.abs(remainder).toFixed(2)} over budget`
               }
             </div>
           )}
         </div>
 
-        {/* White Section - Items */}
+        {/* Items */}
         <div className="form-white-section">
           <h3 className="items-title">Items</h3>
 
@@ -346,7 +354,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
                     className="item-delete-btn"
                     onClick={() => handleDeleteItem(item.id)}
                   >
-                    ×
+                    −
                   </button>
 
                   <span className="item-name">
@@ -359,7 +367,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
                   </span>
 
                   <div className="item-amount-wrapper">
-                    <span className="currency-symbol">€</span>
+                    <span className="currency-symbol">{currency}</span>
                     {isRecurring || item.is_percentage || item.is_other ? (
                       <span className="item-amount-display">
                         {item.localAmount.toFixed(2)}
@@ -395,7 +403,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
               value={newItemType}
               onChange={(e) => setNewItemType(e.target.value)}
             >
-              <option value="euro">€</option>
+              <option value="euro">{currency}</option>
               <option value="percentage">%</option>
             </select>
 
@@ -430,7 +438,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
                 className="add-remainder-btn"
                 onClick={handleAddRemainder}
               >
-                Add Remainder (€{remainingIncome.toFixed(2)})
+                Add Remainder ({currency}{remainingIncome.toFixed(2)})
               </button>
             </div>
           )}

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.contrib.auth.hashers import check_password
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -68,7 +69,7 @@ class CategoryListCreate(generics.ListCreateAPIView):
     
     def get_queryset(self):
         user = self.request.user
-        return Category.objects.filter(author=user)
+        return Category.objects.filter(author=user).order_by('order', 'id')
     
     def perform_create(self, serializer):
         if serializer.is_valid():
@@ -92,6 +93,40 @@ class CategoryDelete(generics.DestroyAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         return super().destroy(request, *args, **kwargs)
+
+
+class CategoryReorderView(APIView):
+    """Update the order of categories"""
+    permission_classes = [IsAuthenticated]
+    
+    def patch(self, request):
+        category_order = request.data.get('categories', [])
+        
+        if not category_order:
+            return Response(
+                {'error': 'No category order provided'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            for item in category_order:
+                category_id = item.get('id')
+                order = item.get('order')
+                
+                if category_id is None or order is None:
+                    continue
+                    
+                Category.objects.filter(
+                    id=category_id,
+                    author=request.user
+                ).update(order=order)
+            
+            return Response({'message': 'Category order updated successfully'})
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class ItemListCreate(generics.ListCreateAPIView):
@@ -176,10 +211,8 @@ class CalculateIncomeSortView(APIView):
         result = []
         for pocket in pockets:
             if period_type == 'oneoff':
-                # One-off income: no items, just pocket total
                 pocket_data = calculate_pocket_total_for_oneoff(pocket, income_amount)
             else:
-                # Regular periodic income: calculate with items
                 pocket_data = calculate_pocket_total_for_period(
                     pocket, 
                     income_amount, 
@@ -301,3 +334,88 @@ class IncomeSortDetailView(generics.RetrieveAPIView):
     
     def get_queryset(self):
         return SortedIncome.objects.filter(author=self.request.user)
+
+
+class UserProfileView(APIView):
+    """Get, update, or delete user profile"""
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """Get current user profile"""
+        from .models import UserProfile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        return Response({
+            'username': request.user.username,
+            'email': request.user.email,
+            'currency': profile.currency
+        })
+    
+    def patch(self, request):
+        """Update username and/or currency"""
+        from .models import UserProfile
+        user = request.user
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        
+        new_username = request.data.get('username')
+        if new_username:
+            if User.objects.filter(username=new_username).exclude(id=user.id).exists():
+                return Response(
+                    {'username': ['This username is already taken']}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            user.username = new_username
+            user.save()
+        
+        new_currency = request.data.get('currency')
+        if new_currency:
+            profile.currency = new_currency
+            profile.save()
+        
+        if not new_username and not new_currency:
+            return Response(
+                {'error': 'No data provided'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return Response({
+            'username': user.username,
+            'currency': profile.currency
+        })
+    
+    def delete(self, request):
+        """Delete user account"""
+        request.user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UpdatePasswordView(APIView):
+    """Update user password"""
+    permission_classes = [IsAuthenticated]
+    
+    def patch(self, request):
+        user = request.user
+        current_password = request.data.get('current_password')
+        new_password = request.data.get('new_password')
+        
+        if not current_password or not new_password:
+            return Response(
+                {'error': 'Both current and new passwords are required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if not check_password(current_password, user.password):
+            return Response(
+                {'current_password': ['Current password is incorrect']}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if len(new_password) < 8:
+            return Response(
+                {'new_password': ['Password must be at least 8 characters']}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        user.set_password(new_password)
+        user.save()
+        
+        return Response({'message': 'Password updated successfully'})

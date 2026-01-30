@@ -10,6 +10,7 @@ import SortIncome from "./pages/SortIncome"
 import SortedIncomeList from "./pages/SortedIncomeList"
 import SortedIncomeDetail from "./pages/SortedIncomeDetail"
 import Calendar from "./pages/Calendar";
+import Profile from "./pages/Profile";
 
  
 function Logout(){
@@ -52,6 +53,11 @@ function App() {
         <Route path='/calendar' element={
           <ProtectedRoute>
             <Calendar/>
+          </ProtectedRoute>  
+        }/>
+        <Route path='/profile' element={
+          <ProtectedRoute>
+            <Profile/>
           </ProtectedRoute>  
         }/>
         <Route path='/login' element={<Login />}/>

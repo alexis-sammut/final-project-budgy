@@ -3,7 +3,7 @@ import api from "../api";
 import "../styles/PocketForm.css";
 import { convertAmount, formatAmountDisplay, hasMixedFrequencies } from "../utils/frequencyUtils";
 
-function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
+function PocketForm({ onClose, onPocketCreated, currency = "€", editingPocket = null }) {
   const [name, setName] = useState(editingPocket?.name || "");
   const [amount, setAmount] = useState(
     editingPocket?.amount ? parseFloat(editingPocket.amount).toFixed(2) : '0.00'
@@ -660,7 +660,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
           </div>
           <div className="amount-control">
             <div className="amount-display">
-              <span className="currency">€</span>
+              <span className="currency">{currency}</span>
               <input
                 type="number"
                 className="amount-input"
@@ -696,7 +696,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                     if (numValue < itemsTotal && regularItems.length > 0) {
                       const freqLabel = (frequencies.find(f => f.value === frequency)?.label || frequency).toLowerCase();
                       
-                      setError(<>Pocket amount cannot be less than items total<br/>€{formatAmountDisplay(itemsTotal)} {freqLabel}</>);
+                      setError(<>Pocket amount cannot be less than items total<br/>{currency}{formatAmountDisplay(itemsTotal)} {freqLabel}</>);
                       const minAmount = itemsTotal;
                       setAmount(minAmount.toFixed(2));
                       setStoredAmount(minAmount);
@@ -836,7 +836,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                     ))}
                   </select>
                 )}
-                <span className="currency-symbol">€</span>
+                <span className="currency-symbol">{currency}</span>
                 <input
                   type="number"
                   className="item-amount-input"
@@ -902,7 +902,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
                   <span className="item-frequency-label-other">
                     {frequencies.find(f => f.value === frequency)?.label}
                   </span>
-                  <span className="currency-symbol">€</span>
+                  <span className="currency-symbol">{currency}</span>
                   <input
                     type="number"
                     className="item-amount-input"
@@ -1071,7 +1071,7 @@ function PocketForm({ onClose, onPocketCreated, editingPocket = null }) {
               <input
                 type="number"
                 className="add-item-amount-input"
-                placeholder={newItemFrequency === 'percentage' ? '0%' : '€0.00'}
+                placeholder={newItemFrequency === 'percentage' ? '0%' : `${currency}0.00`}
                 step="0.01"
                 min="0"
                 max={newItemFrequency === 'percentage' ? '99.99' : undefined}

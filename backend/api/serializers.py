@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'created_at', 'author']
+        fields = ['id', 'name', 'order', 'created_at', 'author']
         extra_kwargs = {'author': {'read_only': True}}
 
 

@@ -1,15 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class UserProfile(models.Model):
+    """Extended user profile with preferences"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    currency = models.CharField(max_length=10, default='€')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"{self.user.username}'s profile"
+
 class Category(models.Model):
     """Budget categories for organizing pockets"""
-    name = models.CharField(max_length=50)
+     
+    name = models.CharField(max_length=100)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="categories")
     created_at = models.DateTimeField(auto_now_add=True)
+    order = models.IntegerField(default=0)  
     
     class Meta:
-        verbose_name_plural = "Categories"
-        ordering = ['name']
+        ordering = ['order', 'id']
     
     def __str__(self):
         return self.name
@@ -215,3 +226,4 @@ class SortedItem(models.Model):
         if self.is_percentage:
             return f"{self.name} - {self.percentage_value}%"
         return f"{self.name} - €{self.amount}"
+    

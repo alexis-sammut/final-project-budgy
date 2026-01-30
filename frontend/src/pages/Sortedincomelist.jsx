@@ -5,15 +5,23 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Home.css";
 import "../styles/SortedIncomeList.css";
+import { getUserCurrency } from "../utils/userPreferences";
 
 function SortedIncomeList() {
   const [sortedIncomes, setSortedIncomes] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+   const [currency, setCurrency] = useState("€");
 
   useEffect(() => {
     fetchSortedIncomes();
+    fetchCurrency();
   }, []);
+
+  const fetchCurrency = async () => {
+    const userCurrency = await getUserCurrency();
+    setCurrency(userCurrency);
+  };
 
   const fetchSortedIncomes = async () => {
     try {
@@ -95,12 +103,6 @@ function SortedIncomeList() {
         <div className="home-content">
           <div className="page-header">
             <h1>Sorted Incomes</h1>
-            <button 
-              className="add-btn"
-              onClick={() => navigate("/sort-income")}
-            >
-              + Sort New Income
-            </button>
           </div>
 
           {sortedIncomes.length === 0 ? (
@@ -127,7 +129,7 @@ function SortedIncomeList() {
                       >
                         <div className="income-card-header">
                           <div className="income-amount">
-                            €{parseFloat(income.income_amount).toFixed(2)}
+                            {currency}{parseFloat(income.income_amount).toFixed(2)}
                           </div>
                           <div className="income-date">
                             {formatDate(income.start_date)}

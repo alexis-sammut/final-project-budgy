@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/Pocket.css";
 
-function Pocket({ pocket, onClick, variant = "default" }) {
+function Pocket({ pocket, onClick, currency = "€", variant = "default" }) {
   
   const getPocketData = () => {
     switch (variant) {
@@ -69,7 +69,7 @@ function Pocket({ pocket, onClick, variant = "default" }) {
     >
       <div className="pocket-content">
         <h3 className="pocket-name">{data.name}</h3>
-        <p className="pocket-amount">€{data.amount}</p>
+        <p className="pocket-amount">{currency}{data.amount}</p>
         
         {/* Show items count for all variants */}
         {data.showItemsCount && (
@@ -82,8 +82,8 @@ function Pocket({ pocket, onClick, variant = "default" }) {
         {data.showRemainder && data.remainder && (
           <p className={`pocket-remainder ${data.remainder.isOverBudget ? 'over-budget' : 'under-budget'}`}>
             {data.remainder.isOverBudget 
-              ? `€${data.remainder.amount} over` 
-              : `€${data.remainder.amount} left`
+              ? `${currency}${data.remainder.amount} over` 
+              : `${currency}${data.remainder.amount} left`
             }
           </p>
         )}

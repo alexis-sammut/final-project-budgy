@@ -12,24 +12,24 @@ function Footer() {
                             <span className="logo-icon">💰</span>
                             Budgy
                         </h3>
-                        <p className="footer-tagline">Smart budgeting made simple</p>
+                        <p className="footer-tagline">Your budgeting buddy.</p>
                     </div>
                     
                     <div className="footer-section">
                         <h4>Quick Links</h4>
                         <ul className="footer-links">
                             <li><a href="/">Home</a></li>
-                            <li><a href="/budget">Budget</a></li>
-                            <li><a href="/history">History</a></li>
+                            <li><a href="/sorted-incomes">Sorted incomes</a></li>
+                            <li><a href="/sort-income">Sort new income</a></li>
                         </ul>
                     </div>
                     
                     <div className="footer-section">
-                        <h4>Support</h4>
+                        <h4>Tools</h4>
                         <ul className="footer-links">
-                            <li><a href="#">Help Center</a></li>
-                            <li><a href="#">Contact Us</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="/calendar">Calendar</a></li>
+                            <li><a href="/currency-converter">Currency converter</a></li>
+                            <li><a href="mailto:alexis.sammut26@gmail.com">Contact us</a></li>
                         </ul>
                     </div>
                 </div>

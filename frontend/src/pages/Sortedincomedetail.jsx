@@ -3,22 +3,32 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import SortedPocketViewModal from "../components/SortedPocketViewModal"
+import SortedPocketViewModal from "../components/SortedPocketViewModal";
 import Pocket from "../components/Pocket";
 import "../styles/Home.css";
 import "../styles/SortedIncomeDetail.css";
+import { getUserCurrency } from "../utils/userPreferences";
 
 function SortedIncomeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [sortedIncome, setSortedIncome] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPocket, setSelectedPocket] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [currency, setCurrency] = useState("€");
 
   useEffect(() => {
     fetchSortedIncome();
+    fetchCategories();
+    fetchCurrency();
   }, [id]);
+
+  const fetchCurrency = async () => {
+    const userCurrency = await getUserCurrency();
+    setCurrency(userCurrency);
+  };
 
   const fetchSortedIncome = async () => {
     try {
@@ -31,22 +41,38 @@ function SortedIncomeDetail() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get("/api/categories/");
+      setCategories(res.data);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      year: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
   const formatPeriod = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
-    
-    const startStr = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const endStr = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    
+
+    const startStr = start.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+    const endStr = end.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+
     return `${startStr} – ${endStr}`;
   };
 
@@ -65,7 +91,7 @@ function SortedIncomeDetail() {
     if (!sortedIncome?.sorted_pockets) return {};
 
     const grouped = sortedIncome.sorted_pockets.reduce((groups, pocket) => {
-      const categoryName = pocket.category_name || 'Uncategorized';
+      const categoryName = pocket.category_name || "Uncategorized";
       if (!groups[categoryName]) {
         groups[categoryName] = [];
       }
@@ -73,16 +99,24 @@ function SortedIncomeDetail() {
       return groups;
     }, {});
 
-    // Sort categories
+    // Sort categories by their order field
     const sortedCategories = Object.keys(grouped).sort((a, b) => {
-      if (a === 'Uncategorized') return 1;
-      if (b === 'Uncategorized') return -1;
-      return a.localeCompare(b);
+      if (a === "Uncategorized") return 1;
+      if (b === "Uncategorized") return -1;
+
+      const categoryA = categories.find((c) => c.name === a);
+      const categoryB = categories.find((c) => c.name === b);
+
+      if (!categoryA && !categoryB) return a.localeCompare(b);
+      if (!categoryA) return 1;
+      if (!categoryB) return -1;
+
+      return (categoryA.order || 0) - (categoryB.order || 0);
     });
 
-    return sortedCategories.map(category => ({
+    return sortedCategories.map((category) => ({
       category,
-      pockets: grouped[category]
+      pockets: grouped[category],
     }));
   };
 
@@ -125,7 +159,7 @@ function SortedIncomeDetail() {
       <div className="home-container">
         <div className="home-content">
           {/* Back button */}
-          <button 
+          <button
             className="back-btn"
             onClick={() => navigate("/sorted-incomes")}
           >
@@ -138,7 +172,7 @@ function SortedIncomeDetail() {
               <div className="detail-income-display">
                 <label>Income Sorted</label>
                 <div className="detail-amount-display">
-                  <span className="detail-currency">€</span>
+                  <span className="detail-currency">{currency}</span>
                   <span className="detail-amount">
                     {parseFloat(sortedIncome.income_amount).toFixed(2)}
                   </span>
@@ -158,11 +192,15 @@ function SortedIncomeDetail() {
             <div className="detail-summary">
               <div className="summary-item">
                 <span className="summary-label">Total Pockets</span>
-                <span className="summary-value">{sortedIncome.sorted_pockets?.length || 0}</span>
+                <span className="summary-value">
+                  {sortedIncome.sorted_pockets?.length || 0}
+                </span>
               </div>
               <div className="summary-item">
                 <span className="summary-label">Created</span>
-                <span className="summary-value">{formatDate(sortedIncome.created_at)}</span>
+                <span className="summary-value">
+                  {formatDate(sortedIncome.created_at)}
+                </span>
               </div>
             </div>
           </div>
@@ -179,6 +217,7 @@ function SortedIncomeDetail() {
                       pocket={pocket}
                       variant="history"
                       onClick={() => handlePocketClick(pocket)}
+                      currency={currency}
                     />
                   ))}
                 </div>
@@ -190,6 +229,7 @@ function SortedIncomeDetail() {
             <SortedPocketViewModal
               pocket={selectedPocket}
               onClose={handleCloseModal}
+              currency={currency}
             />
           )}
         </div>

@@ -1,6 +1,6 @@
 import "../styles/CalendarDayModal.css";
 
-function CalendarDayModal({ day, month, items, onClose }) {
+function CalendarDayModal({ day, month, items, onClose , currency = "€"}) {
   
   const formatAmount = (amount) => {
     return parseFloat(amount).toFixed(2);
@@ -44,7 +44,7 @@ function CalendarDayModal({ day, month, items, onClose }) {
               <div className="item-card-body">
                 <div className="item-detail">
                   <span className="detail-label">Amount</span>
-                  <span className="detail-value amount">€{formatAmount(item.amount)}</span>
+                  <span className="detail-value amount">{currency}{formatAmount(item.amount)}</span>
                 </div>
                 
                 <div className="item-detail">
@@ -75,7 +75,7 @@ function CalendarDayModal({ day, month, items, onClose }) {
           <div className="footer-total">
             <span className="total-label">Total for this day:</span>
             <span className="total-amount">
-              €{items.reduce((sum, item) => sum + parseFloat(item.amount), 0).toFixed(2)}
+              {currency}{items.reduce((sum, item) => sum + parseFloat(item.amount), 0).toFixed(2)}
             </span>
           </div>
         </div>
