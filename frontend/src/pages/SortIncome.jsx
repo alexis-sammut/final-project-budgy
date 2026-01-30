@@ -9,9 +9,23 @@ import { getUserCurrency } from "../utils/userPreferences";
 
 function SortIncome() {
   const navigate = useNavigate();
+  
+  // Helper to get default date range (today + 1 month)
+  const getDefaultDateRange = () => {
+    const today = new Date();
+    const oneMonthLater = new Date(today);
+    oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+    
+    return {
+      start: today.toISOString().split('T')[0],
+      end: oneMonthLater.toISOString().split('T')[0],
+      periodType: "1month"
+    };
+  };
+  
   const [incomeName, setIncomeName] = useState("");
   const [incomeAmount, setIncomeAmount] = useState("");
-  const [dateRange, setDateRange] = useState({ start: "", end: "", periodType: "1month" });
+  const [dateRange, setDateRange] = useState(getDefaultDateRange());
   const [calculatedPockets, setCalculatedPockets] = useState([]);
   const [allPockets, setAllPockets] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -182,6 +196,7 @@ function SortIncome() {
       }));
 
       await api.post("/api/income-sort/create/", {
+        name: incomeName,
         income_amount: parseFloat(incomeAmount),
         start_date: dateRange.start,
         end_date: dateRange.end,
@@ -237,7 +252,7 @@ function SortIncome() {
         <input
           type="text"
           className="income-name-input"
-          placeholder="Name this income sort"
+          placeholder="Name this income"
           value={incomeName}
           onChange={(e) => setIncomeName(e.target.value)}
         />
@@ -323,14 +338,14 @@ function SortIncome() {
               </div>
             ))}
 
-            {income > 0 && dateRange.start && dateRange.end && (
+            {income > 0 && (dateRange.periodType === 'oneoff' || (dateRange.start && dateRange.end)) && (
               <div className="finalize-section">
                 <button
                   className={`finalize-btn ${!canFinalize() ? 'disabled' : ''}`}
                   onClick={handleFinalize}
                   disabled={!canFinalize() || loading}
                 >
-                  {loading ? "Saving..." : "Finalize Sort"}
+                  {loading ? "Saving..." : "Sort income"}
                 </button>
                 {!canFinalize() && (
                   <p className="finalize-hint">

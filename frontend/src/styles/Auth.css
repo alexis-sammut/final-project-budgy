@@ -8,7 +8,7 @@
 /* Left Side - Marketing/Info */
 .auth-left {
     flex: 1;
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, #024b1a 0%, #2d6a4f 100%);
     padding: 4rem;
     display: flex;
     align-items: center;
@@ -30,6 +30,7 @@
     font-size: 3rem;
     font-weight: 800;
     margin-bottom: 1rem;
+    color: white;
 }
 
 @keyframes float {
@@ -46,6 +47,7 @@
     font-weight: 800;
     margin-bottom: 1rem;
     line-height: 1.2;
+    color: white;
 }
 
 .auth-subtitle {
@@ -173,8 +175,7 @@
 }
 
 .auth-submit-btn {
-    background: var(--primary-gradient);
-    color: white;
+    background: linear-gradient(135deg, #024b1a 0%, #2d6a4f 100%);    color: white;
     border: none;
     padding: 1rem;
     border-radius: var(--radius-sm);
@@ -222,6 +223,32 @@
     color: var(--primary-dark);
     text-decoration: underline;
 }
+
+/* Error Message Styling */
+.auth-error-message {
+  background: #fee;
+  border: 2px solid #e74c3c;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  color: #c0392b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 /* Mobile Responsive */
 @media (max-width: 968px) {

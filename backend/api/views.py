@@ -14,11 +14,25 @@ from .frequency_utils import convert_amount, calculate_pocket_monthly_equivalent
 from .income_sort_utils import calculate_pocket_total_for_period, calculate_pocket_total_for_oneoff
 from decimal import Decimal
 from datetime import datetime
+from rest_framework_simplejwt.tokens import RefreshToken
 
 class CreateUserView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            'user': serializer.data,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+        }, status=status.HTTP_201_CREATED)
     
 class PocketListCreate(generics.ListCreateAPIView):
     serializer_class = PocketSerializer
@@ -241,6 +255,7 @@ class IncomeSortCreateView(APIView):
     
     def post(self, request):
         income_amount = request.data.get('income_amount')
+        name = request.data.get('name')
         start_date_str = request.data.get('start_date')
         end_date_str = request.data.get('end_date')
         pockets_data = request.data.get('pockets', [])
@@ -263,6 +278,7 @@ class IncomeSortCreateView(APIView):
         
         sort_instance = SortedIncome.objects.create(
             author=request.user,
+            name=name if name else None,
             income_amount=income_amount,
             start_date=start_date,
             end_date=end_date,

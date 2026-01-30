@@ -1,23 +1,66 @@
 import { useState } from "react"
 import api from "../api"
 import { useNavigate, Link } from "react-router-dom"
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants"
 import "../styles/Auth.css"
 
 function Register(){
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
-        setLoading(true);
         e.preventDefault()
-
+        setLoading(true);
+        setError('');
+        
         try {
             const res = await api.post("api/user/register/", {username, password})
-            navigate('/login')
-        } catch (error){
-            alert(error)
+            
+            localStorage.setItem(ACCESS_TOKEN, res.data.access);
+            localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+            
+            // Navigate to home page
+            navigate('/')
+        } catch (error) {
+            if (error.response) {
+                // Server responded with error
+                if (error.response.status === 400) {
+                    // Handle validation errors
+                    const data = error.response.data;
+                    
+                    if (data.username) {
+                        // Username already exists or validation error
+                        if (Array.isArray(data.username)) {
+                            setError(data.username[0]);
+                        } else {
+                            setError(data.username);
+                        }
+                    } else if (data.password) {
+                        // Password validation error
+                        if (Array.isArray(data.password)) {
+                            setError(data.password[0]);
+                        } else {
+                            setError(data.password);
+                        }
+                    } else if (data.detail) {
+                        setError(data.detail);
+                    } else {
+                        setError('Registration failed. Please check your input.');
+                    }
+                } else if (error.response.data?.detail) {
+                    setError(error.response.data.detail);
+                } else {
+                    setError('Registration failed. Please try again.');
+                }
+            } else if (error.request) {
+                // Request made but no response
+                setError('Cannot connect to server. Please check your connection.');
+            } else {
+                setError('An unexpected error occurred.');
+            }
         } finally {
             setLoading(false)
         }
@@ -27,13 +70,8 @@ function Register(){
         <div className="auth-container">
             <div className="auth-left">
                 <div className="auth-content">
-                    <h1 className="auth-title">Welcome to Budgy!</h1>
+                    <h1 className="auth-logo">Welcome to<br></br>💰 Budgy</h1>
                     <p className="auth-subtitle">Your budgeting buddy for smarter spending</p>
-                    <p className="auth-description">
-                        Take control of your finances with personalized pockets, 
-                        smart budgeting tools, and real-time tracking. 
-                        Start your journey to financial freedom today! 🚀
-                    </p>
                     <div className="auth-features">
                         <div className="feature-item">
                             <span className="feature-icon">✓</span>
@@ -53,7 +91,14 @@ function Register(){
 
             <div className="auth-right">
                 <div className="auth-form-wrapper">
-                    <h2 className="form-title">Create Your Account</h2>                    
+                    <h2 className="form-title">Create Your Account</h2>
+                    
+                    {error && (
+                        <div className="auth-error-message">
+                            {error}
+                        </div>
+                    )}
+                    
                     <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-group">
                             <label htmlFor="username">Username</label>

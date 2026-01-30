@@ -110,6 +110,7 @@ class SortedIncomeSerializer(serializers.ModelSerializer):
         model = SortedIncome
         fields = [
             'id',
+            'name',
             'income_amount',
             'start_date',
             'end_date',

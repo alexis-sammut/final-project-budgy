@@ -5,23 +5,16 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Home.css";
 import "../styles/SortedIncomeList.css";
-import { getUserCurrency } from "../utils/userPreferences";
 
 function SortedIncomeList() {
   const [sortedIncomes, setSortedIncomes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currency, setCurrency] = useState("€");
   const navigate = useNavigate();
-   const [currency, setCurrency] = useState("€");
 
   useEffect(() => {
     fetchSortedIncomes();
-    fetchCurrency();
   }, []);
-
-  const fetchCurrency = async () => {
-    const userCurrency = await getUserCurrency();
-    setCurrency(userCurrency);
-  };
 
   const fetchSortedIncomes = async () => {
     try {
@@ -73,7 +66,7 @@ function SortedIncomeList() {
     const startStr = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     const endStr = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     
-    return `${startStr} – ${endStr}`;
+    return `${startStr} — ${endStr}`;
   };
 
   const handleCardClick = (incomeId) => {
@@ -127,16 +120,31 @@ function SortedIncomeList() {
                         className="income-card"
                         onClick={() => handleCardClick(income.id)}
                       >
-                        <div className="income-card-header">
-                          <div className="income-amount">
-                            {currency}{parseFloat(income.income_amount).toFixed(2)}
-                          </div>
-                          <div className="income-date">
-                            {formatDate(income.start_date)}
-                          </div>
+                        
+                        
+                        {/* Main Amount Display */}
+                        <div>
+                          <span className="income-currency">{currency}</span>
+                          <span className="income-amount">
+                            {parseFloat(income.income_amount).toFixed(2)}
+                          </span>
+                          {income.name && (
+                          <div className="income-name">
+                          <br></br>
+                          {income.name}</div>
+                        )}
                         </div>
-                        <div className="income-period">
-                          {formatPeriod(income.start_date, income.end_date)}
+                        
+                        {/* Period Info */}
+                        <div className="income-info">
+                          <div className="income-period">
+                            {formatPeriod(income.start_date, income.end_date)}
+                          </div>
+                          <div className="income-meta">
+                            <span className="income-pockets-count">
+                              {income.sorted_pockets?.length || 0} pockets
+                            </span>
+                          </div>
                         </div>
                       </div>
                     ))}

@@ -8,19 +8,35 @@ function Login(){
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
+        e.preventDefault();
         setLoading(true);
-        e.preventDefault()
+        setError('');
 
         try {
             const res = await api.post('api/token/', {username, password})
             localStorage.setItem(ACCESS_TOKEN, res.data.access);
             localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
             navigate("/")
-        } catch (error){
-            alert(error)
+        } catch (error) {
+            if (error.response) {
+                // Server responded with error
+                if (error.response.status === 401) {
+                    setError('Invalid username or password');
+                } else if (error.response.data?.detail) {
+                    setError(error.response.data.detail);
+                } else {
+                    setError('Login failed. Please try again.');
+                }
+            } else if (error.request) {
+                // Request made but no response
+                setError('Cannot connect to server. Please check your connection.');
+            } else {
+                setError('An unexpected error occurred.');
+            }
         } finally {
             setLoading(false)
         }
@@ -30,21 +46,21 @@ function Login(){
         <div className="auth-container">
             <div className="auth-left">
                 <div className="auth-content">
-                    <h1 className="auth-logo">💰 Budgy</h1>
-                    <h2 className="auth-title">Welcome Back!</h2>
+                    <h1 className="auth-logo">Welcome back to<br></br>💰 Budgy</h1>
                     <p className="auth-subtitle">Ready to master your money?</p>
-                    <p className="auth-description">
-                        Your pockets are waiting! Log in to continue managing 
-                        your finances like a pro. Smart budgeting is just one 
-                        click away. 💚
-                    </p>
                 </div>
             </div>
 
             <div className="auth-right">
                 <div className="auth-form-wrapper">
                     <h2 className="form-title">Log In</h2>
-                    <p className="form-subtitle">Continue your budgeting journey</p>
+
+                    
+                    {error && (
+                        <div className="auth-error-message">
+                            {error}
+                        </div>
+                    )}
                     
                     <form onSubmit={handleSubmit} className="auth-form">
                         <div className="form-group">

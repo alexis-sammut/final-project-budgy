@@ -168,6 +168,7 @@ class Item(models.Model):
 class SortedIncome(models.Model):
     """Instance of a periodic income sort"""
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sorted_incomes")
+    name = models.CharField(max_length=100, blank=True, null=True) 
     income_amount = models.DecimalField(max_digits=12, decimal_places=2)
     start_date = models.DateField()
     end_date = models.DateField()
@@ -179,8 +180,9 @@ class SortedIncome(models.Model):
         verbose_name_plural = "Sorted Incomes"
     
     def __str__(self):
+        if self.name:
+            return f"{self.name} - €{self.income_amount}"
         return f"€{self.income_amount} - {self.start_date} to {self.end_date}"
-
 
 class SortedPocket(models.Model):
     """Snapshot of a pocket during an income sort"""
