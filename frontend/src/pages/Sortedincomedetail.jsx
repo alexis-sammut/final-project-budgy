@@ -5,8 +5,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import SortedPocketViewModal from "../components/SortedPocketViewModal";
 import Pocket from "../components/Pocket";
-import "../styles/Home.css";
-import "../styles/SortedIncomeDetail.css";
+import "../styles/home.css";
+import "../styles/sortedincomedetail.css";
 import { getUserCurrency } from "../utils/userPreferences";
 
 // Shows details of a past income sorting session

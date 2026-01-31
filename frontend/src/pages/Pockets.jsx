@@ -4,7 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PocketForm from "../components/PocketForm";
 import Pocket from "../components/Pocket";
-import "../styles/Home.css";
+import "../styles/home.css";
 import { getUserCurrency } from "../utils/userPreferences";
 
 // Main dashboard showing all pockets

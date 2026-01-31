@@ -4,7 +4,7 @@ import api from "../api";
 import SortPocketModal from "../components/SortPocketModal";
 import DateRangePicker from "../components/DateRangePicker";
 import Pocket from "../components/Pocket";
-import "../styles/SortIncome.css";
+import "../styles/sortincome.css";
 import { getUserCurrency } from "../utils/userPreferences";
 
 // Main component for allocating income to pockets

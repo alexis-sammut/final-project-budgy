@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import "../styles/CurrencyConverter.css";
+import "../styles/currencyconverter.css";
 
 const API_KEY = import.meta.env.VITE_CURRENCY_API_KEY;
 const API_URL = "https://api.freecurrencyapi.com/v1/latest";

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import api from "../api";
-import "../styles/PocketForm.css";
+import "../styles/pocketform.css";
 import {
   convertAmount,
   formatAmountDisplay,

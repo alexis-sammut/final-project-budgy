@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "../styles/PocketForm.css";
+import "../styles/pocketform.css";
 
 // Modal to edit pocket allocation during income sorting
 function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remainingIncome = 0, onClose, onUpdate, currency = "€" }) {

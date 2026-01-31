@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/Index.css";
+import "../styles/index.css";
 
 // Custom 404 page with funny quotes
 function NotFound() {

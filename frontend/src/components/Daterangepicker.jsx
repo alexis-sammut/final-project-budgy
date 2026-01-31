@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "../styles/DateRangePicker.css";
+import "../styles/daterangepicker.css";
 
 // Component for selecting date ranges with presets
 function DateRangePicker({ value, onChange, onCalculate }) {
