@@ -3,8 +3,9 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/CurrencyConverter.css";
 
-const API_KEY = "fca_live_8I5FSFO3o0tUuJsXBkFVQEiS1JB3jqUsxkAZw3jg";
+const API_KEY = import.meta.env.VITE_CURRENCY_API_KEY;
 const API_URL = "https://api.freecurrencyapi.com/v1/latest";
+
 
 // Tool for converting amounts between different currencies
 function CurrencyConverter() {
