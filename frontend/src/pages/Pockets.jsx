@@ -5,8 +5,9 @@ import Footer from "../components/Footer";
 import PocketForm from "../components/PocketForm";
 import Pocket from "../components/Pocket";
 import "../styles/Home.css";
-import { getUserCurrency } from "../utils/userPreferences"; 
+import { getUserCurrency } from "../utils/userPreferences";
 
+// Main dashboard showing all pockets
 function Home() {
   const [pockets, setPockets] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -16,14 +17,14 @@ function Home() {
   const [pocketToDelete, setPocketToDelete] = useState(null);
   const [currency, setCurrency] = useState("€");
 
+  // Fetch initial data
   useEffect(() => {
     getPockets();
     getCategories();
     fetchCurrency();
-
   }, []);
 
-   const fetchCurrency = async () => {
+  const fetchCurrency = async () => {
     const userCurrency = await getUserCurrency();
     setCurrency(userCurrency);
   };
@@ -49,6 +50,7 @@ function Home() {
       .catch((err) => console.error("Error fetching categories:", err));
   };
 
+  // Handle pocket deletion
   const deletePocket = (id) => {
     api
       .delete(`api/pockets/delete/${id}/`)

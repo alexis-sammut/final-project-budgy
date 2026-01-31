@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants"
 import "../styles/Auth.css"
 
+// Registration component for new users
 function Register(){
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -11,12 +12,14 @@ function Register(){
     const [error, setError] = useState('')
     const navigate = useNavigate()
 
+    // Handle account creation
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true);
         setError('');
         
         try {
+            // Create user and auto-login
             const res = await api.post("api/user/register/", {username, password})
             
             localStorage.setItem(ACCESS_TOKEN, res.data.access);
@@ -68,6 +71,7 @@ function Register(){
 
     return (
         <div className="auth-container">
+            {/* 'Marketing' content on left */}
             <div className="auth-left">
                 <div className="auth-content">
                     <h1 className="auth-logo">Welcome to<br></br>💰 Budgy</h1>
@@ -89,6 +93,7 @@ function Register(){
                 </div>
             </div>
 
+            {/* Registration form on right */}
             <div className="auth-right">
                 <div className="auth-form-wrapper">
                     <h2 className="form-title">Create Your Account</h2>

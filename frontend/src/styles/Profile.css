@@ -1,3 +1,4 @@
+/* Page container */
 .profile-container {
   min-height: calc(100vh - 140px);
   padding: 2rem 1rem;
@@ -7,6 +8,8 @@
   max-width: 700px;
   margin: 0 auto;
 }
+
+/* Header */
 .profile-header {
   text-align: center;
   margin-bottom: 3rem;
@@ -22,6 +25,8 @@
   font-size: 1rem;
   margin: 0;
 }
+
+/* White sections */
 .profile-section {
   background: white;
   border-radius: 16px;
@@ -67,6 +72,7 @@
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
+
 .input-with-button {
   display: flex;
   gap: 0.75rem;
@@ -75,6 +81,7 @@
 .input-with-button .profile-input {
   flex: 1;
 }
+
 .update-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -119,22 +126,13 @@
   cursor: not-allowed;
   transform: none;
 }
+
 .message {
   padding: 0.75rem 1rem;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
   margin-top: 0.5rem;
-}
-.message.success {
-  background: rgba(46, 204, 113, 0.1);
-  border: 1px solid rgba(46, 204, 113, 0.3);
-  color: #27ae60;
-}
-.message.error {
-  background: rgba(231, 76, 60, 0.1);
-  border: 1px solid rgba(231, 76, 60, 0.3);
-  color: #e74c3c;
 }
 .section-description {
   color: #7f8c8d;
@@ -149,6 +147,8 @@
   font-style: italic;
   font-size: 0.95rem;
 }
+
+/* Currency dropdown */
 .currency-selector-group {
   display: flex;
   flex-direction: column;
@@ -188,6 +188,8 @@
   padding: 0.5rem;
   font-weight: 600;
 }
+
+/* Drag and drop to reorder categories */
 .category-list {
   display: flex;
   flex-direction: column;
@@ -210,10 +212,6 @@
   border-color: #667eea;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-.category-item.dragging {
-  opacity: 0.5;
-  transform: scale(1.02);
 }
 .drag-handle {
   font-size: 1.2rem;
@@ -240,14 +238,8 @@
   min-width: 40px;
   text-align: center;
 }
-.danger-zone {
-  border: 2px solid #e74c3c;
-  background: #fff5f5;
-}
-.danger-title {
-  color: #e74c3c;
-  border-bottom-color: #ffdddd;
-}
+
+/* Logout and delete buttons */
 .danger-actions {
   display: flex;
   gap: 1rem;
@@ -285,6 +277,8 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
 }
+
+/* Delete confirmation modal */
 .confirm-overlay {
   position: fixed;
   top: 0;
@@ -359,6 +353,7 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -377,6 +372,8 @@
     opacity: 1;
   }
 }
+
+/* Responsive */
 @media (max-width: 768px) {
   .profile-header h1 {
     font-size: 2rem;

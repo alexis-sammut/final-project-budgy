@@ -1,9 +1,7 @@
-/* index.css - Global styles and design system */
-
-/* Importing a font from Google Fonts */
+/* Google fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
 
-/* CSS Variables - Creating color variables, to set the app branding */
+/* Main variables and colors */
 :root {
   /* Colors */
   --primary-gradient: linear-gradient(135deg, #0c4b4e 0%, #059e92 100%);
@@ -74,14 +72,12 @@
   --text-4xl: 2.5rem;
 }
 
-/* Global Resets */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Base Styles */
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -93,13 +89,12 @@ body {
   line-height: 1.6;
 }
 
-/* Typography */
+/* Title styles */
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.2;
   color: var(--text-dark);
 }
-
 
 h2 { font-size: var(--text-3xl); }
 h3 { font-size: var(--text-2xl); }
@@ -109,7 +104,7 @@ p {
   margin-bottom: var(--spacing-sm);
 }
 
-/* Links */
+/* Default links */
 a {
   color: var(--primary-color);
   text-decoration: none;
@@ -120,7 +115,7 @@ a:hover {
   color: var(--primary-dark);
 }
 
-/* Buttons - Global Button Styles */
+/* Global buttons */
 button {
   font-family: inherit;
   cursor: pointer;
@@ -133,22 +128,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Primary Button Style (reusable) */
-.btn-primary {
-  background: var(--primary-gradient);
-  color: var(--white);
-  padding: var(--spacing-xs) var(--spacing-md);
-  border-radius: var(--radius-xl);
-  font-weight: 600;
-  box-shadow: var(--shadow-md);
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-/* Forms - Global Form Styles */
+/* Input styles */
 input,
 textarea,
 select {
@@ -169,33 +149,13 @@ select:focus {
   box-shadow: var(--shadow-focus);
 }
 
-/* Utility Classes */
+/* Utility classes */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
 }
 
-.text-center {
-  text-align: center;
-}
-
-.mt-1 { margin-top: var(--spacing-xs); }
-.mt-2 { margin-top: var(--spacing-sm); }
-.mt-3 { margin-top: var(--spacing-md); }
-.mt-4 { margin-top: var(--spacing-lg); }
-
-.mb-1 { margin-bottom: var(--spacing-xs); }
-.mb-2 { margin-bottom: var(--spacing-sm); }
-.mb-3 { margin-bottom: var(--spacing-md); }
-.mb-4 { margin-bottom: var(--spacing-lg); }
-
-.p-1 { padding: var(--spacing-xs); }
-.p-2 { padding: var(--spacing-sm); }
-.p-3 { padding: var(--spacing-md); }
-.p-4 { padding: var(--spacing-lg); }
-
-/* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -213,53 +173,7 @@ select:focus {
   background: var(--primary-dark);
 }
 
-/* Loading Animation */
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: var(--white);
-  animation: spin 1s linear infinite;
-}
-
-/* Fade In Animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.fade-in {
-  animation: fadeIn var(--transition-slow) ease;
-}
-
-/* Card Styles (reusable) */
-.card {
-  background: var(--white);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
-  box-shadow: var(--shadow-md);
-  transition: var(--transition-normal);
-}
-
-.card:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-2px);
-}
-
-/* NotFound.jsx */
-
+/* 404 page styles */
 .notfound-container {
   min-height: 100vh;
   display: flex;
@@ -271,7 +185,6 @@ select:focus {
   overflow: hidden;
 }
 
-/* Animated background elements */
 .notfound-container::before {
   content: '💰';
   position: absolute;
@@ -420,6 +333,15 @@ select:focus {
   .notfound-btn {
     min-width: 100%;
   }
+
+  :root {
+    --text-3xl: 1.5rem;
+    --text-4xl: 2rem;
+  }
+
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
 }
 
 @media (max-width: 576px) {
@@ -442,17 +364,5 @@ select:focus {
   .notfound-subtitle {
     font-size: 0.95rem;
     margin-bottom: 2rem;
-  }
-}
-
-/* Mobile Responsive Base */
-@media (max-width: 768px) {
-  :root {
-    --text-3xl: 1.5rem;
-    --text-4xl: 2rem;
-  }
-
-  .container {
-    padding: 0 var(--spacing-sm);
   }
 }

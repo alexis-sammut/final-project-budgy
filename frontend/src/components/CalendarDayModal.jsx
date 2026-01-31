@@ -1,5 +1,6 @@
-import "../styles/CalendarDayModal.css";
+import "../styles/Calendar.css";
 
+// Modal displaying items due on a specific calendar day
 function CalendarDayModal({ day, month, items, onClose , currency = "€"}) {
   
   const formatAmount = (amount) => {
@@ -9,11 +10,11 @@ function CalendarDayModal({ day, month, items, onClose , currency = "€"}) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="calendar-day-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
+        {/* Modal Header */}
         <div className="modal-header">
           <div>
             <h2 className="modal-title">
-              {month.split(' ')[0]} {day}
+              {day} {month.split(' ')[0]}
             </h2>
             <p className="modal-subtitle">{items.length} item{items.length !== 1 ? 's' : ''} due</p>
           </div>
@@ -22,7 +23,7 @@ function CalendarDayModal({ day, month, items, onClose , currency = "€"}) {
           </button>
         </div>
 
-        {/* Items List */}
+        {/* List of items due today */}
         <div className="modal-body">
           {items.map((item, index) => (
             <div 
@@ -70,7 +71,7 @@ function CalendarDayModal({ day, month, items, onClose , currency = "€"}) {
           ))}
         </div>
 
-        {/* Footer */}
+        {/* Total sum for the day */}
         <div className="modal-footer">
           <div className="footer-total">
             <span className="total-label">Total for this day:</span>

@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Index.css";
 
+// Custom 404 page with funny quotes
 function NotFound() {
   const navigate = useNavigate();
   
-  // Funny budget-themed 404 messages
+  // Array of budgeting-related error messages
   const messages = [
     {
       title: "404: Not a Penny Found!",
@@ -29,7 +30,7 @@ function NotFound() {
     }
   ];
 
-  // Pick a random message
+  // Pick a random message on mount
   const [message] = useState(() => messages[Math.floor(Math.random() * messages.length)]);
 
   return (

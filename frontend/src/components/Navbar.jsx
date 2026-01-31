@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import "../styles/Navbar.css";
 
+// Main navigation bar component
 function Navbar() {
   const [showToolsDropdown, setShowToolsDropdown] = useState(false);
   const dropdownRef = useRef(null);
@@ -14,6 +15,7 @@ function Navbar() {
     setShowToolsDropdown(false);
   };
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -45,6 +47,7 @@ function Navbar() {
             Sorted Incomes
           </Link>
           
+          {/* Tools Dropdown */}
           <div className="nav-dropdown" ref={dropdownRef}>
             <button 
               className="nav-link dropdown-toggle" 
@@ -78,6 +81,7 @@ function Navbar() {
           </div>
         </div>
 
+        {/* Right side actions */}
         <div className="navbar-actions">
           <Link to="/sort-income" className="create-btn">
             + Sort Income

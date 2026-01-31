@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/PocketForm.css";
 
+// Modal to edit pocket allocation during income sorting
 function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remainingIncome = 0, onClose, onUpdate, currency = "€" }) {
   const [localAmount, setLocalAmount] = useState(pocket.localAmount || 0);
   const [localItems, setLocalItems] = useState(pocket.localItems || []);
@@ -10,6 +11,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
   const [amountInputValue, setAmountInputValue] = useState("");
   const [minAmountError, setMinAmountError] = useState("");
 
+  // Initialize values
   useEffect(() => {
     setLocalAmount(pocket.localAmount || 0);
     setLocalItems(pocket.localItems || []);
@@ -20,10 +22,11 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
     setAmountInputValue(value);
   };
 
+  // Validate amount on blur
   const handleAmountBlur = () => {
     const amount = parseFloat(amountInputValue);
     
-    // Calculate total of non-Other items only
+    // Sum existing non-Other items
     const nonOtherItemsTotal = localItems
       .filter(item => !item.is_other)
       .reduce((sum, item) => sum + (item.localAmount || 0), 0);
@@ -32,7 +35,6 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
       setLocalAmount(nonOtherItemsTotal);
       setAmountInputValue(nonOtherItemsTotal.toFixed(2));
       
-      // Remove Other item if exists
       const updatedItems = localItems.filter(item => !item.is_other);
       setLocalItems(updatedItems);
       
@@ -43,7 +45,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
       return;
     }
     
-    // Minimum pocket amount is the total of non-Other items
+    // Prevent amount lower than existing commitments
     if (amount < nonOtherItemsTotal - 0.01) {
       console.log('Setting error - amount:', amount, 'minimum:', nonOtherItemsTotal);
       setMinAmountError(`Pocket amount cannot be less than items total (${currency}${nonOtherItemsTotal.toFixed(2)})`);
@@ -67,8 +69,8 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
     setLocalAmount(amount);
     setAmountInputValue(amount.toFixed(2));
     
+    // Handle 'Other' calculation
     const otherAmount = parseFloat((amount - nonOtherItemsTotal).toFixed(2));
-    
     const otherItemIndex = localItems.findIndex(item => item.is_other);
     
     let updatedItems;
@@ -151,6 +153,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
     }
   };
 
+  // Button to auto-add unallocated income
   const handleAddRemainder = () => {
     if (remainingIncome > 0.01) {
       const newAmount = parseFloat((localAmount + remainingIncome).toFixed(2));
@@ -237,14 +240,13 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
     return localAmount - getTotalItems();
   };
 
-  // Sort items: Recurring (blue) → Percentage (purple) → Manual (black) → Other (grey)
+  // Sort items visually by type
   const sortedItems = [...localItems].sort((a, b) => {
-    // Define item types
     const getItemType = (item) => {
-      if (item.is_other) return 4; // Other last
-      if (item.is_percentage) return 2; // Percentage second
-      if (!item.id.toString().startsWith('temp')) return 1; // Recurring first (from template)
-      return 3; // Manual third
+      if (item.is_other) return 4;
+      if (item.is_percentage) return 2;
+      if (!item.id.toString().startsWith('temp')) return 1;
+      return 3;
     };
     
     return getItemType(a) - getItemType(b);
@@ -255,7 +257,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="pocket-form-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
+        {/* Modal Header */}
         <div className="form-header" style={{ backgroundColor: pocket.color }}>
           <div className="form-actions-left">
             {pocket.category_name && (
@@ -274,7 +276,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
           </button>
         </div>
 
-        {/* Colored Section */}
+        {/* Amount Input Section */}
         <div className="form-colored-section" style={{ backgroundColor: pocket.color }}>
           <div className="pocket-name-row">
             <input
@@ -333,7 +335,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
           )}
         </div>
 
-        {/* Items */}
+        {/* List of allocated items */}
         <div className="form-white-section">
           <h3 className="items-title">Items</h3>
 
@@ -388,12 +390,12 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
             })}
           </div>
 
-          {/* Add Item Section */}
+          {/* Add Item Form */}
           <div className="add-item-section">
             <input
               type="text"
               className="add-item-name-input"
-              placeholder="Item name"
+              placeholder="+ Add item"
               value={newItemName}
               onChange={(e) => setNewItemName(e.target.value)}
             />
@@ -431,7 +433,7 @@ function SortPocketModal({ pocket, incomeAmount, overBudgetAmount = 0, remaining
             </button>
           </div>
 
-          {/* Add Remainder Button */}
+          {/* Add Remainder shortcut */}
           {remainingIncome > 0.01 && (
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
               <button

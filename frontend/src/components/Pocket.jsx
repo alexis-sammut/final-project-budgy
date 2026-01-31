@@ -1,8 +1,10 @@
 import React from "react";
-import "../styles/Pocket.css";
+import "../styles/home.css";
 
+// Reusable card component for displaying pocket data
 function Pocket({ pocket, onClick, currency = "€", variant = "default" }) {
   
+  // Format data based on where the pocket is displayed
   const getPocketData = () => {
     switch (variant) {
       case "sorting":
@@ -40,7 +42,7 @@ function Pocket({ pocket, onClick, currency = "€", variant = "default" }) {
     }
   };
 
-  // Calculate remainder for sorting variant
+  // Check if pocket amount matches total of items
   const calculateRemainder = () => {
     if (variant !== "sorting") return null;
     
@@ -71,14 +73,12 @@ function Pocket({ pocket, onClick, currency = "€", variant = "default" }) {
         <h3 className="pocket-name">{data.name}</h3>
         <p className="pocket-amount">{currency}{data.amount}</p>
         
-        {/* Show items count for all variants */}
         {data.showItemsCount && (
           <p className="pocket-items-count">
             {data.itemsCount} item{data.itemsCount !== 1 ? 's' : ''}
           </p>
         )}
         
-        {/* Show remainder for sorting variant */}
         {data.showRemainder && data.remainder && (
           <p className={`pocket-remainder ${data.remainder.isOverBudget ? 'over-budget' : 'under-budget'}`}>
             {data.remainder.isOverBudget 

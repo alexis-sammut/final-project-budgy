@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../styles/DateRangePicker.css";
 
+// Component for selecting date ranges with presets
 function DateRangePicker({ value, onChange, onCalculate }) {
   const [selectedPreset, setSelectedPreset] = useState(value.periodType || "1month");
   const [tempStartDate, setTempStartDate] = useState(value.start || "");
@@ -8,6 +9,7 @@ function DateRangePicker({ value, onChange, onCalculate }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [hoveredDate, setHoveredDate] = useState(null);
 
+  // Sync state with props
   useEffect(() => {
     setSelectedPreset(value.periodType || "1month");
     setTempStartDate(value.start || "");
@@ -22,11 +24,12 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     { value: "oneoff", label: "One-Time", days: null, isOneOff: true },
   ];
 
+  // Handle preset selection logic
   const handlePresetClick = (preset) => {
     setSelectedPreset(preset.value);
     
     if (preset.isOneOff) {
-      // Set to today's date
+      // One-time sets start and end to today
       const today = new Date().toISOString().split('T')[0];
       setTempStartDate(today);
       setTempEndDate(today);
@@ -36,6 +39,7 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     }
   };
 
+  // Handle calendar date clicks
   const handleDateClick = (dateStr) => {
     if (!tempStartDate || (tempStartDate && tempEndDate)) {
       setTempStartDate(dateStr);
@@ -95,12 +99,13 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     }
   };
 
+  // Determine preset type based on date range
   const detectPresetFromDates = (startStr, endStr) => {
     const start = new Date(startStr);
     const end = new Date(endStr);
     
     const diffTime = Math.abs(end - start);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     
     if (diffDays === 7) {
       setSelectedPreset("1week");
@@ -155,6 +160,7 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     });
   };
 
+  // Generate calendar days for current month view
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -185,6 +191,7 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
   };
 
+  // Check if date is within selected range
   const isDateInRange = (dateStr) => {
     if (!tempStartDate) return false;
     if (!tempEndDate && !hoveredDate) return dateStr === tempStartDate;
@@ -214,8 +221,7 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     if (!value.start || !value.end) return "Select period";
     const start = new Date(value.start);
     const end = new Date(value.end);
-    return `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-  };
+    return `${start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} – ${end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`;  };
 
   const days = getDaysInMonth(currentMonth);
   const dayCount = calculateDays();
@@ -226,9 +232,8 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     <div className="date-range-picker">
       <div className="picker-container">
         <div className="picker-content">
-          {/* Sidebar with presets */}
+          {/* Preset options sidebar */}
           <div className="picker-sidebar">
-            <h3 className="sidebar-title">Period</h3>
             {presets.map((preset) => (
               <button
                 key={preset.value}
@@ -240,7 +245,7 @@ function DateRangePicker({ value, onChange, onCalculate }) {
             ))}
           </div>
 
-          {/* Calendar */}
+          {/* Calendar view */}
           <div className="picker-calendar">
                 <div className="calendar-header">
                   <button className="month-nav-btn" onClick={handlePrevMonth}>‹</button>

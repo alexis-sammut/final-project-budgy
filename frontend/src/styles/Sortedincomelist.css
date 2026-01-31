@@ -1,3 +1,4 @@
+/* Container */
 .sorted-incomes-container {
   display: flex;
   flex-direction: column;
@@ -10,6 +11,7 @@
   gap: 1.5rem;
 }
 
+/* Header style for each year */
 .year-title {
   font-size: 2rem;
   font-weight: 800;
@@ -19,13 +21,14 @@
   border-bottom: 3px solid #667eea;
 }
 
+/* Grid layout for income cards */
 .income-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
 }
 
-/* Income Card */
+/* Individual income card */
 .income-card {
   background: white;
   border-radius: 16px;
@@ -59,7 +62,7 @@
   -webkit-box-orient: vertical;
 }
 
-/* Main Amount Display */
+/* Display styles for currency and amount */
 .income-amount-display {
   display: flex;
   align-items: baseline;
@@ -85,7 +88,7 @@
   line-height: 1;
 }
 
-/* Period and Meta Info */
+/* Bottom section with date and other data */
 .income-info {
   display: flex;
   flex-direction: column;
@@ -116,7 +119,7 @@
   border-radius: 20px;
 }
 
-/* Page Header */
+/* Header  */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -128,7 +131,7 @@
   margin: 0;
 }
 
-/* Empty State */
+/* Styles for when list is empty */
 .empty-state {
   display: flex;
   flex-direction: column;

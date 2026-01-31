@@ -1,5 +1,4 @@
-/* CurrencyConverter.css */
-
+/* Container */
 .converter-container {
   min-height: calc(100vh - 70px);
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -31,7 +30,7 @@
   margin: 0;
 }
 
-/* Error State */
+/* Error message styling */
 .converter-error {
   background: white;
   border-radius: 20px;
@@ -64,7 +63,7 @@
   box-shadow: 0 4px 12px rgba(13, 115, 119, 0.3);
 }
 
-/* Loading State */
+/* Loading spinner section */
 .converter-loading {
   background: white;
   border-radius: 20px;
@@ -93,7 +92,7 @@
   margin: 0;
 }
 
-/* Converter Card */
+/* Main converter card layout */
 .converter-card {
   background: white;
   border-radius: 20px;
@@ -169,6 +168,7 @@
   margin: 0;
 }
 
+/* Custom select styling */
 .currency-select-inline {
   padding: 0.75rem 1.25rem;
   font-size: 1rem;
@@ -180,7 +180,6 @@
   cursor: pointer;
   transition: all 0.3s ease;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%232c3e50' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
   padding-right: 3rem;
@@ -196,7 +195,7 @@
   box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.1);
 }
 
-/* Result Display Inline */
+/* Result display area */
 .result-display-inline {
   display: flex;
   align-items: baseline;
@@ -220,7 +219,7 @@
   color: white;
 }
 
-/* Swap Button */
+/* Button to swap currencies */
 .swap-btn {
   width: 50px;
   height: 50px;
@@ -246,7 +245,7 @@
   transform: rotate(180deg);
 }
 
-/* Exchange Rate Info */
+/* Rate information section */
 .exchange-rate-info {
   text-align: center;
   padding: 1rem;
@@ -261,7 +260,7 @@
   font-weight: 600;
 }
 
-/* Last Updated */
+/* Last updated timestamp */
 .last-updated {
   display: flex;
   align-items: center;

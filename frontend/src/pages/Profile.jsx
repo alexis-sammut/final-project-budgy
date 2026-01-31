@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Profile.css";
 
+// User profile and settings management
 function Profile() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -21,6 +22,7 @@ function Profile() {
   const [draggedItem, setDraggedItem] = useState(null);
   const [currency, setCurrency] = useState("€");
 
+  // Load user data on mount
   useEffect(() => {
     fetchUserProfile();
     fetchCategories();
@@ -46,6 +48,7 @@ function Profile() {
     }
   };
 
+  // Drag-and-drop handlers for categories
   const handleDragStart = (e, index) => {
     setDraggedItem(index);
     e.dataTransfer.effectAllowed = "move";
@@ -64,6 +67,7 @@ function Profile() {
     setDraggedItem(index);
   };
 
+  // Save new category order
   const handleDragEnd = async () => {
     setDraggedItem(null);
     
@@ -80,6 +84,7 @@ function Profile() {
     }
   };
 
+  // Update username handler
   const handleUpdateUsername = async (e) => {
     e.preventDefault();
     
@@ -111,6 +116,7 @@ function Profile() {
     }
   };
 
+  // Password change handler
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
 
@@ -159,6 +165,7 @@ function Profile() {
     }
   };
 
+  // Update currency preference
   const handleUpdateCurrency = async (newCurrency) => {
     setCurrency(newCurrency);
     setCurrencyMessage("");
@@ -207,6 +214,7 @@ function Profile() {
             <p className="profile-subtitle">Manage your account settings</p>
           </div>
 
+          {/* Username Section */}
           <div className="profile-section">
             <h2 className="section-title">Account Settings</h2>
             
@@ -239,6 +247,7 @@ function Profile() {
             </form>
           </div>
 
+          {/* Password Section */}
           <div className="profile-section">
             <h2 className="section-title">Change Password</h2>
             
@@ -295,6 +304,7 @@ function Profile() {
             </form>
           </div>
 
+          {/* Currency Section */}
           <div className="profile-section">
             <h2 className="section-title">Currency Preference</h2>
             <p className="section-description">
@@ -333,6 +343,7 @@ function Profile() {
             </div>
           </div>
 
+          {/* Category Reordering Section */}
           <div className="profile-section">
             <h2 className="section-title">Category Order</h2>
             <p className="section-description">
@@ -361,7 +372,8 @@ function Profile() {
             )}
           </div>
 
-<div className="danger-actions">
+          {/* Account Actions */}
+            <div className="danger-actions">
               <button onClick={handleLogout} className="logout-btn">
                 Logout
               </button>
@@ -376,6 +388,7 @@ function Profile() {
       </div>
       <Footer />
 
+      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="confirm-overlay" onClick={() => setShowDeleteConfirm(false)}>
           <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>

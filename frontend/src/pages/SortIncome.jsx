@@ -7,10 +7,11 @@ import Pocket from "../components/Pocket";
 import "../styles/SortIncome.css";
 import { getUserCurrency } from "../utils/userPreferences";
 
+// Main component for allocating income to pockets
 function SortIncome() {
   const navigate = useNavigate();
   
-  // Helper to get default date range (today + 1 month)
+  // Default range is one month from today
   const getDefaultDateRange = () => {
     const today = new Date();
     const oneMonthLater = new Date(today);
@@ -36,7 +37,7 @@ function SortIncome() {
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const [currency, setCurrency] = useState("€");
 
-  // Fetch all pockets on mount
+  // Initial data fetch
   useEffect(() => {
     fetchAllPockets();
     fetchCategories();
@@ -48,7 +49,7 @@ function SortIncome() {
     setCurrency(userCurrency);
   };
 
-  // Trigger calculation whenever income or dates change
+  // Recalculate allocations when inputs change
   useEffect(() => {
     if (incomeAmount && dateRange.start && dateRange.end) {
       handleCalculate();
@@ -59,7 +60,7 @@ function SortIncome() {
     try {
       const res = await api.get("/api/pockets/");
       setAllPockets(res.data);
-      // Initialize with zeros
+      // Initialize zero values
       setCalculatedPockets(res.data.map(pocket => ({
         ...pocket,
         localAmount: 0,
@@ -79,6 +80,7 @@ function SortIncome() {
     }
   };
 
+  // Call API to calculate split
   const handleCalculate = async () => {
     const income = parseFloat(incomeAmount);
     if (isNaN(income) || income <= 0) return;
@@ -95,9 +97,8 @@ function SortIncome() {
         period_type: dateRange.periodType,
       });
 
-      // Transform the response
+      // Map response to local state structure
       const transformedPockets = res.data.map(pocket => {
-        // Find the original pocket to get category_name and color
         const originalPocket = allPockets.find(p => p.id === pocket.id);
         
         return {
@@ -169,6 +170,7 @@ function SortIncome() {
     return isBalanced && notOverBudget;
   };
 
+  // Submit final sorting to backend
   const handleFinalize = async () => {
     if (!canFinalize()) {
       setError("Please allocate all income before finalizing");
@@ -203,7 +205,6 @@ function SortIncome() {
         pockets: pocketsData,
       });
 
-      // Redirect to sorted incomes list
       navigate("/sorted-incomes");
     } catch (err) {
       console.error("Error saving income sort:", err);
@@ -213,7 +214,7 @@ function SortIncome() {
     }
   };
 
-  // Group pockets by category
+  // Group by category for display
   const groupedPockets = calculatedPockets.reduce((groups, pocket) => {
     const categoryName = pocket.category_name || 'Uncategorized';
     if (!groups[categoryName]) {
@@ -244,7 +245,7 @@ function SortIncome() {
 
   return (
     <div className="sort-income-app">
-      {/* App Header */}
+      {/* Header bar */}
       <div className="sort-app-header">
         <button className="back-arrow-btn" onClick={handleBackClick}>
           ←
@@ -261,10 +262,10 @@ function SortIncome() {
 
       <div className="sort-income-content">
 
-          {/* SECTION 1: Income Input & Status */}
+          {/* Section 1: Inputs & Status */}
           <div className="income-section">
             <div className="income-inputs-row">
-              {/* Left Column: Income Input + Remaining Display */}
+              {/* Left Column: Input + Remaining */}
               <div className="income-left-column">
                 <div className="income-input-large">
                   <label>Income to Sort</label>
@@ -282,20 +283,20 @@ function SortIncome() {
                   {/* Date Range Display */}
                   {dateRange.start && dateRange.end && dateRange.periodType !== 'oneoff' && (
                     <div className="date-range-display">
-                      {new Date(dateRange.start).toLocaleDateString('en-US', { 
-                        month: 'short', 
+                      {new Date(dateRange.start).toLocaleDateString('en-GB', { 
                         day: 'numeric',
+                        month: 'short', 
                         year: 'numeric'
-                      })} - {new Date(dateRange.end).toLocaleDateString('en-US', { 
-                        month: 'short', 
+                      })} - {new Date(dateRange.end).toLocaleDateString('en-GB', { 
                         day: 'numeric',
+                        month: 'short', 
                         year: 'numeric'
                       })}
                     </div>
                   )}
                 </div>
 
-                {/* Remaining Amount Display */}
+                {/* Remaining Amount */}
                 {income > 0 && dateRange.start && dateRange.end && (
                   <div className="remaining-display-compact">
                     <div className="remaining-label-compact">
@@ -308,7 +309,7 @@ function SortIncome() {
                 )}
               </div>
 
-              {/* Right Column: Date Range Picker */}
+              {/* Right Column: Date Picker */}
               <DateRangePicker
                 value={dateRange}
                 onChange={setDateRange}
@@ -319,7 +320,7 @@ function SortIncome() {
             {error && <div className="error-message-inline">{error}</div>}
           </div>
 
-          {/* SECTION 2: Pockets Grid */}
+          {/* Section 2: Pockets Grid */}
           <div className="pockets-section">
             {sortedCategories.map((categoryName) => (
               <div key={categoryName} className="category-section">
@@ -360,6 +361,7 @@ function SortIncome() {
             )}
           </div>
 
+        {/* Edit Modal */}
         {showModal && selectedPocket && (
           <SortPocketModal
             pocket={selectedPocket}
@@ -372,7 +374,7 @@ function SortIncome() {
           />
         )}
 
-        {/* Exit Confirmation Modal */}
+        {/* Exit Confirm Modal */}
         {showExitConfirm && (
           <div className="modal-overlay" onClick={handleCancelExit}>
             <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>

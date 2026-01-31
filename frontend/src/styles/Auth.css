@@ -1,11 +1,10 @@
-/* Auth.css - Login & Register Pages */
-
+/* Container for login/register pages */
 .auth-container {
     display: flex;
     min-height: 100vh;
 }
 
-/* Left Side - Marketing/Info */
+/* Front page section on the left */
 .auth-left {
     flex: 1;
     background: linear-gradient(135deg, #024b1a 0%, #2d6a4f 100%);
@@ -17,8 +16,6 @@
     position: relative;
     overflow: hidden;
 }
-
-
 
 .auth-content {
     max-width: 500px;
@@ -64,7 +61,7 @@
     opacity: 0.9;
 }
 
-/* Features List */
+/* Feature list items */
 .auth-features {
     display: flex;
     flex-direction: column;
@@ -89,7 +86,6 @@
     font-weight: 700;
 }
 
-/* Stats */
 .auth-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -114,7 +110,7 @@
     margin: 0;
 }
 
-/* Right Side - Form */
+/* Form section on the right */
 .auth-right {
     flex: 1;
     background: white;
@@ -198,7 +194,7 @@
     cursor: not-allowed;
 }
 
-/* Switch between Login/Register */
+/* Toggle link between login and register */
 .auth-switch {
     margin-top: 2rem;
     text-align: center;
@@ -224,7 +220,7 @@
     text-decoration: underline;
 }
 
-/* Error Message Styling */
+/* Error message box */
 .auth-error-message {
   background: #fee;
   border: 2px solid #e74c3c;
@@ -250,7 +246,7 @@
 }
 
 
-/* Mobile Responsive */
+/* Responsive */
 @media (max-width: 968px) {
     .auth-container {
         flex-direction: column;

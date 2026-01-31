@@ -4,6 +4,7 @@ import api from "../api"
 import { REFRESH_TOKEN, ACCESS_TOKEN } from '../constants'
 import { useState, useEffect } from 'react'
 
+// Wrapper for routes requiring authentication
 function ProtectedRoute({children}){
     const [isAuthorized, setIsAuthorized] = useState(null)
 
@@ -11,6 +12,7 @@ function ProtectedRoute({children}){
         auth().catch(() => setIsAuthorized(false))
     }, [])
 
+    // Try to refresh the access token
     const refreshToken = async () => {
         const token = localStorage.getItem(REFRESH_TOKEN);
         try {
@@ -29,6 +31,7 @@ function ProtectedRoute({children}){
         }
     }
 
+    // Check if token exists and is valid
     const auth = async () => {
         const token = localStorage.getItem(ACCESS_TOKEN)
         if (!token){

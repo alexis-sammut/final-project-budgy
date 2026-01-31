@@ -7,6 +7,7 @@ import CalendarDayModal from "../components/CalendarDayModal";
 import "../styles/Calendar.css";
 import { getUserCurrency } from "../utils/userPreferences";
 
+// Monthly calendar view for recurring items
 function Calendar() {
   const navigate = useNavigate();
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -27,12 +28,13 @@ function Calendar() {
   setCurrency(userCurrency);
 };
 
+  // Get items and organize them for the calendar
   const fetchPocketsAndItems = async () => {
     try {
       const res = await api.get("/api/pockets/");
       setPockets(res.data);
       
-      // Extract all monthly items with due dates
+      // Filter for monthly items with due dates
       const allMonthlyItems = [];
       res.data.forEach(pocket => {
         if (pocket.items && pocket.items.length > 0) {
@@ -57,6 +59,7 @@ function Calendar() {
     }
   };
 
+  // Generate array of days for grid view
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -67,12 +70,12 @@ function Calendar() {
 
     const days = [];
 
-    // Add empty slots for days before month starts
+    // Fill empty cells before first day
     for (let i = 0; i < startDayOfWeek; i++) {
       days.push(null);
     }
 
-    // Add actual days of month
+    // Fill actual days
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
@@ -143,7 +146,7 @@ function Calendar() {
           </div>
 
           <div className="calendar-container">
-            {/* Calendar Header */}
+            {/* Navigation Header */}
             <div className="calendar-header">
               <button className="month-nav-btn" onClick={handlePrevMonth}>‹</button>
               <div className="month-title-section">
@@ -153,14 +156,14 @@ function Calendar() {
               <button className="month-nav-btn" onClick={handleNextMonth}>›</button>
             </div>
 
-            {/* Weekday Headers */}
+            {/* Weekday Labels */}
             <div className="calendar-weekdays">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
                 <div key={day} className="weekday-header">{day}</div>
               ))}
             </div>
 
-            {/* Calendar Grid */}
+            {/* Days Grid */}
             <div className="calendar-grid">
               {days.map((day, index) => {
                 if (!day) {
@@ -207,7 +210,7 @@ function Calendar() {
             </div>
           </div>
 
-          {/* Summary */}
+          {/* Monthly Summary */}
           <div className="calendar-summary">
             <h3>Summary</h3>
             <p><strong>{monthlyItems.length}</strong> monthly recurring items across <strong>{pockets.length}</strong> pockets</p>
@@ -216,6 +219,7 @@ function Calendar() {
       </div>
       <Footer />
 
+      {/* Day Details Modal */}
       {showModal && selectedDay && (
         <CalendarDayModal
           day={selectedDay.day}

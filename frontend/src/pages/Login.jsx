@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants"
 import "../styles/Auth.css"
 
+// Login component handling user authentication
 function Login(){
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -11,12 +12,14 @@ function Login(){
     const [error, setError] = useState('')
     const navigate = useNavigate()
 
+    // Handle login form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         try {
+            // Get tokens and store them
             const res = await api.post('api/token/', {username, password})
             localStorage.setItem(ACCESS_TOKEN, res.data.access);
             localStorage.setItem(REFRESH_TOKEN, res.data.refresh)
@@ -44,6 +47,7 @@ function Login(){
 
     return (
         <div className="auth-container">
+            {/* Left side branding */}
             <div className="auth-left">
                 <div className="auth-content">
                     <h1 className="auth-logo">Welcome back to<br></br>💰 Budgy</h1>
@@ -51,6 +55,7 @@ function Login(){
                 </div>
             </div>
 
+            {/* Right side form */}
             <div className="auth-right">
                 <div className="auth-form-wrapper">
                     <h2 className="form-title">Log In</h2>

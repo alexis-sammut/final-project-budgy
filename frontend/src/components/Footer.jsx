@@ -1,5 +1,6 @@
 import "../styles/Footer.css";
 
+// Standard footer component
 function Footer() {
     const currentYear = new Date().getFullYear();
 
@@ -7,6 +8,7 @@ function Footer() {
         <footer className="footer">
             <div className="footer-container">
                 <div className="footer-content">
+                    {/* Logo area */}
                     <div className="footer-section">
                         <h3 className="footer-logo">
                             <span className="logo-icon">💰</span>
@@ -15,6 +17,7 @@ function Footer() {
                         <p className="footer-tagline">Your budgeting buddy.</p>
                     </div>
                     
+                    {/* Navigation links */}
                     <div className="footer-section">
                         <h4>Quick Links</h4>
                         <ul className="footer-links">
@@ -24,6 +27,7 @@ function Footer() {
                         </ul>
                     </div>
                     
+                    {/* Tool links */}
                     <div className="footer-section">
                         <h4>Tools</h4>
                         <ul className="footer-links">
@@ -34,6 +38,7 @@ function Footer() {
                     </div>
                 </div>
                 
+                {/* Copyright line */}
                 <div className="footer-bottom">
                     <p>&copy; {currentYear} Budgy. All rights reserved.</p>
                 </div>

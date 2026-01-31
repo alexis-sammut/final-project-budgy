@@ -1,15 +1,15 @@
-import "../styles/SortedPocketViewModal.css";
+import "../styles/Sortedincomedetail.css"
 
+// Modal showing details of a specific pocket in a sorted income record
 function SortedPocketViewModal({ pocket, onClose, currency = "€" }) {
-  // Sort items: Recurring (blue) → Percentage (purple) → Manual (black) → Other (grey)
+  // Order items: Recurring -> Percentage -> Manual -> Other
   const sortedItems = [...(pocket.sorted_items || [])].sort((a, b) => {
-    // Define item types
+    // Define item types priority
     const getItemType = (item) => {
-      if (item.is_other) return 4; // Other last
-      if (item.is_percentage) return 2; // Percentage second
-      // In sorted items, we need to check if original_item exists to determine if recurring
-      if (item.original_item) return 1; // Recurring first (has reference to original)
-      return 3; // Manual third (created during sorting)
+      if (item.is_other) return 4;
+      if (item.is_percentage) return 2;
+      if (item.original_item) return 1;
+      return 3;
     };
     
     return getItemType(a) - getItemType(b);
@@ -18,7 +18,7 @@ function SortedPocketViewModal({ pocket, onClose, currency = "€" }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="sorted-pocket-view-modal" onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
+        {/* Header with category label */}
         <div 
           className="view-modal-header"
           style={{ backgroundColor: pocket.color }}
@@ -40,7 +40,7 @@ function SortedPocketViewModal({ pocket, onClose, currency = "€" }) {
           </button>
         </div>
 
-        {/* Colored Section */}
+        {/* Pocket amount summary */}
         <div 
           className="view-modal-colored-section"
           style={{ backgroundColor: pocket.color }}
@@ -57,7 +57,7 @@ function SortedPocketViewModal({ pocket, onClose, currency = "€" }) {
           </div>
         </div>
 
-        {/* White Section - matches SortPocketModal */}
+        {/* List of allocated items */}
         <div className="view-modal-body">
           <h3 className="view-items-title">Items</h3>
           

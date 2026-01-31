@@ -1,298 +1,412 @@
+/* Main layout container */
 .home-container {
-    min-height: calc(100vh - 70px); /* Account for navbar */
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 0;
-    display: flex;
-    flex-direction: column;
+  min-height: calc(100vh - 70px); 
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .home-content {
-    flex: 1;
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 2rem;
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 .page-header h1 {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin: 0;
-    font-weight: 700;
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 700;
 }
 
+/* Create button */
 .create-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 25px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 .create-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
-/* Category Sections */
+/* category headers */
 .category-section {
-    margin-bottom: 2.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .category-title {
-    font-size: 1.1rem;
-    color: #2c3e50;
-    font-weight: 700;
-    margin: 0 0 1.25rem 0;
-    padding: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-bottom: 3px solid #667eea;
-    padding-bottom: 0.75rem;
-    display: block;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  font-weight: 700;
+  margin: 0 0 1.25rem 0;
+  padding: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 3px solid #667eea;
+  padding-bottom: 0.75rem;
+  display: block;
 }
 
 .category-divider {
-    display: none;
+  display: none;
 }
 
+/* Grid for the pockets */
 .pockets-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
 }
 
+/* Card styling */
 .pocket-card {
-    position: relative;
-    border-radius: 20px;
-    padding: 2rem;
-    min-height: 180px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-    cursor: pointer;
+  position: relative;
+  border-radius: 20px;
+  padding: 2rem;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .pocket-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
 }
 
 .pocket-content {
-    color: white;
+  color: white;
+  position: relative;
+  z-index: 1;
+  padding-right: 20px; 
 }
 
 .pocket-name {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 0 1rem 0;
-    color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+  color: white;
+  word-wrap: break-word; 
 }
 
 .pocket-amount {
-    font-size: 2rem;
-    font-weight: 800;
-    margin: 0;
-    color: white;
-    opacity: 0.95;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  color: white;
+  opacity: 0.95;
 }
 
+/* Delete icon */
 .delete-icon {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.3);
-    border: none;
-    color: white;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    font-size: 1.8rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    line-height: 1;
-    padding: 0;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  color: white;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  padding: 0 0 2px 0; 
+  z-index: 20; 
 }
 
 .delete-icon:hover {
-    background: rgba(255, 255, 255, 0.5);
-    transform: rotate(90deg);
+  background: rgba(255, 255, 255, 0.5);
+  transform: rotate(90deg);
 }
 
 .empty-state {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 4rem 2rem;
-    color: #7f8c8d;
-    font-size: 1.1rem;
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #7f8c8d;
+  font-size: 1.1rem;
 }
 
-/* Modal Styles */
+/* Popup modal styles */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    backdrop-filter: blur(5px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
 .modal-content {
-    background: white;
-    border-radius: 20px;
-    padding: 2rem;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.3s ease;
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
 }
 
 @keyframes slideUp {
-    from {
-        transform: translateY(50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 .modal-header h2 {
-    margin: 0;
-    color: #2c3e50;
-    font-size: 1.5rem;
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
 }
 
 .close-btn {
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: #95a5a6;
-    cursor: pointer;
-    padding: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #95a5a6;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .close-btn:hover {
-    background: #ecf0f1;
-    color: #2c3e50;
+  background: #ecf0f1;
+  color: #2c3e50;
 }
 
+/* Form styling */
 .pocket-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .form-group label {
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 0.9rem;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.9rem;
 }
 
 .form-group input {
-    padding: 0.8rem;
-    border: 2px solid #ecf0f1;
-    border-radius: 10px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
+  padding: 0.8rem;
+  border: 2px solid #ecf0f1;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 .form-group input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .submit-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 1rem;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 0.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
 }
 
 .submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
-/* Responsive */
+.pocket-card {
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.pocket-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pocket-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.pocket-card:hover::before {
+  opacity: 1;
+}
+
+.pocket-content {
+  position: relative;
+  z-index: 1;
+}
+
+.pocket-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 0.75rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pocket-amount {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pocket-remainder {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  margin: 0.5rem 0 0 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  text-shadow: none;
+  display: inline-block;
+}
+
+.pocket-remainder.over-budget {
+  background: rgba(231, 76, 60, 0.9);
+  box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
+}
+
+.pocket-remainder.under-budget {
+  background: rgba(241, 196, 15, 0.9);
+  box-shadow: 0 2px 6px rgba(241, 196, 15, 0.4);
+}
+
+.pocket-items-count {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
+}
+
+.pocket-frequency {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0.5rem 0 0 0;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+/* Responsive  */
 @media (max-width: 768px) {
-    .page-header {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
+  .page-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
 
-    .page-header h1 {
-        font-size: 2rem;
-    }
+  .page-header h1 {
+    font-size: 2rem;
+  }
 
-    .home-content {
-        padding: 1rem;
-    }
+  .home-content {
+    padding: 1rem;
+  }
 
-    .pockets-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-    }
+  .pockets-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
 
-    .pocket-card {
-        min-height: 150px;
-        padding: 1.5rem;
-    }
+  .pocket-card {
+    min-height: 150px;
+    padding: 1.5rem;
+  }
 
-    .modal-content {
-        width: 95%;
-        padding: 1.5rem;
-    }
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .pocket-card {
+    padding: 1.25rem;
+  }
+
+  .pocket-name {
+    font-size: 1rem;
+  }
+
+  .pocket-amount {
+    font-size: 1.5rem;
+  }
 }

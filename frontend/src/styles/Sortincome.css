@@ -1,4 +1,5 @@
-/* Full Screen App Container */
+/* Full screen sort income page */
+
 .sort-income-app {
   min-height: 100vh;
   background: #f8f9fa;
@@ -6,7 +7,7 @@
   flex-direction: column;
 }
 
-/* App Header */
+/* Header with back button and name input */
 .sort-app-header {
   background: linear-gradient(135deg, #024b1a 0%, #2d6a4f 100%);
   padding: 1.25rem 2rem;
@@ -66,7 +67,7 @@
   width: 60px;
 }
 
-/* Content Area */
+/* Main content area */
 .sort-income-content {
   flex: 1;
   padding: 2rem;
@@ -75,7 +76,7 @@
   width: 100%;
 }
 
-/* SECTION 1: Income Input & Status */
+/* Income input section */
 .income-section {
   background: white;
   border-radius: 20px;
@@ -92,7 +93,7 @@
   margin-bottom: 2rem;
 }
 
-/* Left Column */
+/* Left column with income input */
 .income-left-column {
   display: flex;
   flex-direction: column;
@@ -100,7 +101,6 @@
   height: 100%;
 }
 
-/* Large Income Input */
 .income-input-large {
   display: flex;
   flex-direction: column;
@@ -158,7 +158,7 @@
   margin: 0;
 }
 
-/* Date Range Display */
+/* Date range display */
 .date-range-display {
   margin-top: 0.75rem;
   padding: 0.5rem 0.75rem;
@@ -171,7 +171,6 @@
   letter-spacing: 0.3px;
 }
 
-/* Date Range Picker Column */
 .income-inputs-row > div:last-child {
   display: flex;
   flex-direction: column;
@@ -187,51 +186,7 @@
   letter-spacing: 0.5px;
 }
 
-/* Remaining Display - Old (keep for reference, unused now) */
-.remaining-display {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
-  padding: 2rem;
-  text-align: center;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-}
-
-.remaining-label {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 0.75rem;
-}
-
-.remaining-amount {
-  font-size: 4rem;
-  font-weight: 900;
-  color: white;
-  line-height: 1;
-  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-.remaining-amount.positive {
-  color: #fff;
-}
-
-.remaining-amount.negative {
-  color: #ff6b6b;
-}
-
-.remaining-amount.zero {
-  color: #2ecc71;
-}
-
-.over-text {
-  font-size: 1.5rem;
-  font-weight: 600;
-  opacity: 0.9;
-}
-
-/* Compact Remaining Display - Next to Income Input */
+/* Remaining amount display */
 .remaining-display-compact {
   background: white;
   border-radius: 16px;
@@ -265,7 +220,7 @@
   color: #e74c3c;
 }
 
-/* Error Message */
+/* Error message */
 .error-message-inline {
   background: #ffe5e5;
   color: #e74c3c;
@@ -276,7 +231,7 @@
   margin-top: 1rem;
 }
 
-/* SECTION 2: Pockets */
+/* Pockets display section */
 .pockets-section {
   min-height: 200px;
 }
@@ -304,6 +259,7 @@
   gap: 1.5rem;
 }
 
+/* Individual pocket card */
 .pocket-card {
   border-radius: 16px;
   padding: 1.5rem;
@@ -377,7 +333,7 @@
   box-shadow: 0 2px 6px rgba(241, 196, 15, 0.4);
 }
 
-/* Finalize Section */
+/* Finalize button section */
 .finalize-section {
   display: flex;
   flex-direction: column;
@@ -465,10 +421,6 @@
     font-size: 2rem;
   }
 
-  .remaining-amount {
-    font-size: 3rem;
-  }
-
   .pockets-grid {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1rem;
@@ -523,10 +475,6 @@
   .amount-input-wrapper-large .currency-large,
   .amount-input-wrapper-large input {
     font-size: 1.75rem;
-  }
-
-  .remaining-amount {
-    font-size: 2.5rem;
   }
 
   .pockets-grid {

@@ -1,3 +1,4 @@
+// Days approximation for conversion logic
 export const DAYS_PER_FREQUENCY = {
   daily: 1,
   weekly: 7,
@@ -8,6 +9,7 @@ export const DAYS_PER_FREQUENCY = {
   yearly: 365,
 };
 
+// Short codes for UI display
 export const FREQUENCY_CODES = {
   daily: 'D',
   weekly: 'W',
@@ -18,6 +20,7 @@ export const FREQUENCY_CODES = {
   yearly: 'Y',
 };
 
+// Convert value between any two frequencies
 export function convertAmount(amount, fromFreq, toFreq) {
   if (fromFreq === toFreq) {
     return parseFloat(amount);
@@ -27,12 +30,14 @@ export function convertAmount(amount, fromFreq, toFreq) {
   const fromDays = DAYS_PER_FREQUENCY[fromFreq];
   const toDays = DAYS_PER_FREQUENCY[toFreq];
   
+  // Normalize to daily rate first
   const dailyRate = amountNum / fromDays;
   const result = dailyRate * toDays;
   
   return result;
 }
 
+// Clean number formatting for UI
 export function formatAmountDisplay(amount) {
   const num = parseFloat(amount);
   const rounded = Math.round(num * 100) / 100;
@@ -44,6 +49,7 @@ export function formatAmountDisplay(amount) {
   return rounded.toFixed(2).replace(/\.?0+$/, '');
 }
 
+// Sum up pocket and items in a specific frequency
 export function calculatePocketInFrequency(pocketAmount, pocketFreq, items, targetFreq) {
   let total = convertAmount(pocketAmount, pocketFreq, targetFreq);
   
@@ -57,6 +63,7 @@ export function calculatePocketInFrequency(pocketAmount, pocketFreq, items, targ
   return total;
 }
 
+// Check if items have different frequencies than the pocket
 export function hasMixedFrequencies(pocketFreq, items) {
   if (pocketFreq === 'monthly' && items.every(item => item.frequency === 'monthly' || item.is_other)) {
     return false;

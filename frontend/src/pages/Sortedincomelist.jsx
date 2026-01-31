@@ -5,16 +5,25 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import "../styles/Home.css";
 import "../styles/SortedIncomeList.css";
+import { getUserCurrency } from "../utils/userPreferences";
 
+// Shows list of past income sortings
 function SortedIncomeList() {
   const [sortedIncomes, setSortedIncomes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currency, setCurrency] = useState("€");
   const navigate = useNavigate();
 
+  // Load data on mount
   useEffect(() => {
     fetchSortedIncomes();
+    fetchCurrency();
   }, []);
+
+  const fetchCurrency = async () => {
+    const userCurrency = await getUserCurrency();
+    setCurrency(userCurrency);
+  };
 
   const fetchSortedIncomes = async () => {
     try {
@@ -27,7 +36,7 @@ function SortedIncomeList() {
     }
   };
 
-  // Group sorted incomes by year
+  // Organise incomes by year
   const groupByYear = () => {
     const grouped = {};
     
@@ -39,7 +48,7 @@ function SortedIncomeList() {
       grouped[year].push(income);
     });
 
-    // Sort years descending (latest first)
+    // Sort years descending
     const sortedYears = Object.keys(grouped).sort((a, b) => b - a);
     
     return sortedYears.map(year => ({
@@ -50,21 +59,23 @@ function SortedIncomeList() {
     }));
   };
 
+  // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
+    return date.toLocaleDateString('en-GB', { 
       day: 'numeric',
+      month: 'short', 
       year: 'numeric'
     });
   };
 
+  // Format full date range string
   const formatPeriod = (startDate, endDate) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
     
-    const startStr = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const endStr = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const startStr = start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    const endStr = end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     
     return `${startStr} — ${endStr}`;
   };
@@ -122,7 +133,7 @@ function SortedIncomeList() {
                       >
                         
                         
-                        {/* Main Amount Display */}
+                        {/* Amount display */}
                         <div>
                           <span className="income-currency">{currency}</span>
                           <span className="income-amount">
@@ -135,7 +146,7 @@ function SortedIncomeList() {
                         )}
                         </div>
                         
-                        {/* Period Info */}
+                        {/* Bottom details */}
                         <div className="income-info">
                           <div className="income-period">
                             {formatPeriod(income.start_date, income.end_date)}

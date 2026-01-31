@@ -6,6 +6,7 @@ import "../styles/CurrencyConverter.css";
 const API_KEY = "fca_live_8I5FSFO3o0tUuJsXBkFVQEiS1JB3jqUsxkAZw3jg";
 const API_URL = "https://api.freecurrencyapi.com/v1/latest";
 
+// Tool for converting amounts between different currencies
 function CurrencyConverter() {
   const [amount, setAmount] = useState("1");
   const [fromCurrency, setFromCurrency] = useState("USD");
@@ -16,10 +17,10 @@ function CurrencyConverter() {
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  // Common currencies to show at the top
+  // Currencies to display first
   const popularCurrencies = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY"];
 
-  // Currency symbols mapping
+  // Mapping codes to symbols
   const currencySymbols = {
     USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "C$", 
     AUD: "A$", CHF: "Fr", CNY: "¥", INR: "₹", BRL: "R$",
@@ -34,13 +35,14 @@ function CurrencyConverter() {
     fetchRates();
   }, []);
 
-  // Calculate result whenever amount or currencies change
+  // Update conversion when inputs change
   useEffect(() => {
     if (rates && amount) {
       calculateConversion();
     }
   }, [amount, fromCurrency, toCurrency, rates]);
 
+  // Get live rates from API
   const fetchRates = async () => {
     setLoading(true);
     setError(null);
@@ -62,6 +64,7 @@ function CurrencyConverter() {
     }
   };
 
+  // Math logic for conversion
   const calculateConversion = () => {
     if (!rates || !amount || isNaN(amount)) {
       setResult(null);
@@ -86,6 +89,7 @@ function CurrencyConverter() {
     }
   };
 
+  // Flip from/to currencies
   const swapCurrencies = () => {
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
@@ -99,6 +103,7 @@ function CurrencyConverter() {
     });
   };
 
+  // Display the 1:1 rate
   const getRate = () => {
     if (!rates) return "...";
     
@@ -113,7 +118,7 @@ function CurrencyConverter() {
     }
   };
 
-  // Sort popular currencies first, then alphabetically
+  // Order currencies list
   const sortedCurrencies = rates ? Object.keys(rates).sort((a, b) => {
     const aIsPopular = popularCurrencies.includes(a);
     const bIsPopular = popularCurrencies.includes(b);

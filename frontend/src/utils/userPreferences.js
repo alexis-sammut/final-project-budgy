@@ -1,11 +1,12 @@
 import api from "../api";
 
+// Fetch user's preferred currency symbol from profile
 export const getUserCurrency = async () => {
   try {
     const res = await api.get("/api/user/profile/");
     return res.data.currency || "€";
   } catch (err) {
     console.error("Error fetching user currency:", err);
-    return "€"; // fallback
+    return "€"; 
   }
 };

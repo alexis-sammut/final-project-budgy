@@ -16,7 +16,27 @@ from decimal import Decimal
 from datetime import datetime
 from rest_framework_simplejwt.tokens import RefreshToken
 
+# class CreateUserView(generics.CreateAPIView):
+#     """Register a new user."""
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+#     permission_classes = [AllowAny]
+    
+#     def create(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.save()
+        
+#         refresh = RefreshToken.for_user(user)
+        
+#         return Response({
+#             'user': serializer.data,
+#             'access': str(refresh.access_token),
+#             'refresh': str(refresh),
+#         }, status=status.HTTP_201_CREATED)
+
 class CreateUserView(generics.CreateAPIView):
+    """Register a new user and initialize default data."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
@@ -25,6 +45,71 @@ class CreateUserView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        
+        # --- Preload Default Data ---
+        
+        # 1. Create Categories
+        cat_essentials = Category.objects.create(name="Essentials", order=0, author=user)
+        cat_savings = Category.objects.create(name="Savings", order=1, author=user)
+        cat_lifestyle = Category.objects.create(name="Lifestyle", order=2, author=user)
+        
+        # 2. Create Pockets
+        # Essentials
+        Pocket.objects.create(
+            name="Rent",
+            amount=0,
+            frequency="monthly",
+            color="#E74C3C",
+            category=cat_essentials,
+            author=user
+        )
+        Pocket.objects.create(
+            name="Groceries",
+            amount=0,
+            frequency="monthly",
+            color="#98D8C8", 
+            category=cat_essentials,
+            author=user
+        )
+        
+        Pocket.objects.create(
+            name="Bills",
+            amount=0,
+            frequency="monthly",
+            color="#45B7D1", 
+            category=cat_essentials,
+            author=user
+        )
+        
+        # Savings
+        Pocket.objects.create(
+            name="Emergency Fund",
+            amount=0,
+            frequency="monthly",
+            color="#0D7377", 
+            category=cat_savings,
+            author=user
+        )
+        Pocket.objects.create(
+            name="Investments",
+            amount=0,
+            frequency="monthly",
+            color="#F1CB34FF",
+            category=cat_savings,
+            author=user
+        )
+        
+        # Lifestyle
+        Pocket.objects.create(
+            name="Entertainment",
+            amount=0,
+            frequency="monthly",
+            color="#9B59B6",
+            category=cat_lifestyle,
+            author=user
+        )
+        
+        # --- End Preload ---
         
         refresh = RefreshToken.for_user(user)
         
@@ -35,6 +120,7 @@ class CreateUserView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
     
 class PocketListCreate(generics.ListCreateAPIView):
+    """List or create pockets for auth user."""
     serializer_class = PocketSerializer
     permission_classes = [IsAuthenticated]
     
@@ -49,6 +135,7 @@ class PocketListCreate(generics.ListCreateAPIView):
             print(serializer.errors)
             
 class PocketDelete(generics.DestroyAPIView):
+    """Delete a pocket."""
     serializer_class = PocketSerializer
     permission_classes = [IsAuthenticated]
     
@@ -57,6 +144,7 @@ class PocketDelete(generics.DestroyAPIView):
         return Pocket.objects.filter(author=user)
 
 class PocketUpdate(generics.UpdateAPIView):
+    """Update a pocket, recalculates 'Other' item."""
     serializer_class = PocketSerializer
     permission_classes = [IsAuthenticated]
     
@@ -78,6 +166,7 @@ class PocketUpdate(generics.UpdateAPIView):
             pocket.update_other_item()
 
 class CategoryListCreate(generics.ListCreateAPIView):
+    """Manage budget categories."""
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
     
@@ -92,6 +181,7 @@ class CategoryListCreate(generics.ListCreateAPIView):
             print(serializer.errors)
 
 class CategoryDelete(generics.DestroyAPIView):
+    """Delete category if unused."""
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
     
@@ -110,7 +200,7 @@ class CategoryDelete(generics.DestroyAPIView):
 
 
 class CategoryReorderView(APIView):
-    """Update the order of categories"""
+    """Save new category display order."""
     permission_classes = [IsAuthenticated]
     
     def patch(self, request):
@@ -144,6 +234,7 @@ class CategoryReorderView(APIView):
 
 
 class ItemListCreate(generics.ListCreateAPIView):
+    """Manage items inside a specific pocket."""
     serializer_class = ItemSerializer
     permission_classes = [IsAuthenticated]
     
@@ -160,6 +251,7 @@ class ItemListCreate(generics.ListCreateAPIView):
 
 
 class ItemUpdate(generics.UpdateAPIView):
+    """Update item and recalculate pocket remainder."""
     serializer_class = ItemSerializer
     permission_classes = [IsAuthenticated]
     
@@ -177,6 +269,7 @@ class ItemUpdate(generics.UpdateAPIView):
 
 
 class ItemDelete(generics.DestroyAPIView):
+    """Delete item and recalculate pocket remainder."""
     serializer_class = ItemSerializer
     permission_classes = [IsAuthenticated]
     
@@ -194,8 +287,8 @@ class ItemDelete(generics.DestroyAPIView):
 
 class CalculateIncomeSortView(APIView):
     """
-    Calculate prorated amounts for all pockets based on income and period.
-    This doesn't save anything - it's just for the UI to display initial amounts.
+    Project pocket allocations for a given income and date range.
+    Does not save to database.
     """
     permission_classes = [IsAuthenticated]
     
@@ -248,9 +341,7 @@ class CalculateIncomeSortView(APIView):
 
 
 class IncomeSortCreateView(APIView):
-    """
-    Save a finalized income sort instance with all pocket/item snapshots.
-    """
+    """Finalize and save an income sorting session."""
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
@@ -331,33 +422,27 @@ class IncomeSortCreateView(APIView):
 
 
 class IncomeSortListView(generics.ListAPIView):
-    """
-    List all income sort instances for the authenticated user.
-    """
+    """History of sorted incomes."""
     serializer_class = SortedIncomeSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         return SortedIncome.objects.filter(author=self.request.user)
 
+class IncomeSortDetailView(generics.RetrieveDestroyAPIView):
 
-class IncomeSortDetailView(generics.RetrieveAPIView):
-    """
-    Get details of a specific income sort instance.
-    """
+    """Get details of or delete a specific income sort instance."""
     serializer_class = SortedIncomeSerializer
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
         return SortedIncome.objects.filter(author=self.request.user)
-
 
 class UserProfileView(APIView):
-    """Get, update, or delete user profile"""
+    """View and edit user profile settings."""
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        """Get current user profile"""
         from .models import UserProfile
         profile, created = UserProfile.objects.get_or_create(user=request.user)
         return Response({
@@ -367,7 +452,6 @@ class UserProfileView(APIView):
         })
     
     def patch(self, request):
-        """Update username and/or currency"""
         from .models import UserProfile
         user = request.user
         profile, created = UserProfile.objects.get_or_create(user=user)
@@ -399,13 +483,12 @@ class UserProfileView(APIView):
         })
     
     def delete(self, request):
-        """Delete user account"""
         request.user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UpdatePasswordView(APIView):
-    """Update user password"""
+    """Change user password."""
     permission_classes = [IsAuthenticated]
     
     def patch(self, request):

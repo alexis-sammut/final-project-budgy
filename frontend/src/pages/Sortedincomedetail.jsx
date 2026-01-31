@@ -9,6 +9,7 @@ import "../styles/Home.css";
 import "../styles/SortedIncomeDetail.css";
 import { getUserCurrency } from "../utils/userPreferences";
 
+// Shows details of a past income sorting session
 function SortedIncomeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -17,8 +18,10 @@ function SortedIncomeDetail() {
   const [loading, setLoading] = useState(true);
   const [selectedPocket, setSelectedPocket] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Modal state
   const [currency, setCurrency] = useState("€");
 
+  // Load data on mount
   useEffect(() => {
     fetchSortedIncome();
     fetchCategories();
@@ -50,11 +53,23 @@ function SortedIncomeDetail() {
     }
   };
 
+  // Delete handler
+  const handleDelete = async () => {
+    try {
+      await api.delete(`/api/sorted-incomes/${id}/`);
+      navigate("/sorted-incomes");
+    } catch (err) {
+      alert("Failed to delete sorted income.");
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  // Date formatting helpers
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
+    return date.toLocaleDateString("en-GB", {
       day: "numeric",
+      month: "short",
       year: "numeric",
     });
   };
@@ -63,13 +78,13 @@ function SortedIncomeDetail() {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    const startStr = start.toLocaleDateString("en-US", {
-      month: "short",
+    const startStr = start.toLocaleDateString("en-GB", {
       day: "numeric",
+      month: "short",
     });
-    const endStr = end.toLocaleDateString("en-US", {
-      month: "short",
+    const endStr = end.toLocaleDateString("en-GB", {
       day: "numeric",
+      month: "short",
       year: "numeric",
     });
 
@@ -99,7 +114,7 @@ function SortedIncomeDetail() {
       return groups;
     }, {});
 
-    // Sort categories by their order field
+    // Sort categories
     const sortedCategories = Object.keys(grouped).sort((a, b) => {
       if (a === "Uncategorized") return 1;
       if (b === "Uncategorized") return -1;
@@ -166,9 +181,9 @@ function SortedIncomeDetail() {
             ← Back to Sorted Incomes
           </button>
 
+          {/* Header Summary Card */}
           <div className="detail-header-section">
             <div className="detail-info-row">
-              {/* Income Amount */}
               <div className="detail-income-display">
                 <label>Income Sorted</label>
                 <div className="detail-amount-display">
@@ -179,7 +194,6 @@ function SortedIncomeDetail() {
                 </div>
               </div>
 
-              {/* Period Display */}
               <div className="detail-period-display">
                 <label>Period</label>
                 <div className="period-info-box">
@@ -188,7 +202,6 @@ function SortedIncomeDetail() {
               </div>
             </div>
 
-            {/* Summary info */}
             <div className="detail-summary">
               <div className="summary-item">
                 <span className="summary-label">Total Pockets</span>
@@ -205,7 +218,7 @@ function SortedIncomeDetail() {
             </div>
           </div>
 
-          {/* Pockets Section */}
+          {/* Categorized Pockets Grid */}
           <div className="detail-pockets-section">
             {groupedPockets.map(({ category, pockets }) => (
               <div key={category} className="detail-category-section">
@@ -225,6 +238,17 @@ function SortedIncomeDetail() {
             ))}
           </div>
 
+          {/* Delete Action */}
+          <div style={{ marginTop: "3rem", textAlign: "center", borderTop: "1px solid #eee", paddingTop: "2rem" }}>
+            <button 
+              className="delete-btn" 
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Delete this income
+            </button>
+          </div>
+
+          {/* Details Modal */}
           {showModal && selectedPocket && (
             <SortedPocketViewModal
               pocket={selectedPocket}
@@ -235,6 +259,30 @@ function SortedIncomeDetail() {
         </div>
       </div>
       <Footer />
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="confirm-overlay" onClick={() => setShowDeleteConfirm(false)}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Delete Sorted Income?</h3>
+            <p>This will permanently remove this record from your history.</p>
+            <div className="confirm-actions">
+              <button 
+                className="confirm-btn confirm-cancel"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="delete-btn"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
