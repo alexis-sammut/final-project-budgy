@@ -77,7 +77,7 @@ Project Structure
 budgy/
 ├── backend/
 │   ├── api/
-│   │   ├── models.py            # Database models (Pocket, Category, Item, etc.)
+│   │   ├── models.py            # Database models (Pocket, Category, etc. You can find the Data Model Diagram here : https://drawsql.app/teams/alexis-sammut/diagrams/budgy-database) 
 │   │   ├── views.py             # API endpoints and business logic
 │   │   ├── serializers.py       # Data serialisation
 │   │   ├── urls.py              # API routing
