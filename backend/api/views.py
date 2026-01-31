@@ -16,26 +16,7 @@ from decimal import Decimal
 from datetime import datetime
 from rest_framework_simplejwt.tokens import RefreshToken
 
-# class CreateUserView(generics.CreateAPIView):
-#     """Register a new user."""
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     permission_classes = [AllowAny]
-    
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.save()
-        
-#         refresh = RefreshToken.for_user(user)
-        
-#         return Response({
-#             'user': serializer.data,
-#             'access': str(refresh.access_token),
-#             'refresh': str(refresh),
-#         }, status=status.HTTP_201_CREATED)
-
-class CreateUserView(generics.CreateAPIView):
+class CreateUserView(generics.CreateAPIView):  
     """Register a new user and initialize default data."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -47,67 +28,66 @@ class CreateUserView(generics.CreateAPIView):
         user = serializer.save()
         
         # --- Preload Default Data ---
-        
-        # 1. Create Categories
-        cat_essentials = Category.objects.create(name="Essentials", order=0, author=user)
-        cat_savings = Category.objects.create(name="Savings", order=1, author=user)
-        cat_lifestyle = Category.objects.create(name="Lifestyle", order=2, author=user)
-        
-        # 2. Create Pockets
-        # Essentials
-        Pocket.objects.create(
-            name="Rent",
-            amount=0,
-            frequency="monthly",
-            color="#E74C3C",
-            category=cat_essentials,
-            author=user
-        )
-        Pocket.objects.create(
-            name="Groceries",
-            amount=0,
-            frequency="monthly",
-            color="#98D8C8", 
-            category=cat_essentials,
-            author=user
-        )
-        
-        Pocket.objects.create(
-            name="Bills",
-            amount=0,
-            frequency="monthly",
-            color="#45B7D1", 
-            category=cat_essentials,
-            author=user
-        )
-        
-        # Savings
-        Pocket.objects.create(
-            name="Emergency Fund",
-            amount=0,
-            frequency="monthly",
-            color="#0D7377", 
-            category=cat_savings,
-            author=user
-        )
-        Pocket.objects.create(
-            name="Investments",
-            amount=0,
-            frequency="monthly",
-            color="#F1CB34FF",
-            category=cat_savings,
-            author=user
-        )
-        
-        # Lifestyle
-        Pocket.objects.create(
-            name="Entertainment",
-            amount=0,
-            frequency="monthly",
-            color="#9B59B6",
-            category=cat_lifestyle,
-            author=user
-        )
+        try:
+            # 1. Create Categories
+            cat_essentials = Category.objects.create(name="Essentials", order=0, author=user)
+            cat_savings = Category.objects.create(name="Savings", order=1, author=user)
+            cat_lifestyle = Category.objects.create(name="Lifestyle", order=2, author=user)
+            
+            # 2. Create Pockets
+            Pocket.objects.create(
+                name="Rent",
+                amount=0,
+                frequency="monthly",
+                color="#E74C3C",
+                category=cat_essentials,
+                author=user
+            )
+            Pocket.objects.create(
+                name="Groceries",
+                amount=0,
+                frequency="monthly",
+                color="#98D8C8", 
+                category=cat_essentials,
+                author=user
+            )
+            
+            Pocket.objects.create(
+                name="Bills",
+                amount=0,
+                frequency="monthly",
+                color="#45B7D1", 
+                category=cat_essentials,
+                author=user
+            )
+            
+            Pocket.objects.create(
+                name="Emergency Fund",
+                amount=0,
+                frequency="monthly",
+                color="#0D7377", 
+                category=cat_savings,
+                author=user
+            )
+            Pocket.objects.create(
+                name="Investments",
+                amount=0,
+                frequency="monthly",
+                color="#F1CB34FF",
+                category=cat_savings,
+                author=user
+            )
+            
+            Pocket.objects.create(
+                name="Entertainment",
+                amount=0,
+                frequency="monthly",
+                color="#9B59B6",
+                category=cat_lifestyle,
+                author=user
+            )
+        except Exception as e:
+            print(f"Error creating default data for user {user.username}: {str(e)}")
         
         # --- End Preload ---
         
@@ -118,7 +98,7 @@ class CreateUserView(generics.CreateAPIView):
             'access': str(refresh.access_token),
             'refresh': str(refresh),
         }, status=status.HTTP_201_CREATED)
-    
+
 class PocketListCreate(generics.ListCreateAPIView):
     """List or create pockets for auth user."""
     serializer_class = PocketSerializer
