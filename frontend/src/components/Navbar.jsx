@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import "../styles/Navbar.css";
+import "../styles/navbar.css";
 
 // Main navigation bar component
 function Navbar() {
@@ -46,30 +46,34 @@ function Navbar() {
             <span className="nav-icon">📊</span>
             Sorted Incomes
           </Link>
-          
+
           {/* Tools Dropdown */}
           <div className="nav-dropdown" ref={dropdownRef}>
-            <button 
-              className="nav-link dropdown-toggle" 
+            <button
+              className="nav-link dropdown-toggle"
               onClick={toggleToolsDropdown}
             >
               <span className="nav-icon">🛠️</span>
               Tools
-              <span className={`dropdown-arrow ${showToolsDropdown ? 'open' : ''}`}>▼</span>
+              <span
+                className={`dropdown-arrow ${showToolsDropdown ? "open" : ""}`}
+              >
+                ▼
+              </span>
             </button>
-            
+
             {showToolsDropdown && (
               <div className="dropdown-menu">
-                <Link 
-                  to="/calendar" 
+                <Link
+                  to="/calendar"
                   className="dropdown-item"
                   onClick={closeDropdown}
                 >
                   <span className="dropdown-icon">📅</span>
                   Calendar
                 </Link>
-                <Link 
-                  to="/currency-converter" 
+                <Link
+                  to="/currency-converter"
                   className="dropdown-item"
                   onClick={closeDropdown}
                 >

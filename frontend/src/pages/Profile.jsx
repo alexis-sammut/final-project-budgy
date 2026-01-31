@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import "../styles/Profile.css";
+import "../styles/profile.css";
 
 // User profile and settings management
 function Profile() {
@@ -70,14 +70,16 @@ function Profile() {
   // Save new category order
   const handleDragEnd = async () => {
     setDraggedItem(null);
-    
+
     const categoryOrder = categories.map((cat, index) => ({
       id: cat.id,
-      order: index
+      order: index,
     }));
 
     try {
-      await api.patch("/api/categories/reorder/", { categories: categoryOrder });
+      await api.patch("/api/categories/reorder/", {
+        categories: categoryOrder,
+      });
     } catch (err) {
       console.error("Error updating category order:", err);
       fetchCategories();
@@ -87,7 +89,7 @@ function Profile() {
   // Update username handler
   const handleUpdateUsername = async (e) => {
     e.preventDefault();
-    
+
     if (!newUsername.trim()) {
       setUsernameMessage("Username cannot be empty");
       setTimeout(() => setUsernameMessage(""), 3000);
@@ -109,7 +111,9 @@ function Profile() {
       setUsernameMessage("✓ Username updated successfully");
       setTimeout(() => setUsernameMessage(""), 3000);
     } catch (err) {
-      setUsernameMessage(err.response?.data?.username?.[0] || "Failed to update username");
+      setUsernameMessage(
+        err.response?.data?.username?.[0] || "Failed to update username",
+      );
       setTimeout(() => setUsernameMessage(""), 5000);
     } finally {
       setLoading(false);
@@ -144,9 +148,9 @@ function Profile() {
     try {
       await api.patch("/api/user/password/", {
         current_password: currentPassword,
-        new_password: newPassword
+        new_password: newPassword,
       });
-      
+
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -155,9 +159,9 @@ function Profile() {
     } catch (err) {
       setPasswordMessage(
         err.response?.data?.current_password?.[0] ||
-        err.response?.data?.new_password?.[0] ||
-        err.response?.data?.error ||
-        "Failed to update password"
+          err.response?.data?.new_password?.[0] ||
+          err.response?.data?.error ||
+          "Failed to update password",
       );
       setTimeout(() => setPasswordMessage(""), 5000);
     } finally {
@@ -191,7 +195,7 @@ function Profile() {
 
   const handleDeleteAccount = async () => {
     setLoading(true);
-    
+
     try {
       await api.delete("/api/user/profile/");
       localStorage.clear();
@@ -217,7 +221,7 @@ function Profile() {
           {/* Username Section */}
           <div className="profile-section">
             <h2 className="section-title">Account Settings</h2>
-            
+
             <form onSubmit={handleUpdateUsername} className="profile-form">
               <div className="form-group">
                 <label htmlFor="username">Username</label>
@@ -230,8 +234,8 @@ function Profile() {
                     className="profile-input"
                     placeholder="Enter username"
                   />
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="update-btn"
                     disabled={loading || newUsername === username}
                   >
@@ -239,7 +243,9 @@ function Profile() {
                   </button>
                 </div>
                 {usernameMessage && (
-                  <div className={`message ${usernameMessage.includes("✓") ? "success" : "error"}`}>
+                  <div
+                    className={`message ${usernameMessage.includes("✓") ? "success" : "error"}`}
+                  >
                     {usernameMessage}
                   </div>
                 )}
@@ -250,7 +256,7 @@ function Profile() {
           {/* Password Section */}
           <div className="profile-section">
             <h2 className="section-title">Change Password</h2>
-            
+
             <form onSubmit={handleUpdatePassword} className="profile-form">
               <div className="form-group">
                 <label htmlFor="current-password">Current Password</label>
@@ -289,16 +295,14 @@ function Profile() {
               </div>
 
               {passwordMessage && (
-                <div className={`message ${passwordMessage.includes("✓") ? "success" : "error"}`}>
+                <div
+                  className={`message ${passwordMessage.includes("✓") ? "success" : "error"}`}
+                >
                   {passwordMessage}
                 </div>
               )}
 
-              <button 
-                type="submit" 
-                className="submit-btn"
-                disabled={loading}
-              >
+              <button type="submit" className="submit-btn" disabled={loading}>
                 {loading ? "Updating..." : "Update Password"}
               </button>
             </form>
@@ -308,9 +312,10 @@ function Profile() {
           <div className="profile-section">
             <h2 className="section-title">Currency Preference</h2>
             <p className="section-description">
-              Choose your preferred currency symbol. This will be updated throughout the app.
+              Choose your preferred currency symbol. This will be updated
+              throughout the app.
             </p>
-            
+
             <div className="currency-selector-group">
               <label htmlFor="currency">Currency Symbol</label>
               <select
@@ -334,9 +339,11 @@ function Profile() {
                 <option value="kr">kr (Swedish Krona)</option>
                 <option value="zł">zł (Polish Zloty)</option>
               </select>
-              
+
               {currencyMessage && (
-                <div className={`message ${currencyMessage.includes("✓") ? "success" : "error"}`}>
+                <div
+                  className={`message ${currencyMessage.includes("✓") ? "success" : "error"}`}
+                >
                   {currencyMessage}
                 </div>
               )}
@@ -347,17 +354,20 @@ function Profile() {
           <div className="profile-section">
             <h2 className="section-title">Category Order</h2>
             <p className="section-description">
-              Drag and drop to reorder categories. Changes are saved automatically.
+              Drag and drop to reorder categories. Changes are saved
+              automatically.
             </p>
-            
+
             {categories.length === 0 ? (
-              <p className="empty-state">No categories yet. Create categories in the Pockets page.</p>
+              <p className="empty-state">
+                No categories yet. Create categories in the Pockets page.
+              </p>
             ) : (
               <div className="category-list">
                 {categories.map((category, index) => (
                   <div
                     key={category.id}
-                    className={`category-item ${draggedItem === index ? 'dragging' : ''}`}
+                    className={`category-item ${draggedItem === index ? "dragging" : ""}`}
                     draggable
                     onDragStart={(e) => handleDragStart(e, index)}
                     onDragOver={(e) => handleDragOver(e, index)}
@@ -373,36 +383,44 @@ function Profile() {
           </div>
 
           {/* Account Actions */}
-            <div className="danger-actions">
-              <button onClick={handleLogout} className="logout-btn">
-                Logout
-              </button>
-              <button 
-                onClick={() => setShowDeleteConfirm(true)} 
-                className="delete-account-btn"
-              >
-                Delete Account
-              </button>
-            </div>
+          <div className="danger-actions">
+            <button onClick={handleLogout} className="logout-btn">
+              Logout
+            </button>
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="delete-account-btn"
+            >
+              Delete Account
+            </button>
+          </div>
         </div>
       </div>
       <Footer />
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="confirm-overlay" onClick={() => setShowDeleteConfirm(false)}>
+        <div
+          className="confirm-overlay"
+          onClick={() => setShowDeleteConfirm(false)}
+        >
           <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
             <h3>Delete Account?</h3>
-            <p>This action is <strong>permanent</strong> and cannot be undone.</p>
-            <p className="confirm-warning">All your pockets, items, and sorted incomes will be permanently deleted.</p>
+            <p>
+              This action is <strong>permanent</strong> and cannot be undone.
+            </p>
+            <p className="confirm-warning">
+              All your pockets, items, and sorted incomes will be permanently
+              deleted.
+            </p>
             <div className="confirm-actions">
-              <button 
+              <button
                 className="confirm-btn confirm-cancel"
                 onClick={() => setShowDeleteConfirm(false)}
               >
                 Cancel
               </button>
-              <button 
+              <button
                 className="confirm-btn confirm-delete"
                 onClick={handleDeleteAccount}
                 disabled={loading}

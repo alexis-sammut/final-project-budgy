@@ -6,7 +6,6 @@ import "../styles/currencyconverter.css";
 const API_KEY = import.meta.env.VITE_CURRENCY_API_KEY;
 const API_URL = "https://api.freecurrencyapi.com/v1/latest";
 
-
 // Tool for converting amounts between different currencies
 function CurrencyConverter() {
   const [amount, setAmount] = useState("1");
@@ -19,17 +18,52 @@ function CurrencyConverter() {
   const [lastUpdated, setLastUpdated] = useState(null);
 
   // Currencies to display first
-  const popularCurrencies = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF", "CNY"];
+  const popularCurrencies = [
+    "USD",
+    "EUR",
+    "GBP",
+    "JPY",
+    "CAD",
+    "AUD",
+    "CHF",
+    "CNY",
+  ];
 
   // Mapping codes to symbols
   const currencySymbols = {
-    USD: "$", EUR: "€", GBP: "£", JPY: "¥", CAD: "C$", 
-    AUD: "A$", CHF: "Fr", CNY: "¥", INR: "₹", BRL: "R$",
-    MXN: "$", KRW: "₩", RUB: "₽", TRY: "₺", ZAR: "R",
-    SGD: "S$", HKD: "HK$", NOK: "kr", SEK: "kr", DKK: "kr",
-    PLN: "zł", THB: "฿", IDR: "Rp", MYR: "RM", PHP: "₱",
-    CZK: "Kč", ILS: "₪", HUF: "Ft", NZD: "NZ$", RON: "lei",
-    BGN: "лв", HRK: "kn", ISK: "kr"
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+    JPY: "¥",
+    CAD: "C$",
+    AUD: "A$",
+    CHF: "Fr",
+    CNY: "¥",
+    INR: "₹",
+    BRL: "R$",
+    MXN: "$",
+    KRW: "₩",
+    RUB: "₽",
+    TRY: "₺",
+    ZAR: "R",
+    SGD: "S$",
+    HKD: "HK$",
+    NOK: "kr",
+    SEK: "kr",
+    DKK: "kr",
+    PLN: "zł",
+    THB: "฿",
+    IDR: "Rp",
+    MYR: "RM",
+    PHP: "₱",
+    CZK: "Kč",
+    ILS: "₪",
+    HUF: "Ft",
+    NZD: "NZ$",
+    RON: "lei",
+    BGN: "лв",
+    HRK: "kn",
+    ISK: "kr",
   };
 
   useEffect(() => {
@@ -47,14 +81,14 @@ function CurrencyConverter() {
   const fetchRates = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`${API_URL}?apikey=${API_KEY}`);
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch exchange rates");
       }
-      
+
       const data = await response.json();
       setRates(data.data);
       setLastUpdated(new Date());
@@ -73,10 +107,10 @@ function CurrencyConverter() {
     }
 
     const amountNum = parseFloat(amount);
-    
+
     const fromRate = rates[fromCurrency];
     const toRate = rates[toCurrency];
-    
+
     if (fromCurrency === "USD") {
       const converted = amountNum * toRate;
       setResult(converted);
@@ -98,16 +132,16 @@ function CurrencyConverter() {
 
   const formatResult = (value) => {
     if (value === null || value === undefined) return "0.00";
-    return value.toLocaleString('en-US', {
+    return value.toLocaleString("en-US", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     });
   };
 
   // Display the 1:1 rate
   const getRate = () => {
     if (!rates) return "...";
-    
+
     if (fromCurrency === "USD") {
       return rates[toCurrency].toFixed(4);
     } else if (toCurrency === "USD") {
@@ -120,14 +154,16 @@ function CurrencyConverter() {
   };
 
   // Order currencies list
-  const sortedCurrencies = rates ? Object.keys(rates).sort((a, b) => {
-    const aIsPopular = popularCurrencies.includes(a);
-    const bIsPopular = popularCurrencies.includes(b);
-    
-    if (aIsPopular && !bIsPopular) return -1;
-    if (!aIsPopular && bIsPopular) return 1;
-    return a.localeCompare(b);
-  }) : [];
+  const sortedCurrencies = rates
+    ? Object.keys(rates).sort((a, b) => {
+        const aIsPopular = popularCurrencies.includes(a);
+        const bIsPopular = popularCurrencies.includes(b);
+
+        if (aIsPopular && !bIsPopular) return -1;
+        if (!aIsPopular && bIsPopular) return 1;
+        return a.localeCompare(b);
+      })
+    : [];
 
   return (
     <>
@@ -187,7 +223,11 @@ function CurrencyConverter() {
                   </div>
                 </div>
 
-                <button className="swap-btn" onClick={swapCurrencies} title="Swap currencies">
+                <button
+                  className="swap-btn"
+                  onClick={swapCurrencies}
+                  title="Swap currencies"
+                >
                   ⇄
                 </button>
 
@@ -218,13 +258,19 @@ function CurrencyConverter() {
               </div>
 
               <div className="exchange-rate-info">
-                <span>1 {fromCurrency} = {getRate()} {toCurrency}</span>
+                <span>
+                  1 {fromCurrency} = {getRate()} {toCurrency}
+                </span>
               </div>
 
               {lastUpdated && (
                 <div className="last-updated">
                   Last updated: {lastUpdated.toLocaleTimeString()}
-                  <button onClick={fetchRates} className="refresh-btn" title="Refresh rates">
+                  <button
+                    onClick={fetchRates}
+                    className="refresh-btn"
+                    title="Refresh rates"
+                  >
                     ↻
                   </button>
                 </div>

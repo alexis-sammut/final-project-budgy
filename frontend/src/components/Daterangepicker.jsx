@@ -3,7 +3,9 @@ import "../styles/daterangepicker.css";
 
 // Component for selecting date ranges with presets
 function DateRangePicker({ value, onChange, onCalculate }) {
-  const [selectedPreset, setSelectedPreset] = useState(value.periodType || "1month");
+  const [selectedPreset, setSelectedPreset] = useState(
+    value.periodType || "1month",
+  );
   const [tempStartDate, setTempStartDate] = useState(value.start || "");
   const [tempEndDate, setTempEndDate] = useState(value.end || "");
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -27,10 +29,10 @@ function DateRangePicker({ value, onChange, onCalculate }) {
   // Handle preset selection logic
   const handlePresetClick = (preset) => {
     setSelectedPreset(preset.value);
-    
+
     if (preset.isOneOff) {
       // One-time sets start and end to today
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split("T")[0];
       setTempStartDate(today);
       setTempEndDate(today);
     } else {
@@ -43,28 +45,32 @@ function DateRangePicker({ value, onChange, onCalculate }) {
   const handleDateClick = (dateStr) => {
     if (!tempStartDate || (tempStartDate && tempEndDate)) {
       setTempStartDate(dateStr);
-      
+
       if (selectedPreset !== "custom") {
-        const preset = presets.find(p => p.value === selectedPreset);
+        const preset = presets.find((p) => p.value === selectedPreset);
         const start = new Date(dateStr);
         let end;
-        
+
         if (preset.isOneOff) {
           end = start;
         } else if (preset.isMonth) {
-          const daysInMonth = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
-          
+          const daysInMonth = new Date(
+            start.getFullYear(),
+            start.getMonth() + 1,
+            0,
+          ).getDate();
+
           end = new Date(start);
           end.setDate(start.getDate() + daysInMonth - 1);
         } else if (preset.days) {
           end = new Date(start);
           end.setDate(start.getDate() + preset.days - 1);
         }
-        
+
         if (end) {
-          const endDateStr = end.toISOString().split('T')[0];
+          const endDateStr = end.toISOString().split("T")[0];
           setTempEndDate(endDateStr);
-          
+
           onChange({
             start: dateStr,
             end: endDateStr,
@@ -77,20 +83,20 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     } else {
       const start = new Date(tempStartDate);
       const clicked = new Date(dateStr);
-      
+
       let finalStart = tempStartDate;
       let finalEnd = dateStr;
-      
+
       if (clicked < start) {
         finalStart = dateStr;
         finalEnd = tempStartDate;
       }
-      
+
       setTempStartDate(finalStart);
       setTempEndDate(finalEnd);
-      
+
       const detectedPreset = detectPresetFromDates(finalStart, finalEnd);
-      
+
       onChange({
         start: finalStart,
         end: finalEnd,
@@ -103,49 +109,57 @@ function DateRangePicker({ value, onChange, onCalculate }) {
   const detectPresetFromDates = (startStr, endStr) => {
     const start = new Date(startStr);
     const end = new Date(endStr);
-    
+
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    
+
     if (diffDays === 7) {
       setSelectedPreset("1week");
       return "1week";
     }
-    
+
     if (diffDays === 14) {
       setSelectedPreset("2weeks");
       return "2weeks";
     }
-    
+
     if (diffDays >= 28 && diffDays <= 31) {
       const startDay = start.getDate();
       const endDay = end.getDate();
       const startMonth = start.getMonth();
       const endMonth = end.getMonth();
-      
-      const daysInStartMonth = new Date(start.getFullYear(), startMonth + 1, 0).getDate();
-      
+
+      const daysInStartMonth = new Date(
+        start.getFullYear(),
+        startMonth + 1,
+        0,
+      ).getDate();
+
       if (endDay === startDay - 1 && endMonth === startMonth + 1) {
         setSelectedPreset("1month");
         return "1month";
       }
-      
-      if (startDay === 1 && endDay === daysInStartMonth && startMonth === endMonth) {
+
+      if (
+        startDay === 1 &&
+        endDay === daysInStartMonth &&
+        startMonth === endMonth
+      ) {
         setSelectedPreset("1month");
         return "1month";
       }
-      
+
       if (diffDays === daysInStartMonth) {
         setSelectedPreset("1month");
         return "1month";
       }
     }
-    
+
     if (diffDays === 1 && startStr === endStr) {
       setSelectedPreset("oneoff");
       return "oneoff";
     }
-    
+
     setSelectedPreset("custom");
     return "custom";
   };
@@ -176,7 +190,7 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     }
 
     for (let i = 1; i <= daysInMonth; i++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
       days.push(dateStr);
     }
 
@@ -184,25 +198,33 @@ function DateRangePicker({ value, onChange, onCalculate }) {
   };
 
   const handlePrevMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+    setCurrentMonth(
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1),
+    );
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+    setCurrentMonth(
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
+    );
   };
 
   // Check if date is within selected range
   const isDateInRange = (dateStr) => {
     if (!tempStartDate) return false;
     if (!tempEndDate && !hoveredDate) return dateStr === tempStartDate;
-    
+
     const date = new Date(dateStr);
     const start = new Date(tempStartDate);
-    const end = tempEndDate ? new Date(tempEndDate) : hoveredDate ? new Date(hoveredDate) : start;
-    
+    const end = tempEndDate
+      ? new Date(tempEndDate)
+      : hoveredDate
+        ? new Date(hoveredDate)
+        : start;
+
     const actualStart = start < end ? start : end;
     const actualEnd = start < end ? end : start;
-    
+
     return date >= actualStart && date <= actualEnd;
   };
 
@@ -221,12 +243,16 @@ function DateRangePicker({ value, onChange, onCalculate }) {
     if (!value.start || !value.end) return "Select period";
     const start = new Date(value.start);
     const end = new Date(value.end);
-    return `${start.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} – ${end.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`;  };
+    return `${start.toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${end.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`;
+  };
 
   const days = getDaysInMonth(currentMonth);
   const dayCount = calculateDays();
 
-  const monthYear = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const monthYear = currentMonth.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <div className="date-range-picker">
@@ -237,7 +263,7 @@ function DateRangePicker({ value, onChange, onCalculate }) {
             {presets.map((preset) => (
               <button
                 key={preset.value}
-                className={`preset-btn ${selectedPreset === preset.value ? 'active' : ''}`}
+                className={`preset-btn ${selectedPreset === preset.value ? "active" : ""}`}
                 onClick={() => handlePresetClick(preset)}
               >
                 {preset.label}
@@ -247,52 +273,58 @@ function DateRangePicker({ value, onChange, onCalculate }) {
 
           {/* Calendar view */}
           <div className="picker-calendar">
-                <div className="calendar-header">
-                  <button className="month-nav-btn" onClick={handlePrevMonth}>‹</button>
-                  <h3 className="month-title">{monthYear}</h3>
-                  <button className="month-nav-btn" onClick={handleNextMonth}>›</button>
-                </div>
-
-                <div className="calendar-weekdays">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="weekday">{day}</div>
-                  ))}
-                </div>
-
-                <div className="calendar-grid">
-                  {days.map((dateStr, index) => {
-                    if (!dateStr) {
-                      return <div key={index} className="calendar-day empty" />;
-                    }
-
-                    const day = new Date(dateStr).getDate();
-                    const inRange = isDateInRange(dateStr);
-                    const isStart = isStartDate(dateStr);
-                    const isEnd = isEndDate(dateStr);
-
-                    return (
-                      <button
-                        key={dateStr}
-                        className={`calendar-day ${inRange ? 'in-range' : ''} ${isStart ? 'start' : ''} ${isEnd ? 'end' : ''}`}
-                        onClick={() => handleDateClick(dateStr)}
-                        onMouseEnter={() => setHoveredDate(dateStr)}
-                        onMouseLeave={() => setHoveredDate(null)}
-                      >
-                        {day}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {dayCount && (
-                  <div className="period-info">
-                    {dayCount} day{dayCount !== 1 ? 's' : ''}
-                  </div>
-                )}
-              </div>
+            <div className="calendar-header">
+              <button className="month-nav-btn" onClick={handlePrevMonth}>
+                ‹
+              </button>
+              <h3 className="month-title">{monthYear}</h3>
+              <button className="month-nav-btn" onClick={handleNextMonth}>
+                ›
+              </button>
             </div>
+
+            <div className="calendar-weekdays">
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                <div key={day} className="weekday">
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            <div className="calendar-grid">
+              {days.map((dateStr, index) => {
+                if (!dateStr) {
+                  return <div key={index} className="calendar-day empty" />;
+                }
+
+                const day = new Date(dateStr).getDate();
+                const inRange = isDateInRange(dateStr);
+                const isStart = isStartDate(dateStr);
+                const isEnd = isEndDate(dateStr);
+
+                return (
+                  <button
+                    key={dateStr}
+                    className={`calendar-day ${inRange ? "in-range" : ""} ${isStart ? "start" : ""} ${isEnd ? "end" : ""}`}
+                    onClick={() => handleDateClick(dateStr)}
+                    onMouseEnter={() => setHoveredDate(dateStr)}
+                    onMouseLeave={() => setHoveredDate(null)}
+                  >
+                    {day}
+                  </button>
+                );
+              })}
+            </div>
+
+            {dayCount && (
+              <div className="period-info">
+                {dayCount} day{dayCount !== 1 ? "s" : ""}
+              </div>
+            )}
           </div>
         </div>
+      </div>
+    </div>
   );
 }
 

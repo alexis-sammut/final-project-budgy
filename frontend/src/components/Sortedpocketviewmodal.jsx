@@ -1,4 +1,4 @@
-import "../styles/Sortedincomedetail.css"
+import "../styles/sortedincomedetail.css";
 
 // Modal showing details of a specific pocket in a sorted income record
 function SortedPocketViewModal({ pocket, onClose, currency = "€" }) {
@@ -11,15 +11,18 @@ function SortedPocketViewModal({ pocket, onClose, currency = "€" }) {
       if (item.original_item) return 1;
       return 3;
     };
-    
+
     return getItemType(a) - getItemType(b);
   });
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="sorted-pocket-view-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="sorted-pocket-view-modal"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header with category label */}
-        <div 
+        <div
           className="view-modal-header"
           style={{ backgroundColor: pocket.color }}
         >
@@ -28,7 +31,7 @@ function SortedPocketViewModal({ pocket, onClose, currency = "€" }) {
               <button
                 type="button"
                 className="view-action-btn category-btn"
-                style={{ cursor: 'default', opacity: 1 }}
+                style={{ cursor: "default", opacity: 1 }}
                 title={pocket.category_name}
               >
                 {pocket.category_name}
@@ -41,14 +44,12 @@ function SortedPocketViewModal({ pocket, onClose, currency = "€" }) {
         </div>
 
         {/* Pocket amount summary */}
-        <div 
+        <div
           className="view-modal-colored-section"
           style={{ backgroundColor: pocket.color }}
         >
-          <div className="view-pocket-name">
-            {pocket.name}
-          </div>
-          
+          <div className="view-pocket-name">{pocket.name}</div>
+
           <div className="view-amount-display">
             <span className="view-currency">{currency}</span>
             <span className="view-amount">
@@ -60,24 +61,21 @@ function SortedPocketViewModal({ pocket, onClose, currency = "€" }) {
         {/* List of allocated items */}
         <div className="view-modal-body">
           <h3 className="view-items-title">Items</h3>
-          
+
           {sortedItems && sortedItems.length > 0 ? (
             <div className="view-items-list">
               {sortedItems.map((item, index) => {
                 const isRecurring = item.original_item !== null;
-                const itemClass = item.is_other 
-                  ? 'item-other' 
-                  : item.is_percentage 
-                  ? 'item-percentage' 
-                  : isRecurring 
-                  ? 'item-recurring' 
-                  : 'item-manual';
+                const itemClass = item.is_other
+                  ? "item-other"
+                  : item.is_percentage
+                    ? "item-percentage"
+                    : isRecurring
+                      ? "item-recurring"
+                      : "item-manual";
 
                 return (
-                  <div 
-                    key={index} 
-                    className={`view-item-row ${itemClass}`}
-                  >
+                  <div key={index} className={`view-item-row ${itemClass}`}>
                     <span className="view-item-name">
                       {item.name}
                       {item.is_percentage && (

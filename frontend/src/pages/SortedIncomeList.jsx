@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import "../styles/Home.css";
-import "../styles/SortedIncomeList.css";
+import "../styles/home.css";
+import "../styles/sortedincomelist.css";
 import { getUserCurrency } from "../utils/userPreferences";
 
 // Shows list of past income sortings

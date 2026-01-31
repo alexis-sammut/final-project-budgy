@@ -4,7 +4,7 @@ import api from "../api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CalendarDayModal from "../components/CalendarDayModal";
-import "../styles/Calendar.css";
+import "../styles/calendar.css";
 import { getUserCurrency } from "../utils/userPreferences";
 
 // Monthly calendar view for recurring items
@@ -16,30 +16,30 @@ function Calendar() {
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [currency, setCurrency] = useState("€")
+  const [currency, setCurrency] = useState("€");
 
   useEffect(() => {
     fetchPocketsAndItems();
-    fetchCurrency()
+    fetchCurrency();
   }, []);
 
   const fetchCurrency = async () => {
-  const userCurrency = await getUserCurrency();
-  setCurrency(userCurrency);
-};
+    const userCurrency = await getUserCurrency();
+    setCurrency(userCurrency);
+  };
 
   // Get items and organize them for the calendar
   const fetchPocketsAndItems = async () => {
     try {
       const res = await api.get("/api/pockets/");
       setPockets(res.data);
-      
+
       // Filter for monthly items with due dates
       const allMonthlyItems = [];
-      res.data.forEach(pocket => {
+      res.data.forEach((pocket) => {
         if (pocket.items && pocket.items.length > 0) {
-          pocket.items.forEach(item => {
-            if (item.frequency === 'monthly' && item.due_date) {
+          pocket.items.forEach((item) => {
+            if (item.frequency === "monthly" && item.due_date) {
               allMonthlyItems.push({
                 ...item,
                 pocketName: pocket.name,
@@ -50,7 +50,7 @@ function Calendar() {
           });
         }
       });
-      
+
       setMonthlyItems(allMonthlyItems);
     } catch (err) {
       console.error("Error fetching pockets:", err);
@@ -85,7 +85,7 @@ function Calendar() {
 
   const getItemsForDay = (day) => {
     if (!day) return [];
-    return monthlyItems.filter(item => item.due_date === day);
+    return monthlyItems.filter((item) => item.due_date === day);
   };
 
   const handleDayClick = (day) => {
@@ -103,11 +103,15 @@ function Calendar() {
   };
 
   const handlePrevMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
+    setCurrentMonth(
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1),
+    );
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1));
+    setCurrentMonth(
+      new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
+    );
   };
 
   const handleToday = () => {
@@ -115,10 +119,13 @@ function Calendar() {
   };
 
   const days = getDaysInMonth(currentMonth);
-  const monthYear = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const monthYear = currentMonth.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
   const today = new Date();
-  const isCurrentMonth = 
-    currentMonth.getMonth() === today.getMonth() && 
+  const isCurrentMonth =
+    currentMonth.getMonth() === today.getMonth() &&
     currentMonth.getFullYear() === today.getFullYear();
 
   if (loading) {
@@ -142,24 +149,34 @@ function Calendar() {
         <div className="home-content">
           <div className="calendar-page-header">
             <h1>Monthly Items Calendar</h1>
-            <p className="calendar-subtitle">View all your monthly recurring items by due date</p>
+            <p className="calendar-subtitle">
+              View all your monthly recurring items by due date
+            </p>
           </div>
 
           <div className="calendar-container">
             {/* Navigation Header */}
             <div className="calendar-header">
-              <button className="month-nav-btn" onClick={handlePrevMonth}>‹</button>
+              <button className="month-nav-btn" onClick={handlePrevMonth}>
+                ‹
+              </button>
               <div className="month-title-section">
                 <h2 className="month-title">{monthYear}</h2>
-                <button className="today-btn" onClick={handleToday}>Today</button>
+                <button className="today-btn" onClick={handleToday}>
+                  Today
+                </button>
               </div>
-              <button className="month-nav-btn" onClick={handleNextMonth}>›</button>
+              <button className="month-nav-btn" onClick={handleNextMonth}>
+                ›
+              </button>
             </div>
 
             {/* Weekday Labels */}
             <div className="calendar-weekdays">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                <div key={day} className="weekday-header">{day}</div>
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                <div key={day} className="weekday-header">
+                  {day}
+                </div>
               ))}
             </div>
 
@@ -167,7 +184,12 @@ function Calendar() {
             <div className="calendar-grid">
               {days.map((day, index) => {
                 if (!day) {
-                  return <div key={`empty-${index}`} className="calendar-day empty" />;
+                  return (
+                    <div
+                      key={`empty-${index}`}
+                      className="calendar-day empty"
+                    />
+                  );
                 }
 
                 const items = getItemsForDay(day);
@@ -177,7 +199,7 @@ function Calendar() {
                 return (
                   <div
                     key={day}
-                    className={`calendar-day ${hasItems ? 'has-items' : ''} ${isToday ? 'today' : ''}`}
+                    className={`calendar-day ${hasItems ? "has-items" : ""} ${isToday ? "today" : ""}`}
                     onClick={() => handleDayClick(day)}
                   >
                     <div className="day-number">{day}</div>
@@ -213,7 +235,10 @@ function Calendar() {
           {/* Monthly Summary */}
           <div className="calendar-summary">
             <h3>Summary</h3>
-            <p><strong>{monthlyItems.length}</strong> monthly recurring items across <strong>{pockets.length}</strong> pockets</p>
+            <p>
+              <strong>{monthlyItems.length}</strong> monthly recurring items
+              across <strong>{pockets.length}</strong> pockets
+            </p>
           </div>
         </div>
       </div>
